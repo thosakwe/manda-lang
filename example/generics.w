@@ -1,8 +1,8 @@
-type <T> MyOption = sum
+pub type <T> MyOption = sum
   None;
   Some(&T)
 
-fn timesTwo (n: MyOption<i32>) ->
+pub fn timesTwo (n: MyOption<i32>) ->
   match n with
     None -> 0;
     Some(value) -> value * 2

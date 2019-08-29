@@ -1,4 +1,4 @@
-type OS = sum
+pub type OS = sum
   Windows;
   Mac;
   Linux(string);
@@ -9,7 +9,7 @@ fn main {
   printOS(ubuntu)
 }
 
-fn printOS (os: OS) ->
+pub fn printOS (os: OS) ->
   match os with
     Windows -> print("Windows");
     Mac -> print("Mac");
