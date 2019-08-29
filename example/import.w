@@ -1,8 +1,8 @@
 // Import specific symbols
-import {OS, printOS} from sum_type
+import {OS, printOS} from "sum_type"
 
 // Import all symbols from module
-import generics
+import "generics"
 
 fn main {
   var os = generics.Some(Windows)
