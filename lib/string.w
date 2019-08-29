@@ -1,10 +1,10 @@
-type String =
+pub type String =
   interface {
     fn getLength: u64
     fn substring(start: u64, end: Option<u64> = None): String
   }
 
-type AsciiString =
+pub type AsciiString =
   class implements String {
     new(var arr: u8[] = []);
     fn getLength -> arr.length
