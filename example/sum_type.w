@@ -1,8 +1,8 @@
-type OS =
-  | Windows
-  | Mac
-  | Linux(string)
-  | Other({name: string})
+type OS = sum
+  Windows;
+  Mac;
+  Linux(string);
+  Other({name: string})
 
 fn main {
   var ubuntu = Linux("Ubuntu")
