@@ -10,5 +10,6 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_library(w
   ${BISON_WParser_OUTPUTS}
   ${FLEX_WLexer_OUTPUTS}
+  type.hpp type.cpp
 )
 target_compile_options(w PUBLIC -Wno-deprecated-register)
