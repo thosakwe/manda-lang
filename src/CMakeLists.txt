@@ -11,5 +11,6 @@ add_library(w
   ${BISON_WParser_OUTPUTS}
   ${FLEX_WLexer_OUTPUTS}
   type.hpp type.cpp
+  type_reference.hpp type_reference.cpp
 )
 target_compile_options(w PUBLIC -Wno-deprecated-register)
