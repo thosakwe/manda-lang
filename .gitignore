@@ -1,36 +1,22 @@
 
-# Created by https://www.gitignore.io/api/ocaml
-# Edit at https://www.gitignore.io/?templates=ocaml
+# Created by https://www.gitignore.io/api/cmake
+# Edit at https://www.gitignore.io/?templates=cmake
 
-### OCaml ###
-*.annot
-*.cmo
-*.cma
-*.cmi
-*.a
-*.o
-*.cmx
-*.cmxs
-*.cmxa
+### CMake ###
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
 
-# ocamlbuild working directory
-_build/
+### CMake Patch ###
+# External projects
+*-prefix/
 
-# ocamlbuild targets
-*.byte
-*.native
-
-# oasis generated files
-setup.data
-setup.log
-
-# Merlin configuring file for Vim and Emacs
-.merlin
-
-# Dune generated files
-*.install
-
-# Local OPAM switch
-_opam/
-
-# End of https://www.gitignore.io/api/ocaml
+# End of https://www.gitignore.io/api/cmake
