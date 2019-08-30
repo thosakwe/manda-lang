@@ -1,4 +1,4 @@
-/* %option bison-bridge */
+%option bison-bridge
 %option prefix="wLang"
 
 ID [A-Za-z_][A-Za-z0-9_]*
@@ -12,4 +12,4 @@ ID [A-Za-z_][A-Za-z0-9_]*
 
 type { return TYPE; }
 
-{ID} { return ID; }
+{ID} { yylval.strval = strdup(yytext); return ID; }
