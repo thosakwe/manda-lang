@@ -9,3 +9,4 @@ add_library(w
   ${BISON_WParser_OUTPUTS}
   ${FLEX_WLexer_OUTPUTS}
 )
+target_compile_options(w PUBLIC -Wno-deprecated-register)
