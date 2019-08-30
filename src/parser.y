@@ -1,5 +1,6 @@
 %{
   #include <w_lexer.hpp>
+  void wLangerror(const char* msg);
 %}
 
 %define api.prefix {wLang}
