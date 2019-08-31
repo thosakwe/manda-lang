@@ -2,11 +2,7 @@
 #define W_TYPE_HPP
 
 namespace w_lang {
-  class Type {
-    public:
-      virtual ~Type() = default;
-      const Type* getInnermost() const;
-  };
-}
+class Type {};
+} // namespace w_lang
 
 #endif

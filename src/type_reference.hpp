@@ -6,7 +6,7 @@
 namespace w_lang {
 class TypeReference : public Type {
  public:
-  TypeReference(std::string name);
+  explicit TypeReference(std::string name);
   const std::string& getName() const;
 
  private:
