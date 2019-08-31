@@ -1,5 +1,5 @@
-#ifndef W_TOKEN_HPP
-#define W_TOKEN_HPP
+#ifndef MANDA_TOKEN_HPP
+#define MANDA_TOKEN_HPP
 
 #include <cstdint>
 #include <ostream>

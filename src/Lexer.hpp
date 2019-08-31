@@ -1,5 +1,5 @@
-#ifndef W_LEXER_HPP
-#define W_LEXER_HPP
+#ifndef MANDA_LEXER_HPP
+#define MANDA_LEXER_HPP
 
 namespace manda {
   class Lexer {

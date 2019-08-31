@@ -1,5 +1,5 @@
-#ifndef W_TYPE_HPP
-#define W_TYPE_HPP
+#ifndef MANDA_TYPE_HPP
+#define MANDA_TYPE_HPP
 
 namespace manda {
 class Type {

@@ -1,5 +1,5 @@
-#ifndef W_OBJECT_HPP
-#define W_OBJECT_HPP
+#ifndef MANDA_OBJECT_HPP
+#define MANDA_OBJECT_HPP
 
 
 
