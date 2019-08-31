@@ -13,7 +13,25 @@ public:
   Location location;
 };
 
-struct VoidExpr : public ExprCtx {};
+struct VoidExprCtx : public ExprCtx {};
+
+class NumberLiteralCtx : public ExprCtx {
+public:
+  explicit NumberLiteralCtx(double value);
+  double value;
+};
+
+class StringLiteralCtx : public ExprCtx {
+public:
+  explicit StringLiteralCtx(std::string &value);
+  std::string value;
+};
+
+class BoolLiteralCtx : public ExprCtx {
+public:
+  explicit BoolLiteralCtx(bool &value);
+  bool value;
+};
 
 struct BlockExprCtx : public ExprCtx {
   std::vector<std::shared_ptr<ExprCtx>> body;
