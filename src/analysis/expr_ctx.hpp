@@ -12,11 +12,14 @@ public:
   Location location;
 };
 
-class TopLevelExprCtx : public ExprCtx {};
+class TopLevelExprCtx : public ExprCtx {
+  // Visibility?
+  bool isPublic;
+  std::string name;
+};
 
 struct VarExprCtx : public TopLevelExprCtx {
   bool isFinal;
-  std::string name;
   std::shared_ptr<ExprCtx> value;
 };
 
@@ -28,7 +31,6 @@ struct ParamCtx {
 };
 
 struct FnDeclCtx : public TopLevelExprCtx {
-  std::string name;
   std::vector<std::shared_ptr<ParamCtx>> params;
   std::shared_ptr<TypeCtx> returnType;
   std::shared_ptr<ExprCtx> body;
