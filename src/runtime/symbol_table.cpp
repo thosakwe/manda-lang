@@ -15,8 +15,13 @@ manda::runtime::SymbolTable::resolve(std::string &name) const {
 manda::runtime::Symbol
 manda::runtime::SymbolTable::add(std::string &name,
                                  manda::runtime::Symbol &value) {
-  // TODO: Prevent adding the monostate?
-  return manda::runtime::Symbol();
+  auto it = symbols.find(name);
+  if (it != symbols.end() || std::holds_alternative<std::monostate>(value)) {
+    // The symbol cannot be redefined...
+    return std::monostate();
+  } else {
+    return symbols[name] = value;
+  }
 }
 
 std::shared_ptr<manda::runtime::SymbolTable>
