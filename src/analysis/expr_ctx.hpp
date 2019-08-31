@@ -51,7 +51,7 @@ public:
 
 class BoolLiteralCtx : public ExprCtx {
 public:
-  explicit BoolLiteralCtx(bool &value);
+  explicit BoolLiteralCtx(bool value);
   bool value;
 };
 
