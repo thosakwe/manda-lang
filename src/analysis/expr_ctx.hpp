@@ -13,6 +13,28 @@ public:
   Location location;
 };
 
+class TopLevelExprCtx : public ExprCtx {};
+
+struct VarExprCtx : public TopLevelExprCtx {
+  bool isFinal;
+  std::string name;
+  std::shared_ptr<ExprCtx> value;
+};
+
+struct ParamCtx {
+  Location location;
+  std::string name;
+  std::shared_ptr<TypeCtx> type;
+  std::shared_ptr<ExprCtx> defaultValue;
+};
+
+struct FnDeclCtx : public TopLevelExprCtx {
+  std::string name;
+  std::vector<std::shared_ptr<ParamCtx>> params;
+  std::shared_ptr<TypeCtx> returnType;
+  std::shared_ptr<ExprCtx> body;
+};
+
 struct VoidExprCtx : public ExprCtx {};
 
 class NumberLiteralCtx : public ExprCtx {
@@ -35,12 +57,6 @@ public:
 
 struct BlockExprCtx : public ExprCtx {
   std::vector<std::shared_ptr<ExprCtx>> body;
-};
-
-struct VarExprCtx : public ExprCtx {
-  bool isFinal;
-  std::string name;
-  std::shared_ptr<ExprCtx> value;
 };
 
 struct TupleExprCtx : public ExprCtx {
