@@ -1,7 +1,7 @@
 #ifndef W_LEXER_HPP
 #define W_LEXER_HPP
 
-namespace w_lang {
+namespace manda {
   class Lexer {
     public:
       int wlex(void* state);

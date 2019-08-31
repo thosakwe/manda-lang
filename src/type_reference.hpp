@@ -3,7 +3,7 @@
 #include <string>
 #include "type.hpp"
 
-namespace w_lang {
+namespace manda {
 class TypeReference : public Type {
  public:
   explicit TypeReference(std::string name);
@@ -12,7 +12,7 @@ class TypeReference : public Type {
  private:
   std::string name;
 };
-}  // namespace w_lang
+}  // namespace manda
 
 #endif
 

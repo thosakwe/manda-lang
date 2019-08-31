@@ -9,8 +9,8 @@ WHITESPACE [ \r\t]
 
 %{
   #include <w_parser.hpp>
-  #define YY_DECL int w_lang::Lexer::wlex(void& yyscanner);
-  using T = w_lang::Token::TokenType;
+  #define YY_DECL int manda::Lexer::wlex(void& yyscanner);
+  using T = manda::Token::TokenType;
 %}
 
 %%
