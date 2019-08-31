@@ -7,7 +7,7 @@ namespace manda {
 namespace runtime {
 class Object {
 public:
-  const std::shared_ptr<Type> &getType() const;
+  virtual const std::shared_ptr<Type> &getType() const = 0;
 
 private:
   std::shared_ptr<Type> type;

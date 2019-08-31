@@ -8,7 +8,7 @@ namespace manda {
 namespace runtime {
 class Module {
 public:
-  Module(std::string &name);
+  explicit Module(std::string &name);
   const std::string &getName() const;
   //  void addChild(std::shared_ptr<Module> &child);
   //  const std::shared_ptr<Module> findChild(std::string &name);
