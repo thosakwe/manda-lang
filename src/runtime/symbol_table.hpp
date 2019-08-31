@@ -13,6 +13,7 @@ class SymbolTable : public std::enable_shared_from_this<SymbolTable> {
 public:
   SymbolTable();
   Symbol &resolve(std::string &name) const;
+  Symbol add(std::string &name, Symbol &value);
   std::shared_ptr<SymbolTable> createChild() const;
 
 private:
