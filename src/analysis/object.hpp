@@ -3,13 +3,11 @@
 #include "type_ctx.hpp"
 #include <memory>
 
-namespace manda {
-namespace analysis {
+namespace manda::analysis {
 class Object {
 public:
   virtual std::shared_ptr<TypeCtx> getType() const;
 };
-} // namespace analysis
-} // namespace manda
+} // namespace manda::analysis
 
 #endif

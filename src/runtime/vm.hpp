@@ -4,13 +4,11 @@
 #include <list>
 #include <memory>
 
-namespace manda {
-namespace runtime {
+namespace manda::runtime {
 class VM {
 private:
   std::list<std::shared_ptr<Worker>> workers;
 };
-} // namespace runtime
-} // namespace manda
+} // namespace manda::runtime
 
 #endif

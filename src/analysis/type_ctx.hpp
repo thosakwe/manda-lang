@@ -2,8 +2,7 @@
 #define MANDA_ANALYSIS_TYPE_HPP
 #include <string>
 
-namespace manda {
-namespace analysis {
+namespace manda::analysis {
 class TypeCtx {};
 
 class TypeReferenceCtx : public TypeCtx {
@@ -14,7 +13,6 @@ public:
 private:
   std::string name;
 };
-} // namespace analysis
-} // namespace manda
+} // namespace manda::analysis
 
 #endif

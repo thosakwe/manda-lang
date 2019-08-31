@@ -1,10 +1,8 @@
 #ifndef MANDA_RUNTIME_VALUE_HPP
 #define MANDA_RUNTIME_VALUE_HPP
 
-namespace manda {
-namespace runtime {
+namespace manda::runtime {
 class Value {};
-} // namespace runtime
-} // namespace manda
+} // namespace manda::runtime
 
 #endif

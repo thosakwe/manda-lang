@@ -1,10 +1,8 @@
 #ifndef MANDA_TYPE_HPP
 #define MANDA_TYPE_HPP
 
-namespace manda {
-namespace runtime {
+namespace manda::runtime {
 class Type {};
-} // namespace runtime
-} // namespace manda
+} // namespace manda::runtime
 
 #endif

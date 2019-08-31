@@ -2,8 +2,7 @@
 #define MANDA_ANALYSIS_AST_HPP
 #include "expr_ctx.hpp"
 
-namespace manda {
-namespace analysis {
+namespace manda::analysis {
 struct DeclCtx {
   Location location;
 };
@@ -22,7 +21,6 @@ struct CompilationUnitCtx {
   Location location;
   std::vector<std::shared_ptr<DeclCtx>> declarations;
 };
-} // namespace analysis
-} // namespace manda
+} // namespace manda::analysis
 
 #endif

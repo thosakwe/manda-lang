@@ -1,10 +1,8 @@
 #ifndef MANDA_TASK_HPP
 #define MANDA_TASK_HPP
 
-namespace manda {
-namespace runtime {
+namespace manda::runtime {
 class Task {};
-} // namespace runtime
-} // namespace manda
+} // namespace manda::runtime
 
 #endif

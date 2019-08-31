@@ -6,8 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace manda {
-namespace analysis {
+namespace manda::analysis {
 class ExprCtx {
 public:
   Location location;
@@ -72,7 +71,6 @@ struct CallExprCtx : public ExprCtx {
   std::shared_ptr<ExprCtx> target;
   std::vector<std::shared_ptr<ExprCtx>> arguments;
 };
-} // namespace analysis
-} // namespace manda
+} // namespace manda::analysis
 
 #endif

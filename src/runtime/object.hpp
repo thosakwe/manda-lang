@@ -3,8 +3,7 @@
 #include "type.hpp"
 #include <memory>
 
-namespace manda {
-namespace runtime {
+namespace manda::runtime {
 class Object {
 public:
   virtual const std::shared_ptr<Type> &getType() const = 0;
@@ -12,7 +11,6 @@ public:
 private:
   std::shared_ptr<Type> type;
 };
-} // namespace runtime
-} // namespace manda
+} // namespace manda::runtime
 
 #endif

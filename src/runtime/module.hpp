@@ -4,8 +4,7 @@
 #include <string>
 //#include <unordered_map>
 
-namespace manda {
-namespace runtime {
+namespace manda::runtime {
 class Module {
 public:
   explicit Module(std::string &name);
@@ -17,7 +16,6 @@ private:
   std::string name;
   //  std::unordered_map<std::string, std::shared_ptr<Module>> children;
 };
-} // namespace runtime
-} // namespace manda
+} // namespace manda::runtime
 
 #endif

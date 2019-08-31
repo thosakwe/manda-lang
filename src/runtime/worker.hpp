@@ -6,14 +6,12 @@
 #include <memory>
 #include <vector>
 
-namespace manda {
-namespace runtime {
+namespace manda::runtime {
 class Worker {
 private:
   std::vector<std::shared_ptr<Module>> modules;
   std::list<std::shared_ptr<Task>> tasks;
 };
-} // namespace runtime
-} // namespace manda
+} // namespace manda::runtime
 
 #endif
