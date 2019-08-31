@@ -1,13 +1,13 @@
 #ifndef MANDA_ANALYSIS_OBJECT_HPP
 #define MANDA_ANALYSIS_OBJECT_HPP
-#include "type.hpp"
+#include "type_ctx.hpp"
 #include <memory>
 
 namespace manda {
 namespace analysis {
 class Object {
 public:
-  virtual std::shared_ptr<Type> getType() const;
+  virtual std::shared_ptr<TypeCtx> getType() const;
 };
 } // namespace analysis
 } // namespace manda
