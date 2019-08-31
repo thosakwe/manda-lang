@@ -11,3 +11,4 @@
 #  object.cpp object.hpp)
 #target_compile_options(manda PUBLIC -Wno-deprecated-register)
 add_subdirectory(analysis)
+add_subdirectory(runtime)

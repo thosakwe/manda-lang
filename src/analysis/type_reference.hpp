@@ -1,5 +1,5 @@
-#ifndef MANDA_TYPE_REFERENCE_HPP
-#define MANDA_TYPE_REFERENCE_HPP
+#ifndef MANDA_ANALYSIS_TYPE_REFERENCE_HPP
+#define MANDA_ANALYSIS_TYPE_REFERENCE_HPP
 #include <string>
 #include "type.hpp"
 

@@ -1,10 +1,10 @@
-#ifndef MANDA_TYPE_HPP
-#define MANDA_TYPE_HPP
+#ifndef MANDA_ANALYSIS_TYPE_HPP
+#define MANDA_ANALYSIS_TYPE_HPP
 
 namespace manda {
-class Type {
-
-};
-}
+namespace analysis {
+class Type {};
+} // namespace analysis
+} // namespace manda
 
 #endif
