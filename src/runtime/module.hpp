@@ -8,8 +8,9 @@
 namespace manda::runtime {
 class Module {
 public:
-  explicit Module(std::string &name);
+  explicit Module(std::string name);
   const std::string &getName() const;
+  void setName(std::string value);
   SymbolTable &getSymbolTable();
   const SymbolTable &getSymbolTable() const;
   //  void addChild(std::shared_ptr<Module> &child);
