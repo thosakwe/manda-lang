@@ -14,6 +14,7 @@ void manda::runtime::Worker::loadCompilationUnit(
   if (!std::holds_alternative<std::shared_ptr<Object>>(main)) {
     // TODO: Throw error if no main function was found.
   } else {
-    auto mainMethod = std::get<std::shared_ptr<Object>>(main);
+    auto mainMethod = std::get<std::shared_ptr<Object>>(main).get();
+    // TODO: Dynamic cast to function, and execute
   }
 }
