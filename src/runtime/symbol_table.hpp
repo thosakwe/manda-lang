@@ -13,7 +13,7 @@ using Symbol = std::variant<std::monostate, std::shared_ptr<Object>,
 class SymbolTable : public std::enable_shared_from_this<SymbolTable> {
 public:
   SymbolTable() = default;
-  const Symbol resolve(std::string &name) const;
+  const Symbol resolve(std::string name) const;
   Symbol add(std::string &name, Symbol &value);
   std::shared_ptr<SymbolTable> createChild() const;
 

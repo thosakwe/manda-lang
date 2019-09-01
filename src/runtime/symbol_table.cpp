@@ -1,7 +1,7 @@
 #include "symbol_table.hpp"
 
 const manda::runtime::Symbol
-manda::runtime::SymbolTable::resolve(std::string &name) const {
+manda::runtime::SymbolTable::resolve(const std::string name) const {
   auto it = symbols.find(name);
   if (it != symbols.end()) {
     return it->second;
