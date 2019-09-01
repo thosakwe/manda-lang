@@ -21,6 +21,9 @@ public:
 };
 
 class TopLevelExprCtx : public ExprCtx {
+public:
+  void accept(ExprVisitor &visitor) override;
+private:
   // Visibility?
   bool isPublic;
   std::string name;
@@ -44,41 +47,57 @@ struct FnDeclExprCtx : public TopLevelExprCtx {
   std::shared_ptr<ExprCtx> body;
 };
 
-struct VoidExprCtx : public ExprCtx {};
+struct VoidExprCtx : public ExprCtx {
+  void accept(ExprVisitor &visitor) override;
+};
 
 struct IdExprCtx : public ExprCtx {
+  void accept(ExprVisitor &visitor) override;
   std::string name;
 };
 
 class NumberLiteralCtx : public ExprCtx {
+public:
+  void accept(ExprVisitor &visitor) override;
+
 public:
   double value;
 };
 
 class StringLiteralCtx : public ExprCtx {
 public:
+  void accept(ExprVisitor &visitor) override;
+
+public:
   std::string value;
 };
 
 class BoolLiteralCtx : public ExprCtx {
 public:
+  void accept(ExprVisitor &visitor) override;
+
+public:
   bool value;
 };
 
 struct BlockExprCtx : public ExprCtx {
+  void accept(ExprVisitor &visitor) override;
   std::vector<std::shared_ptr<ExprCtx>> body;
 };
 
 struct TupleExprCtx : public ExprCtx {
+  void accept(ExprVisitor &visitor) override;
   std::vector<std::shared_ptr<ExprCtx>> items;
 };
 
 struct CastExprCtx : public ExprCtx {
+  void accept(ExprVisitor &visitor) override;
   std::shared_ptr<ExprCtx> value;
   std::shared_ptr<TypeCtx> type;
 };
 
 struct CallExprCtx : public ExprCtx {
+  void accept(ExprVisitor &visitor) override;
   std::shared_ptr<ExprCtx> target;
   std::vector<std::shared_ptr<ExprCtx>> arguments;
 };
