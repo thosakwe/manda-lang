@@ -7,9 +7,17 @@
 #include <vector>
 
 namespace manda::analysis {
+class ExprVisitor;
+
 class ExprCtx {
 public:
   Location location;
+  ExprCtx(const ExprCtx &) = default;
+  ExprCtx(ExprCtx &&) = default;
+  ExprCtx &operator=(const ExprCtx &) = default;
+  ExprCtx &operator=(ExprCtx &&) = default;
+  virtual ~ExprCtx() = default;
+  virtual void accept(ExprVisitor &visitor) = 0;
 };
 
 class TopLevelExprCtx : public ExprCtx {
@@ -30,7 +38,7 @@ struct ParamCtx {
   std::shared_ptr<ExprCtx> defaultValue;
 };
 
-struct FnDeclCtx : public TopLevelExprCtx {
+struct FnDeclExprCtx : public TopLevelExprCtx {
   std::vector<std::shared_ptr<ParamCtx>> params;
   std::shared_ptr<TypeCtx> returnType;
   std::shared_ptr<ExprCtx> body;
@@ -38,21 +46,22 @@ struct FnDeclCtx : public TopLevelExprCtx {
 
 struct VoidExprCtx : public ExprCtx {};
 
+struct IdExprCtx : public ExprCtx {
+  std::string name;
+};
+
 class NumberLiteralCtx : public ExprCtx {
 public:
-  explicit NumberLiteralCtx(double value);
   double value;
 };
 
 class StringLiteralCtx : public ExprCtx {
 public:
-  explicit StringLiteralCtx(std::string &value);
   std::string value;
 };
 
 class BoolLiteralCtx : public ExprCtx {
 public:
-  explicit BoolLiteralCtx(bool value);
   bool value;
 };
 
@@ -72,6 +81,21 @@ struct CastExprCtx : public ExprCtx {
 struct CallExprCtx : public ExprCtx {
   std::shared_ptr<ExprCtx> target;
   std::vector<std::shared_ptr<ExprCtx>> arguments;
+};
+
+class ExprVisitor {
+public:
+  virtual void visitVarExpr(VarExprCtx &ctx) = 0;
+  virtual void visitFnDeclExpr(FnDeclExprCtx &ctx) = 0;
+  virtual void visitVoidExpr(VoidExprCtx &ctx) = 0;
+  virtual void visitIdExpr(IdExprCtx &ctx) = 0;
+  virtual void visitNumberLiteral(NumberLiteralCtx &ctx) = 0;
+  virtual void visitStringLiteral(StringLiteralCtx &ctx) = 0;
+  virtual void visitBoolLiteral(BoolLiteralCtx &ctx) = 0;
+  virtual void visitBlockExpr(BlockExprCtx &ctx) = 0;
+  virtual void visitTupleExpr(TupleExprCtx &ctx) = 0;
+  virtual void visitCastExpr(CastExprCtx &ctx) = 0;
+  virtual void visitCallExpr(CallExprCtx &ctx) = 0;
 };
 } // namespace manda::analysis
 
