@@ -7,7 +7,7 @@
 namespace manda::analysis {
 class Parser {
 public:
-  Parser(const std::vector<Token> &tokens);
+  explicit Parser(const std::vector<Token> &tokens);
   std::shared_ptr<CompilationUnitCtx> parseCompilationUnit();
 
 private:

@@ -4,4 +4,4 @@ add_library(manda_analysis
     ast.cpp ast.hpp
     location.cpp location.hpp
     expr_ctx.cpp expr_ctx.hpp
-    token.cpp token.hpp parser.cpp parser.hpp)
+    token.cpp token.hpp parser.cpp parser.hpp scanner.cpp scanner.hpp)
