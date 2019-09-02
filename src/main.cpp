@@ -45,7 +45,7 @@ int runFile(int argc, char **argv) {
   manda::runtime::VM vm;
   manda::runtime::Worker mainWorker;
   mainWorker.loadCompilationUnit(compilationUnit);
-  vm.addWorker(mainWorker);
+  vm.addWorker(mainWorker.shared_from_this());
   return vm.run();
 }
 

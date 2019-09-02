@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace manda::runtime {
-class Worker {
+class Worker : public std::enable_shared_from_this<Worker> {
 public:
   void loadCompilationUnit(std::shared_ptr<analysis::CompilationUnitCtx> &ctx);
 
