@@ -13,13 +13,13 @@ using Symbol = std::variant<std::monostate, std::shared_ptr<Object>,
 class SymbolTable : public std::enable_shared_from_this<SymbolTable> {
 public:
   SymbolTable() = default;
+  explicit SymbolTable(std::shared_ptr<const SymbolTable> &parent);
   const Symbol resolve(std::string name) const;
   Symbol add(std::string &name, Symbol &value);
   std::shared_ptr<SymbolTable> createChild() const;
 
 private:
-  explicit SymbolTable(std::shared_ptr<SymbolTable> &parent);
-  std::shared_ptr<SymbolTable> parent;
+  std::shared_ptr<const SymbolTable> parent;
   std::unordered_map<std::string, Symbol> symbols;
 };
 } // namespace manda::runtime

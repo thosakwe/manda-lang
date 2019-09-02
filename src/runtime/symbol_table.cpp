@@ -26,9 +26,10 @@ manda::runtime::SymbolTable::add(std::string &name,
 
 std::shared_ptr<manda::runtime::SymbolTable>
 manda::runtime::SymbolTable::createChild() const {
-  return std::make_shared<SymbolTable>(shared_from_this());
+  auto child = shared_from_this();
+  return std::make_shared<SymbolTable>(child);
 }
 
 manda::runtime::SymbolTable::SymbolTable(
-    std::shared_ptr<manda::runtime::SymbolTable> &parent)
+    std::shared_ptr<const manda::runtime::SymbolTable> &parent)
     : parent(parent) {}
