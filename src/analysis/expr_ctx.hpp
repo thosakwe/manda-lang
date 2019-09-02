@@ -21,8 +21,11 @@ public:
 };
 
 class TopLevelExprCtx : public ExprCtx {
-public:
-  void accept(ExprVisitor &visitor) override;
+  TopLevelExprCtx(const TopLevelExprCtx &) = default;
+  TopLevelExprCtx(TopLevelExprCtx &&) = default;
+  TopLevelExprCtx &operator=(const TopLevelExprCtx &) = default;
+  TopLevelExprCtx &operator=(TopLevelExprCtx &&) = default;
+
 private:
   // Visibility?
   bool isPublic;
