@@ -12,8 +12,15 @@ public:
   const std::vector<Token> &getTokens() const;
 
 private:
+  Location currentLocation, errorLocation;
+  bool hasError;
   std::string filename, sourceText;
   std::vector<Token> tokens;
+  void flushErrors();
+  void match(std::string pattern, Token::TokenType type,
+             const std::string &sourceText, std::vector<Token> &tokens);
+  void match_regex(std::string pattern, Token::TokenType type,
+                   const std::string &sourceText, std::vector<Token> &tokens);
 };
 } // namespace manda::analysis
 

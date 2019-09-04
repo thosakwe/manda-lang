@@ -3,6 +3,7 @@
 #include "location.hpp"
 #include <cstdint>
 #include <ostream>
+#include <regex>
 #include <string>
 
 namespace manda::analysis {
@@ -11,8 +12,11 @@ struct Token {
 
   TokenType type;
   Location location;
+  std::smatch match;
   std::string text;
 };
+
+bool tokenIsLonger(const Token &a, const Token &b);
 } // namespace manda::analysis
 
 #endif
