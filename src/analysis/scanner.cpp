@@ -35,8 +35,52 @@ void manda::analysis::Scanner::scan() {
     }
 
     match("=", Token::EQUALS, text, potential);
-    match("type", Token::TYPE, text, potential);
+    match("->", Token::EQUALS, text, potential);
+    match("<", Token::EQUALS, text, potential);
+    match(">", Token::EQUALS, text, potential);
+    match("<=", Token::EQUALS, text, potential);
+    match(">=", Token::EQUALS, text, potential);
+    match("{", Token::EQUALS, text, potential);
+    match("}", Token::EQUALS, text, potential);
+    match("(", Token::EQUALS, text, potential);
+    match(")", Token::EQUALS, text, potential);
+    match(":", Token::EQUALS, text, potential);
+    match("[", Token::EQUALS, text, potential);
+    match("]", Token::EQUALS, text, potential);
+    match("..", Token::EQUALS, text, potential);
+    match("...", Token::EQUALS, text, potential);
+    match(".", Token::EQUALS, text, potential);
+    match("+", Token::EQUALS, text, potential);
+    match("-", Token::EQUALS, text, potential);
+    match("*", Token::EQUALS, text, potential);
+    match("/", Token::EQUALS, text, potential);
+    match("%", Token::EQUALS, text, potential);
+    match("=", Token::EQUALS, text, potential);
+    match("^", Token::EQUALS, text, potential);
+    match("|", Token::EQUALS, text, potential);
+    match("&", Token::EQUALS, text, potential);
+    match("||", Token::EQUALS, text, potential);
+    match("&&", Token::EQUALS, text, potential);
+    match("==", Token::EQUALS, text, potential);
+    match(";", Token::EQUALS, text, potential);
+    match("as", Token::EQUALS, text, potential);
+    match("else", Token::EQUALS, text, potential);
+    match("export", Token::EQUALS, text, potential);
+    match("for", Token::EQUALS, text, potential);
+    match("final", Token::EQUALS, text, potential);
+    match("fn", Token::EQUALS, text, potential);
+    match("from", Token::EQUALS, text, potential);
+    match("if", Token::EQUALS, text, potential);
+    match("import", Token::EQUALS, text, potential);
+    match("match", Token::EQUALS, text, potential);
+    match("pub", Token::EQUALS, text, potential);
+    match("sum", Token::EQUALS, text, potential);
+    match("then", Token::EQUALS, text, potential);
+    match("type", Token::EQUALS, text, potential);
+    match("with", Token::TYPE, text, potential);
+    match("var", Token::TYPE, text, potential);
     match_regex("[A-Za-z_][A-Za-z0-9_]*", Token::ID, text, potential);
+    match_regex("[0-9]+(\\.[0-9]+)?", Token::ID, text, potential);
     if (potential.empty()) {
       if (!hasError) {
         hasError = true;
