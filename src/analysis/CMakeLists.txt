@@ -1,5 +1,6 @@
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
+message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 bison_target(MandaParser parser.y
   ${CMAKE_CURRENT_BINARY_DIR}/manda_flex_parser.cpp
   DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/manda_flex_parser.hpp)

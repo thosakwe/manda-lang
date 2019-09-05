@@ -11,6 +11,10 @@ Scanner::Scanner(const string &filename, const string &contents)
   location = {filename, 1, 1};
 }
 
+const vector<Token>& Scanner::getTokens() const {
+  return tokens;
+}
+
 Scanner::~Scanner() {
   if (flexContext != nullptr) {
     mandalex_destroy(flexContext);
