@@ -12,6 +12,8 @@ public:
   std::shared_ptr<CompilationUnitCtx> parseCompilationUnit();
 
 private:
+  bool next(Token::TokenType type);
+  bool anyNext(const std::vector<Token::TokenType>& types);
   std::vector<Token>::iterator it;
   const std::vector<Token> &tokens;
 };
