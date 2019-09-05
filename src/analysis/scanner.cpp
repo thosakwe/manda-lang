@@ -7,6 +7,7 @@ using namespace std;
 Scanner::Scanner(const string &filename, const string &contents)
     : filename(filename), contents(contents) {
   mandalex_init(&flexContext);
+  manda_scan_string(this->contents.c_str(), flexContext);
   location = {filename, 1, 1};
 }
 

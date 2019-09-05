@@ -17,15 +17,15 @@ public:
   Scanner(Scanner &&) = delete;
   Scanner &operator=(Scanner &&) = delete;
   ~Scanner();
-  void scan();
   const std::vector<Token>& getTokens() const;
+  void scan();
+  int mandalex(void *yyscanner);
 
 private:
   std::string filename, contents;
   void *flexContext;
   Location location;
   std::vector<Token> tokens;
-  int mandalex(void *yyscanner);
   void emit(Token::TokenType type);
 };
 } // namespace manda::analysis
