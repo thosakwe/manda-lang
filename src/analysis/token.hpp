@@ -1,9 +1,7 @@
 #ifndef MANDA_TOKEN_HPP
 #define MANDA_TOKEN_HPP
 #include "location.hpp"
-#include <cstdint>
 #include <ostream>
-#include <regex>
 #include <string>
 
 namespace manda::analysis {
@@ -63,7 +61,6 @@ struct Token {
 
   TokenType type;
   Location location;
-  std::smatch match;
   std::string text;
 };
 

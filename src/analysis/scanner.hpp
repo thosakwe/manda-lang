@@ -2,9 +2,10 @@
 #define MANDA_ANALYSIS_SCANNER_HPP
 #include "token.hpp"
 #include <string>
+#include <vector>
 
 #ifndef YY_DECL
-#define YY_DECL int manda::analysis::Scanner::yylex(void *yyscanner)
+#define YY_DECL int manda::analysis::Scanner::mandalex(void *yyscanner)
 #endif
 
 namespace manda::analysis {
@@ -17,14 +18,15 @@ public:
   Scanner &operator=(Scanner &&) = delete;
   ~Scanner();
   void scan();
+  const std::vector<Token>& getTokens() const;
 
 private:
   std::string filename, contents;
-  void *flex_context;
-  int yylex(void *yyscanner);
+  void *flexContext;
+  Location location;
+  std::vector<Token> tokens;
+  int mandalex(void *yyscanner);
   void emit(Token::TokenType type);
-  void newline();
-  void whitespace();
 };
 } // namespace manda::analysis
 

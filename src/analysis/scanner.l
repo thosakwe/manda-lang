@@ -1,4 +1,5 @@
-%option noyywrap
+%option noyywrap reentrant
+%option prefix="manda"
 %x DQ SQ
 
 %{
@@ -7,14 +8,14 @@
 using TT = manda::analysis::Token::TokenType;
 %}
 
-WS [ \r\t]+
+WS [ \r\t]
 NUM -?[0-9]+(\.[0-9]+)?
 ID [A-Za-z_][A-Za-z0-9]*
 
 %%
 
-\n      newline();
-{WS}    whitespace();
+\n      location.line++;
+{WS}    { location.line++; location.column = 1; }
 =       emit(TT::EQUALS);
 "<"     emit(TT::LT);
 ">"     emit(TT::GT);

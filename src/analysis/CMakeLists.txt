@@ -10,7 +10,7 @@ add_library(manda_analysis
   location.cpp location.hpp
   expr_ctx.cpp expr_ctx.hpp
   token.cpp token.hpp
-  parser.cpp parser.hpp)
+  parser.cpp parser.hpp
+  scanner.cpp scanner.hpp)
 include_directories(
-  ${CMAKE_CURRENT_BINARY_DIR}
-  ${CMAKE_CURRENT_LIST_DIR})
+  ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_LIST_DIR})
