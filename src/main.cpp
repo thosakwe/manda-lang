@@ -39,14 +39,15 @@ int runFile(int argc, char **argv) {
   manda::analysis::Parser parser(scanner);
   scanner.scan();
   compilationUnit = parser.parseCompilationUnit();
+	return 0;
 
-  // TODO: Dump any errors...
+//   // TODO: Dump any errors...
 
-  manda::runtime::VM vm;
-  manda::runtime::Worker mainWorker;
-  mainWorker.loadCompilationUnit(compilationUnit);
-  vm.addWorker(mainWorker.shared_from_this());
-  return vm.run();
+//   manda::runtime::VM vm;
+//   manda::runtime::Worker mainWorker;
+//   mainWorker.loadCompilationUnit(compilationUnit);
+//   vm.addWorker(mainWorker.shared_from_this());
+//   return vm.run();
 }
 
 int runRepl(int argc, char **argv) {

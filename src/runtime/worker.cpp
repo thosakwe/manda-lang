@@ -3,6 +3,8 @@
 
 void manda::runtime::Worker::loadCompilationUnit(
     std::shared_ptr<manda::analysis::CompilationUnitCtx> &ctx) {
+  // TODO: Do the logic...
+  return;
   ModuleCompiler compiler;
   for (auto &decl : ctx->declarations) {
     decl->accept(compiler);
