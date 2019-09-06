@@ -114,4 +114,6 @@ void Interpreter::visitCastExpr(CastExprCtx &ctx) {}
 
 void Interpreter::visitCallExpr(CallExprCtx &ctx) {}
 
-void Interpreter::visitParenExpr(ParenExprCtx &ctx) {}
+void Interpreter::visitParenExpr(ParenExprCtx &ctx) {
+  ctx.inner->accept(*this);
+}
