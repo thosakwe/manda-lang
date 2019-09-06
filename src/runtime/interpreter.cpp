@@ -1,6 +1,7 @@
 #include "interpreter.hpp"
 #include "ansi_printer.hpp"
 #include "number.hpp"
+#include "tuple.hpp"
 #include <iostream>
 #include <sstream>
 
@@ -22,7 +23,7 @@ void Interpreter::reportError(const manda::analysis::Location &location,
   // TODO: What about thrown errors?
   ostringstream oss;
   oss << "Error: " << location << ": " << message;
-  cerr << red(oss.str());
+  cerr << red(oss.str()) << endl;
 }
 
 void Interpreter::visitExprDecl(ExprDeclCtx &ctx) {}
@@ -89,7 +90,25 @@ void Interpreter::visitBoolLiteral(BoolLiteralCtx &ctx) {}
 
 void Interpreter::visitBlockExpr(BlockExprCtx &ctx) {}
 
-void Interpreter::visitTupleExpr(TupleExprCtx &ctx) {}
+void Interpreter::visitTupleExpr(TupleExprCtx &ctx) {
+  auto tup = make_shared<Tuple>();
+  for (unsigned long i = 0; i < ctx.items.size(); i++) {
+    auto &ptr = ctx.items[i];
+    lastObject = nullopt;
+    ptr->accept(*this);
+    if (!lastObject) {
+      ostringstream oss;
+      oss << "Failed to resolve item " << i;
+      oss << " in tuple.";
+      reportError(ptr->location, oss.str());
+      lastObject = nullopt;
+      return;
+    } else {
+      tup->getItems().push_back(*lastObject);
+    }
+  }
+  lastObject = tup;
+}
 
 void Interpreter::visitCastExpr(CastExprCtx &ctx) {}
 
