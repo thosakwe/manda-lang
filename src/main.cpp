@@ -86,8 +86,10 @@ int runFile(const VMOptions &options) {
     cout << "NULL" << endl;
     return 1;
   } else {
-    AstPrinter printer(cout);
-    compilationUnit->accept(printer);
+    if (options.developerMode) {
+      AstPrinter printer(cout);
+      compilationUnit->accept(printer);
+    }
     Worker mainWorker(options);
     mainWorker.executeProgram(compilationUnit);
     //  vm.addWorker(mainWorker.shared_from_this());
@@ -112,13 +114,15 @@ int runREPL(const VMOptions &options) {
       cout << "NULL" << endl;
       return 1;
     } else {
-      AstPrinter printer(cout);
-      compilationUnit->accept(printer);
+      if (options.developerMode) {
+        AstPrinter printer(cout);
+        compilationUnit->accept(printer);
+      }
       module->getTopLevelExpressions().clear();
       ModuleCompiler compiler(options, module);
       compilationUnit->accept(compiler);
-      Interpreter interpreter(options, module);
       for (auto &node : module->getTopLevelExpressions()) {
+        Interpreter interpreter(options, module);
         node->accept(interpreter);
         auto result = interpreter.getLastObject();
         if (result) {
@@ -127,6 +131,7 @@ int runREPL(const VMOptions &options) {
             ptr->print(cout);
           }
         }
+        cout << endl;
       }
     }
   }

@@ -1,4 +1,5 @@
 #include "interpreter.hpp"
+#include "number.hpp"
 
 using namespace manda::analysis;
 using namespace manda::runtime;
@@ -25,7 +26,10 @@ void Interpreter::visitVoidLiteral(VoidLiteralCtx &ctx) {}
 
 void Interpreter::visitIdExpr(IdExprCtx &ctx) {}
 
-void Interpreter::visitNumberLiteral(NumberLiteralCtx &ctx) {}
+void Interpreter::visitNumberLiteral(NumberLiteralCtx &ctx) {
+  // TODO: Location
+  lastObject = make_shared<Number>(ctx.value);
+}
 
 void Interpreter::visitStringLiteral(StringLiteralCtx &ctx) {}
 
