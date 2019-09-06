@@ -22,7 +22,46 @@ public:
   virtual void accept(ExprVisitor &visitor) = 0;
 };
 
+template <typename T> struct AstList {
+  ExprCtx *value;
+  AstList *next;
+  explicit AstList(ExprCtx *v) : value(v) { next = nullptr; }
+  AstList(const AstList &) = delete;
+  AstList(AstList &&) = delete;
+  AstList &operator=(const AstList &) = delete;
+  AstList &operator=(AstList &&) = delete;
+  ~AstList() {
+    if (next != nullptr) {
+      // Don't delete *value, we passed ownership to unique_ptr.
+      delete next;
+      next = nullptr;
+    }
+  }
+  AstList<T> *add(AstList<T> *other) {
+    if (other != nullptr) {
+      auto *current = this;
+      while (current->next != nullptr) {
+        current = current->next;
+      }
+      current->next = other;
+    }
+    return this;
+  }
+};
+
+template <typename T>
+void toVector(AstList<T> *head, std::vector<std::unique_ptr<T>> &out) {
+  auto *current = head;
+  while (current != nullptr) {
+    out.emplace_back(current->value);
+    current = current->next;
+  }
+  delete head; // Destroy it!!!
+}
+
 class TopLevelExprCtx : public ExprCtx {
+public:
+  TopLevelExprCtx() = default;
   TopLevelExprCtx(const TopLevelExprCtx &) = default;
   TopLevelExprCtx(TopLevelExprCtx &&) = default;
   TopLevelExprCtx &operator=(const TopLevelExprCtx &) = default;
@@ -36,7 +75,11 @@ private:
 
 struct VarExprCtx : public TopLevelExprCtx {
   bool isFinal;
+  std::string name;
   std::unique_ptr<ExprCtx> value;
+  VarExprCtx(bool f, std::string n, ExprCtx *v)
+      : isFinal(f), name(std::move(n)), value(v) {}
+  void accept(ExprVisitor &visitor) override;
 };
 
 struct ParamCtx {
@@ -50,9 +93,10 @@ struct FnDeclExprCtx : public TopLevelExprCtx {
   std::vector<std::unique_ptr<ParamCtx>> params;
   std::unique_ptr<TypeCtx> returnType;
   std::unique_ptr<ExprCtx> body;
+  void accept(ExprVisitor &visitor) override;
 };
 
-struct VoidExprCtx : public ExprCtx {
+struct VoidLiteralCtx : public ExprCtx {
   void accept(ExprVisitor &visitor) override;
 };
 
@@ -79,12 +123,10 @@ public:
   std::string value;
 };
 
-class BoolLiteralCtx : public ExprCtx {
-public:
-  void accept(ExprVisitor &visitor) override;
-
-public:
+struct BoolLiteralCtx : public ExprCtx {
   bool value;
+  explicit BoolLiteralCtx(bool v) : value(v) {}
+  void accept(ExprVisitor &visitor) override;
 };
 
 struct BlockExprCtx : public ExprCtx {
@@ -104,6 +146,7 @@ struct CastExprCtx : public ExprCtx {
 };
 
 struct CallExprCtx : public ExprCtx {
+  explicit CallExprCtx(ExprCtx *tgt) : target(tgt) {}
   void accept(ExprVisitor &visitor) override;
   std::unique_ptr<ExprCtx> target;
   std::vector<std::unique_ptr<ExprCtx>> arguments;
@@ -113,7 +156,7 @@ class ExprVisitor {
 public:
   virtual void visitVarExpr(VarExprCtx &ctx) = 0;
   virtual void visitFnDeclExpr(FnDeclExprCtx &ctx) = 0;
-  virtual void visitVoidExpr(VoidExprCtx &ctx) = 0;
+  virtual void visitVoidLiteral(VoidLiteralCtx &ctx) = 0;
   virtual void visitIdExpr(IdExprCtx &ctx) = 0;
   virtual void visitNumberLiteral(NumberLiteralCtx &ctx) = 0;
   virtual void visitStringLiteral(StringLiteralCtx &ctx) = 0;

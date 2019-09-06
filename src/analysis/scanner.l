@@ -26,6 +26,7 @@ ID [A-Za-z_][A-Za-z0-9]*
 "("     emit(TT::LPAREN);
 ")"     emit(TT::RPAREN);
 :       emit(TT::COLON);
+,       emit(TT::COMMA);
 "["     emit(TT::LBRACKET);
 "]"     emit(TT::RBRACKET);
 "."     emit(TT::DOT);
@@ -43,6 +44,7 @@ ID [A-Za-z_][A-Za-z0-9]*
 as      emit(TT::AS);
 else    emit(TT::ELSE);
 export  emit(TT::EXPORT);
+false   emit(TT::FALSE);
 for     emit(TT::FOR);
 final   emit(TT::FINAL);
 fn      emit(TT::FN);
@@ -53,9 +55,11 @@ match   emit(TT::MATCH);
 pub     emit(TT::PUB);
 sum     emit(TT::SUM);
 then    emit(TT::THEN);
+true    emit(TT::TRUE);
 type    emit(TT::TYPE);
 with    emit(TT::WITH);
 var     emit(TT::VAR);
+void    emit(TT::VOID);
 {NUM}   emit(TT::NUMBER);
 "\""    { emit(TT::DOUBLE_QUOTE); BEGIN(DQ); }
 "'"     { emit(TT::SINGLE_QUOTE); BEGIN(SQ); }

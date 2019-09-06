@@ -13,7 +13,7 @@ public:
   void visitTypeDecl(analysis::TypeDeclCtx &ctx) override;
   void visitVarExpr(analysis::VarExprCtx &ctx) override;
   void visitFnDeclExpr(analysis::FnDeclExprCtx &ctx) override;
-  void visitVoidExpr(analysis::VoidExprCtx &ctx) override;
+  void visitVoidLiteral(analysis::VoidLiteralCtx &ctx) override;
   void visitIdExpr(analysis::IdExprCtx &ctx) override;
   void visitNumberLiteral(analysis::NumberLiteralCtx &ctx) override;
   void visitStringLiteral(analysis::StringLiteralCtx &ctx) override;

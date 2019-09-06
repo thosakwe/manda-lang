@@ -1,5 +1,6 @@
 #include "parser.hpp"
 #include <iostream>
+#include <manda_flex_parser.hpp>
 
 using namespace manda::analysis;
 using namespace std;
@@ -19,7 +20,7 @@ int Parser::yylex(YYSTYPE *lvalp) {
   }
   auto token = lastToken = *(it++);
   // TODO: Set last text
-  return (token.type - Token::EQUALS) + 1;
+  return (token.type - Token::EQUALS) + EQUALS;
 }
 
 void manda::analysis::yyerror(Parser *parser, const char *message) {

@@ -1,5 +1,15 @@
 #include "expr_ctx.hpp"
 
+void manda::analysis::FnDeclExprCtx::accept(
+    manda::analysis::ExprVisitor &visitor) {
+  visitor.visitFnDeclExpr(*this);
+}
+
+void manda::analysis::VarExprCtx::accept(
+    manda::analysis::ExprVisitor &visitor) {
+  visitor.visitVarExpr(*this);
+}
+
 void manda::analysis::StringLiteralCtx::accept(
     manda::analysis::ExprVisitor &visitor) {
   visitor.visitStringLiteral(*this);
@@ -14,9 +24,9 @@ void manda::analysis::CallExprCtx::accept(
   visitor.visitCallExpr(*this);
 }
 
-void manda::analysis::VoidExprCtx::accept(
+void manda::analysis::VoidLiteralCtx::accept(
     manda::analysis::ExprVisitor &visitor) {
-  visitor.visitVoidExpr(*this);
+  visitor.visitVoidLiteral(*this);
 }
 
 void manda::analysis::CastExprCtx::accept(

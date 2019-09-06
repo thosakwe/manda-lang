@@ -29,8 +29,8 @@ void manda::runtime::ModuleCompiler::visitFnDeclExpr(
   // Emit an "empty" function object, that simply points to the fn decl.
 }
 
-void manda::runtime::ModuleCompiler::visitVoidExpr(
-    manda::analysis::VoidExprCtx &ctx) {}
+void manda::runtime::ModuleCompiler::visitVoidLiteral(
+    manda::analysis::VoidLiteralCtx &ctx) {}
 
 void manda::runtime::ModuleCompiler::visitIdExpr(
     manda::analysis::IdExprCtx &ctx) {}
