@@ -14,6 +14,7 @@ struct Parameter {
 
 class Function : public Object {
 public:
+  [[nodiscard]] virtual const std::string &getName() const = 0;
   [[nodiscard]] virtual const std::vector<Parameter> &getParameters() const = 0;
   [[nodiscard]] virtual std::shared_ptr<Object>
   invoke(std::shared_ptr<Object> thisObject,
