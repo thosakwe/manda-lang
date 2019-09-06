@@ -3,6 +3,7 @@
 #include "expr_ctx.hpp"
 
 namespace manda::analysis {
+class CompilationUnitVisitor;
 class DeclVisitor;
 
 struct DeclCtx {
@@ -39,6 +40,12 @@ struct CompilationUnitCtx {
   // TODO: Location
   Location location;
   std::vector<std::unique_ptr<DeclCtx>> declarations;
+  void accept(CompilationUnitVisitor& visitor);
+};
+
+class CompilationUnitVisitor {
+public:
+  virtual void visitCompilationUnit(CompilationUnitCtx &ctx) = 0;
 };
 } // namespace manda::analysis
 
