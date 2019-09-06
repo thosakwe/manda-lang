@@ -24,7 +24,7 @@ string manda::runtime::bold(const string &s) { return wrap(s, {1}); }
 
 string manda::runtime::cyan(const string &s) { return wrap(s, {36}); }
 
-string manda::runtime::gray(const string &s) { return wrap(s, {30}); }
+string manda::runtime::gray(const string &s) { return wrap(s, {90}); }
 
 string manda::runtime::green(const string &s) { return wrap(s, {32}); }
 
