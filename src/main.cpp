@@ -128,7 +128,7 @@ int runREPL(const VMOptions &options) {
         if (result) {
           auto ptr = *result;
           if (ptr) {
-            ptr->print(cout);
+            ptr->print(cout, true);
           }
         }
         cout << endl;

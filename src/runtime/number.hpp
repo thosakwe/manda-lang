@@ -7,7 +7,7 @@ class Number : public Object {
 public:
   explicit Number(double value);
   double getValue() const;
-  void print(std::ostream &out) const override;
+  void print(std::ostream &out, bool ansiSupported) const override;
 
 private:
   double value;
