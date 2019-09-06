@@ -17,6 +17,8 @@ using namespace std;
 
 int runFile(int argc, char **argv);
 int runRepl(int argc, char **argv);
+int execute(const std::string &filename, const std::string &text, char **argv,
+            bool replMode, VM &vm);
 
 int main(int argc, char **argv) {
   // TODO: Parse options.
@@ -39,42 +41,39 @@ int runFile(int argc, char **argv) {
 
   string contents = {istreambuf_iterator<char>(ifs),
                      istreambuf_iterator<char>()};
-  Scanner scanner(filename, contents);
-  Parser parser(scanner);
-  scanner.scan();
-  compilationUnit = parser.parseCompilationUnit();
-  if (compilationUnit == nullptr) {
-    cout << "NULL" << endl;
-  } else {
-    AstPrinter printer(cout);
-    compilationUnit->accept(printer);
-  }
-  //   // TODO: Dump any errors...
-
   VM vm;
-  Worker mainWorker;
-  mainWorker.loadCompilationUnit(compilationUnit);
-//  vm.addWorker(mainWorker.shared_from_this());
-  return vm.run();
+  return execute(filename, contents, argv, false, vm);
 }
 
 int runRepl(int argc, char **argv) {
   // TODO: Run from file...
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
+  VM vm;
   while (true) {
     string line(readline("manda> "));
     add_history(line.c_str());
-    Scanner scanner("", line);
-    Parser parser(scanner);
-    scanner.scan();
-    auto compilationUnit = parser.parseCompilationUnit();
-    if (compilationUnit == nullptr) {
-      cout << "NULL" << endl;
-    } else {
-      AstPrinter printer(cout);
-      compilationUnit->accept(printer);
-    }
+    execute("", line, argv, true, vm);
   }
 #pragma clang diagnostic pop
+}
+
+int execute(const std::string &filename, const std::string &text, char **argv,
+            bool replMode, VM &vm) {
+
+  Scanner scanner(filename, text);
+  Parser parser(scanner);
+  scanner.scan();
+  auto compilationUnit = parser.parseCompilationUnit();
+  if (compilationUnit == nullptr) {
+    cout << "NULL" << endl;
+    return 1;
+  } else {
+    AstPrinter printer(cout);
+    compilationUnit->accept(printer);
+    Worker mainWorker;
+    mainWorker.loadCompilationUnit(compilationUnit);
+    //  vm.addWorker(mainWorker.shared_from_this());
+    return vm.run();
+  }
 }
