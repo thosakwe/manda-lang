@@ -6,7 +6,7 @@ using namespace manda::runtime;
 using namespace std;
 
 ModuleCompiler::ModuleCompiler(VMOptions options)
-    : module{""}, options(options) {
+    : module{""}, options(std::move(options)) {
   scopeStack.push(module.getSymbolTable());
 }
 
@@ -22,7 +22,13 @@ void ModuleCompiler::visitExprDecl(ExprDeclCtx &ctx) {
   using namespace manda::analysis;
   auto *topLevel = dynamic_cast<TopLevelExprCtx *>(ctx.value.get());
   if (!topLevel) {
-    // TODO: Throw error
+    if (options.isREPL()) {
+      // TODO: Evaluate top-level expressions
+      // IMPORTANT: The value is MOVED.
+      module.getTopLevelExpressions().push_back(move(ctx.value));
+    } else {
+      // TODO: Disallow top-level evaluations in regular mode.
+    }
   } else {
     // TODO: Visit top-level
     topLevel->accept(*this);
