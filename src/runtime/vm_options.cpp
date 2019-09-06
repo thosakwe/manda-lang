@@ -103,4 +103,5 @@ void VMOptions::parseDefine(const string &str, size_t startIndex) {
   } else if (iss.good()) {
     getline(iss, value);
   }
+  defines[name] = value;
 }
