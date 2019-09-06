@@ -5,6 +5,12 @@
 
 namespace manda::runtime {
 struct BuiltinFunction : public Function {
+  BuiltinFunction(std::string name, std::vector<Parameter> parameters,
+                  std::function<std::shared_ptr<Object>(
+                      Interpreter &, const manda::analysis::Location,
+                      std::shared_ptr<Object> &,
+                      const std::vector<std::shared_ptr<Object>> &)>
+                      fn);
   std::string name;
   std::vector<Parameter> parameters;
   std::function<std::shared_ptr<Object>(

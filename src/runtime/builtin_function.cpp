@@ -19,6 +19,14 @@ BuiltinFunction::invoke(Interpreter &interpreter, const Location &location,
   return fn(interpreter, location, thisObject, args);
 }
 
+BuiltinFunction::BuiltinFunction(
+    string name, vector<Parameter> parameters,
+    function<shared_ptr<Object>(Interpreter &, const Location,
+                                shared_ptr<Object> &,
+                                const vector<shared_ptr<Object>> &)>
+        fn)
+    : name(move(name)), parameters(move(parameters)), fn(move(fn)) {}
+
 void BuiltinFunction::print(ostream &out, bool ansiSupported) const {
   ostringstream oss;
   oss << "[Function";

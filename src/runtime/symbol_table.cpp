@@ -18,7 +18,7 @@ const Symbol SymbolTable::resolve(const string name) const {
   }
 }
 
-Symbol SymbolTable::add(string &name, const Symbol &value, bool allowRedefine) {
+Symbol SymbolTable::add(const string &name, const Symbol &value, bool allowRedefine) {
   auto it = symbols.find(name);
   if ((it != symbols.end() && !allowRedefine) ||
       holds_alternative<monostate>(value)) {

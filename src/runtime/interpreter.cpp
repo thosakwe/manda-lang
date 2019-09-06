@@ -19,6 +19,8 @@ optional<shared_ptr<Object>> &Interpreter::getLastObject() {
   return lastObject;
 }
 
+const VMOptions &Interpreter::getOptions() const { return options; }
+
 void Interpreter::reportError(const manda::analysis::Location &location,
                               const string &message) {
   // TODO: What about thrown errors?
@@ -28,7 +30,7 @@ void Interpreter::reportError(const manda::analysis::Location &location,
 }
 
 bool Interpreter::ensureArgumentCount(const Location &location,
-                                      const vector<Object> &args,
+                                      const vector<shared_ptr<Object>> &args,
                                       unsigned long size) {
   if (args.size() == size) {
     return true;

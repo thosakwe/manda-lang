@@ -15,7 +15,7 @@ public:
   SymbolTable() = default;
   explicit SymbolTable(std::shared_ptr<const SymbolTable> &parent);
   const Symbol resolve(std::string name) const;
-  Symbol add(std::string &name, const Symbol &value,
+  Symbol add(const std::string &name, const Symbol &value,
              bool allowRedefine = false);
   std::shared_ptr<SymbolTable> createChild() const;
   const std::unordered_map<std::string, Symbol> &getSymbols();

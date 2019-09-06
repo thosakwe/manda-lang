@@ -14,8 +14,10 @@ class Interpreter : public manda::analysis::CompilationUnitVisitor,
 public:
   Interpreter(VMOptions options, std::shared_ptr<Module> &module);
   std::optional<std::shared_ptr<Object>> &getLastObject();
+  const VMOptions &getOptions() const;
   bool ensureArgumentCount(const manda::analysis::Location &location,
-                           const std::vector<Object> &args, unsigned long size);
+                           const std::vector<std::shared_ptr<Object>> &args,
+                           unsigned long size);
   bool ensureArguments(const manda::analysis::Location &location,
                        const std::vector<std::shared_ptr<Object>> &args,
                        std::vector<std::shared_ptr<Type>> &parameters);
