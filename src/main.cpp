@@ -162,12 +162,11 @@ char *manda_completion_generator(const char *text, int state) {
         manda_completion_matches.push_back(p.first);
       }
     }
+  }
+  if (manda_completion_match_index >= manda_completion_matches.size()) {
+    return nullptr;
   } else {
-    if (manda_completion_match_index >= manda_completion_matches.size()) {
-      return nullptr;
-    } else {
-      return strdup(
-          manda_completion_matches[manda_completion_match_index++].c_str());
-    }
+    return strdup(
+        manda_completion_matches[manda_completion_match_index++].c_str());
   }
 }
