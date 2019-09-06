@@ -1,5 +1,6 @@
 #include "interpreter.hpp"
 #include "number.hpp"
+#include <iostream>
 
 using namespace manda::analysis;
 using namespace manda::runtime;
@@ -18,7 +19,25 @@ void Interpreter::visitTypeDecl(TypeDeclCtx &ctx) {}
 
 void Interpreter::visitCompilationUnit(CompilationUnitCtx &ctx) {}
 
-void Interpreter::visitVarExpr(VarExprCtx &ctx) {}
+void Interpreter::visitVarExpr(VarExprCtx &ctx) {
+  // TODO: Plain mode implementation (lazy?, etc.?)
+  if (options.isREPL()) {
+    // Eagerly resolve the value.
+    ctx.value->accept(*this);
+    if (!lastObject) {
+      // TODO: Properly report errors.
+      cerr << "error when evaluating var decl" << endl;
+    } else {
+      // Add the symbol to the current scope.
+      auto symbol = scopeStack.top()->add(ctx.name, *lastObject, true);
+      // Resolve the value as an identifier in the top-level.
+      auto id = make_unique<IdExprCtx>(ctx.location, ctx.name);
+      module->getTopLevelExpressions().push_back(move(id));
+    }
+  } else {
+    lastObject = nullopt;
+  }
+}
 
 void Interpreter::visitFnDeclExpr(FnDeclExprCtx &ctx) {}
 
