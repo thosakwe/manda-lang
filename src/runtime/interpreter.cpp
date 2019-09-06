@@ -11,20 +11,38 @@ using namespace manda::runtime;
 using namespace std;
 
 Interpreter::Interpreter(VMOptions options, shared_ptr<Module> &module)
-    : options(std::move(options)), module(module) {
+    : options(move(options)), module(module) {
   scopeStack.push(module->getSymbolTable());
 }
 
-std::optional<std::shared_ptr<Object>> &Interpreter::getLastObject() {
+optional<shared_ptr<Object>> &Interpreter::getLastObject() {
   return lastObject;
 }
 
 void Interpreter::reportError(const manda::analysis::Location &location,
-                              const std::string &message) {
+                              const string &message) {
   // TODO: What about thrown errors?
   ostringstream oss;
   oss << "Error: " << location << ": " << message;
   cerr << red(oss.str()) << endl;
+}
+
+bool Interpreter::ensureArgumentCount(const Location &location,
+                                      const vector<Object> &args,
+                                      unsigned long size) {
+  if (args.size() == size) {
+    return true;
+  }
+  ostringstream oss;
+  oss << "Expected " << size << " argument(s), got " << args.size() << ".";
+  reportError(location, oss.str());
+  return false;
+}
+bool Interpreter::ensureArguments(const Location &location,
+                                  const vector<shared_ptr<Object>> &args,
+                                  vector<shared_ptr<Type>> &parameters) {
+  // TODO: Add type coercion, etc.
+  return false;
 }
 
 void Interpreter::visitExprDecl(ExprDeclCtx &ctx) {}
