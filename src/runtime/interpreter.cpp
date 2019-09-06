@@ -59,7 +59,9 @@ void Interpreter::visitVarExpr(VarExprCtx &ctx) {
 
 void Interpreter::visitFnDeclExpr(FnDeclExprCtx &ctx) {}
 
-void Interpreter::visitVoidLiteral(VoidLiteralCtx &ctx) {}
+void Interpreter::visitVoidLiteral(VoidLiteralCtx &ctx) {
+  lastObject = make_shared<Void>();
+}
 
 void Interpreter::visitIdExpr(IdExprCtx &ctx) {
   auto symbol = scopeStack.top()->resolve(ctx.name);
