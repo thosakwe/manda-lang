@@ -11,8 +11,8 @@ public:
   explicit Module(std::string name);
   const std::string &getName() const;
   void setName(std::string value);
-  SymbolTable &getSymbolTable();
-  const SymbolTable &getSymbolTable() const;
+  std::shared_ptr<SymbolTable> getSymbolTable();
+  std::shared_ptr<const SymbolTable> getSymbolTable() const;
   //  void addChild(std::shared_ptr<Module> &child);
   //  const std::shared_ptr<Module> findChild(std::string &name);
 

@@ -2,6 +2,9 @@
 #define MANDA_MODULE_COMPILER_HPP
 #include "../analysis/ast.hpp"
 #include "module.hpp"
+#include "symbol_table.hpp"
+#include <optional>
+#include <stack>
 
 namespace manda::runtime {
 class ModuleCompiler : public manda::analysis::CompilationUnitVisitor,
@@ -28,6 +31,8 @@ public:
 
 private:
   Module module;
+  std::optional<std::shared_ptr<Object>> lastObject;
+  std::stack<std::shared_ptr<SymbolTable>> scopeStack;
 };
 } // namespace manda::runtime
 

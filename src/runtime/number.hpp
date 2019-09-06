@@ -4,6 +4,7 @@
 
 namespace manda::runtime {
 class Number : public Object {
+public:
   explicit Number(double value);
   double getValue() const;
 

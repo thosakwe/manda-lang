@@ -2,17 +2,18 @@
 
 #include "module.hpp"
 
-manda::runtime::Module::Module(std::string name) : name(std::move(name)) {}
+using namespace manda::runtime;
+using namespace std;
 
-const std::string &manda::runtime::Module::getName() const { return name; }
+Module::Module(string name) : name(move(name)) {}
 
-void manda::runtime::Module::setName(std::string value) { name = value; }
+const string &Module::getName() const { return name; }
 
-manda::runtime::SymbolTable &manda::runtime::Module::getSymbolTable() {
-  return symbolTable;
+void Module::setName(string value) { name = value; }
+
+shared_ptr<SymbolTable> Module::getSymbolTable() {
+  return symbolTable.shared_from_this();
 }
-
-const manda::runtime::SymbolTable &
-manda::runtime::Module::getSymbolTable() const {
-  return symbolTable;
+shared_ptr<const SymbolTable> Module::getSymbolTable() const {
+  return symbolTable.shared_from_this();
 }
