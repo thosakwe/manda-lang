@@ -1,4 +1,5 @@
 #include "scanner.hpp"
+#include <iostream>
 #include <manda_flex_scanner.hpp>
 
 using namespace manda::analysis;
@@ -11,9 +12,7 @@ Scanner::Scanner(const string &filename, const string &contents)
   location = {filename, 1, 1};
 }
 
-const vector<Token>& Scanner::getTokens() const {
-  return tokens;
-}
+const vector<Token> &Scanner::getTokens() const { return tokens; }
 
 Scanner::~Scanner() {
   if (flexContext != nullptr) {
@@ -24,10 +23,14 @@ Scanner::~Scanner() {
 
 void Scanner::emit(Token::TokenType type) {
   std::string text = mandaget_text(flexContext);
-  tokens.push_back({type, location, text});
+  Token token = {type, location, text};
+  tokens.push_back(token);
+//  cout << token << endl;
   location.column += text.length();
 }
 
 void Scanner::scan() {
   // TODO: Is this even necessary when using Bison?
+  while (mandalex(flexContext) != 0)
+    ;
 }

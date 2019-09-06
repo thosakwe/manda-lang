@@ -16,7 +16,7 @@
 %param {manda::analysis::Parser* parser}
 
 %union {
-  int ival;
+  ExprCtx* exprval;
 }
 
 %code requires {
@@ -29,11 +29,22 @@
     void yyerror(Parser*, const char*);
   }
   using namespace manda::analysis;
+  #define tok parser->lastToken
+  #define l tok.location
+  #define txt tok.text
 }
+
+%{
+  #include <parser.hpp>
+%}
+
+%start expr
+%type <exprval> expr
 
 %%
 
 expr:
-  ID
-  | LPAREN expr RPAREN
+  ID { $$ = new IdExprCtx{l, txt}; }
+  | NUMBER { $$ = new NumberLiteralCtx{l, stod(txt)}; }
+  | LPAREN expr RPAREN { $$ = $2; }
 ;

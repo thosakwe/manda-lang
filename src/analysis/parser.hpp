@@ -11,8 +11,11 @@ class Parser {
 public:
   explicit Parser(const Scanner &tokens);
   std::shared_ptr<CompilationUnitCtx> parseCompilationUnit();
+  int yylex(YYSTYPE *);
+  void yyerror(const std::string& message);
   friend int yylex(YYSTYPE *, Parser *parser);
   friend void yyerror(Parser *, const char *);
+  Token lastToken;
 
 private:
   bool next(Token::TokenType type);

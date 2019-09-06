@@ -62,6 +62,7 @@ struct Token {
   TokenType type;
   Location location;
   std::string text;
+  friend std::ostream &operator<<(std::ostream &out, const Token &a);
 };
 
 bool tokenIsLonger(const Token &a, const Token &b);

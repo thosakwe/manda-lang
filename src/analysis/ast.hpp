@@ -12,14 +12,14 @@ struct DeclCtx {
 
 struct ExprDeclCtx : public DeclCtx {
   void accept(DeclVisitor &visitor) override;
-  std::shared_ptr<ExprCtx> value;
+  std::unique_ptr<ExprCtx> value;
 };
 
 struct TypeDeclCtx : public DeclCtx {
   void accept(DeclVisitor &visitor) override;
   std::string name;
   std::vector<std::string> typeParameters;
-  std::shared_ptr<TypeCtx> type;
+  std::unique_ptr<TypeCtx> type;
 };
 
 class DeclVisitor {
@@ -30,7 +30,7 @@ public:
 
 struct CompilationUnitCtx {
   Location location;
-  std::vector<std::shared_ptr<DeclCtx>> declarations;
+  std::vector<std::unique_ptr<DeclCtx>> declarations;
 };
 } // namespace manda::analysis
 

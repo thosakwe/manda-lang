@@ -4,21 +4,36 @@
 using namespace manda::analysis;
 using namespace std;
 
+int yyparse(Parser *parser);
+
 Parser::Parser(const Scanner &scanner)
     : tokens(scanner.getTokens()), it(scanner.getTokens().begin()) {}
 
 int manda::analysis::yylex(YYSTYPE *lvalp, Parser *parser) {
-  auto token = *(parser->it++);
+  return parser->yylex(lvalp);
+}
+
+int Parser::yylex(YYSTYPE *lvalp) {
+  if (it >= tokens.end()) {
+    return 0;
+  }
+  auto token = lastToken = *(it++);
   // TODO: Set last text
   return (token.type - Token::EQUALS) + 1;
 }
 
 void manda::analysis::yyerror(Parser *parser, const char *message) {
+  parser->yyerror(message);
+}
+
+void Parser::yyerror(const std::string &message) {
   // TODO: Add to an error buffer.
-  cerr << "error: " << message << endl;
+  cerr << "error: " << lastToken.location << ": " << message << endl;
 }
 
 shared_ptr<CompilationUnitCtx> Parser::parseCompilationUnit() {
   // TODO: Implement this...
+  it = tokens.begin();
+  yyparse(this);
   return nullptr;
 }

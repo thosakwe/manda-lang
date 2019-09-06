@@ -4,6 +4,7 @@
 #include "type_ctx.hpp"
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace manda::analysis {
@@ -12,6 +13,7 @@ class ExprVisitor;
 class ExprCtx {
 public:
   Location location;
+  ExprCtx() = default;
   ExprCtx(const ExprCtx &) = default;
   ExprCtx(ExprCtx &&) = default;
   ExprCtx &operator=(const ExprCtx &) = default;
@@ -34,20 +36,20 @@ private:
 
 struct VarExprCtx : public TopLevelExprCtx {
   bool isFinal;
-  std::shared_ptr<ExprCtx> value;
+  std::unique_ptr<ExprCtx> value;
 };
 
 struct ParamCtx {
   Location location;
   std::string name;
-  std::shared_ptr<TypeCtx> type;
-  std::shared_ptr<ExprCtx> defaultValue;
+  std::unique_ptr<TypeCtx> type;
+  std::unique_ptr<ExprCtx> defaultValue;
 };
 
 struct FnDeclExprCtx : public TopLevelExprCtx {
-  std::vector<std::shared_ptr<ParamCtx>> params;
-  std::shared_ptr<TypeCtx> returnType;
-  std::shared_ptr<ExprCtx> body;
+  std::vector<std::unique_ptr<ParamCtx>> params;
+  std::unique_ptr<TypeCtx> returnType;
+  std::unique_ptr<ExprCtx> body;
 };
 
 struct VoidExprCtx : public ExprCtx {
@@ -55,16 +57,18 @@ struct VoidExprCtx : public ExprCtx {
 };
 
 struct IdExprCtx : public ExprCtx {
-  void accept(ExprVisitor &visitor) override;
   std::string name;
+  IdExprCtx(const Location &l, std::string n) : name(std::move(n)) {
+    location = l;
+  }
+  void accept(ExprVisitor &visitor) override;
 };
 
 class NumberLiteralCtx : public ExprCtx {
 public:
-  void accept(ExprVisitor &visitor) override;
-
-public:
   double value;
+  NumberLiteralCtx(const Location &l, double v) : value(v) { location = l; }
+  void accept(ExprVisitor &visitor) override;
 };
 
 class StringLiteralCtx : public ExprCtx {
@@ -85,24 +89,24 @@ public:
 
 struct BlockExprCtx : public ExprCtx {
   void accept(ExprVisitor &visitor) override;
-  std::vector<std::shared_ptr<ExprCtx>> body;
+  std::vector<std::unique_ptr<ExprCtx>> body;
 };
 
 struct TupleExprCtx : public ExprCtx {
   void accept(ExprVisitor &visitor) override;
-  std::vector<std::shared_ptr<ExprCtx>> items;
+  std::vector<std::unique_ptr<ExprCtx>> items;
 };
 
 struct CastExprCtx : public ExprCtx {
   void accept(ExprVisitor &visitor) override;
-  std::shared_ptr<ExprCtx> value;
-  std::shared_ptr<TypeCtx> type;
+  std::unique_ptr<ExprCtx> value;
+  std::unique_ptr<TypeCtx> type;
 };
 
 struct CallExprCtx : public ExprCtx {
   void accept(ExprVisitor &visitor) override;
-  std::shared_ptr<ExprCtx> target;
-  std::vector<std::shared_ptr<ExprCtx>> arguments;
+  std::unique_ptr<ExprCtx> target;
+  std::vector<std::unique_ptr<ExprCtx>> arguments;
 };
 
 class ExprVisitor {
