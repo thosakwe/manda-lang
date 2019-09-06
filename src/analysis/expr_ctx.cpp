@@ -53,3 +53,8 @@ void manda::analysis::BoolLiteralCtx::accept(
     manda::analysis::ExprVisitor &visitor) {
   visitor.visitBoolLiteral(*this);
 }
+
+void manda::analysis::ParenExprCtx::accept(
+    manda::analysis::ExprVisitor &visitor) {
+  visitor.visitParenExpr(*this);
+}

@@ -100,3 +100,10 @@ void AstPrinter::visitCallExpr(CallExprCtx &ctx) {
   }
   outdent();
 }
+
+void AstPrinter::visitParenExpr(ParenExprCtx &ctx) {
+  print() << "ParenExpr" << endl;
+  indent();
+  ctx.inner->accept(*this);
+  outdent();
+}

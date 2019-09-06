@@ -22,6 +22,7 @@ public:
   void visitTupleExpr(analysis::TupleExprCtx &ctx) override;
   void visitCastExpr(analysis::CastExprCtx &ctx) override;
   void visitCallExpr(analysis::CallExprCtx &ctx) override;
+  void visitParenExpr(analysis::ParenExprCtx &ctx) override;
 
 private:
   Module module;

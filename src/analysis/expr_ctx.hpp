@@ -161,6 +161,13 @@ struct CallExprCtx : public ExprCtx {
   std::vector<std::unique_ptr<ExprCtx>> arguments;
 };
 
+struct ParenExprCtx : public ExprCtx {
+  // TODO: Location
+  std::unique_ptr<ExprCtx> inner;
+  explicit ParenExprCtx(ExprCtx *i) : inner(i) {}
+  void accept(ExprVisitor &visitor) override;
+};
+
 class ExprVisitor {
 public:
   virtual void visitVarExpr(VarExprCtx &ctx) = 0;
@@ -174,6 +181,7 @@ public:
   virtual void visitTupleExpr(TupleExprCtx &ctx) = 0;
   virtual void visitCastExpr(CastExprCtx &ctx) = 0;
   virtual void visitCallExpr(CallExprCtx &ctx) = 0;
+  virtual void visitParenExpr(ParenExprCtx &ctx) = 0;
 };
 } // namespace manda::analysis
 

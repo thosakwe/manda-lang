@@ -55,3 +55,6 @@ void manda::runtime::ModuleCompiler::visitCastExpr(
 
 void manda::runtime::ModuleCompiler::visitCallExpr(
     manda::analysis::CallExprCtx &ctx) {}
+
+void manda::runtime::ModuleCompiler::visitParenExpr(
+    manda::analysis::ParenExprCtx &ctx) {}

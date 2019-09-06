@@ -21,8 +21,8 @@ ID [A-Za-z_][A-Za-z0-9]*
 ">"     emit(TT::GT);
 "<="    emit(TT::LT);
 ">="    emit(TT::GT);
-{       emit(TT::LCURLY);
-}       emit(TT::RCURLY);
+"{"       emit(TT::LCURLY);
+"}"       emit(TT::RCURLY);
 "("     emit(TT::LPAREN);
 ")"     emit(TT::RPAREN);
 :       emit(TT::COLON);

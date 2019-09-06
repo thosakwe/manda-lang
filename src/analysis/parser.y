@@ -59,6 +59,7 @@
 %type <idval> id
 
 %left COMMA
+%right EQUALS LPAREN
 
 %%
 
@@ -96,7 +97,6 @@ expr:
   | TRUE { $$ = new BoolLiteralCtx(true); }
   | VOID { $$ = new VoidLiteralCtx; }
   | FALSE { $$ = new BoolLiteralCtx(false); }
-  | LPAREN expr RPAREN { $$ = $2; }
   | LCURLY expr_list RCURLY
     {
       auto *ctx = new BlockExprCtx;
@@ -120,6 +120,7 @@ expr:
       $$ = new VarExprCtx(false, $2->name, $4);
       delete $2;
     }
+  | LPAREN expr RPAREN { $$ = new ParenExprCtx($2); }
 ;
 
 expr_list:

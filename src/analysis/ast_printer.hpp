@@ -29,6 +29,7 @@ private:
   std::ostream &out;
   unsigned long level;
   std::ostream &print();
+  void visitParenExpr(ParenExprCtx &ctx) override;
 };
 } // namespace manda::analysis
 
