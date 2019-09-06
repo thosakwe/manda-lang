@@ -97,12 +97,18 @@ int runFile(const VMOptions &options) {
   }
 }
 
+// This *must* be global because of the way GNU Readline works. :(
+shared_ptr<Module> replModule;
+char **manda_repl_completer(const char *text, int start, int end);
+char *manda_completion_generator(const char *text, int state);
+
 int runREPL(const VMOptions &options) {
   // TODO: Run from file...
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
   VM vm(options);
-  auto module = make_shared<Module>("<stdin>");
+  auto module = replModule = make_shared<Module>("<stdin>");
+  rl_attempted_completion_function = manda_repl_completer;
   while (true) {
     string line(readline("manda> "));
     add_history(line.c_str());
@@ -136,4 +142,32 @@ int runREPL(const VMOptions &options) {
     }
   }
 #pragma clang diagnostic pop
+}
+
+char **manda_repl_completer(const char *text, int start, int end) {
+  rl_attempted_completion_over = 1;
+  return rl_completion_matches(text, manda_completion_generator);
+}
+
+vector<string> manda_completion_matches;
+size_t manda_completion_match_index = 0;
+
+char *manda_completion_generator(const char *text, int state) {
+  if (state == 0) {
+    string search(text);
+    manda_completion_match_index = 0;
+    manda_completion_matches.clear();
+    for (auto &p : replModule->getSymbolTable()->getSymbols()) {
+      if (p.first.compare(0, search.length(), search) == 0) {
+        manda_completion_matches.push_back(p.first);
+      }
+    }
+  } else {
+    if (manda_completion_match_index >= manda_completion_matches.size()) {
+      return nullptr;
+    } else {
+      return strdup(
+          manda_completion_matches[manda_completion_match_index++].c_str());
+    }
+  }
 }
