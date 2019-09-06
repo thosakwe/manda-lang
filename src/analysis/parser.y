@@ -58,6 +58,8 @@
 %type <elistval> arg_list
 %type <idval> id
 
+%left COMMA
+
 %%
 
 compilation_unit:
@@ -136,10 +138,16 @@ expr_list:
 tuple_expr_list:
   expr COMMA expr
     {
-      $$ = new TupleExprCtx;
-      $$->location = $1->location;
-      $$->items.emplace_back($1);
-      $$->items.emplace_back($3);
+      auto *tup = dynamic_cast<TupleExprCtx*>($1);
+      if (tup != nullptr) {
+        tup->items.emplace_back($3);
+        $$ = tup;
+      } else {
+        $$ = new TupleExprCtx;
+        $$->location = $1->location;
+        $$->items.emplace_back($1);
+        $$->items.emplace_back($3);
+      }
     }
   | tuple_expr_list expr
     {
