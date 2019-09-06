@@ -23,9 +23,9 @@ public:
 };
 
 template <typename T> struct AstList {
-  ExprCtx *value;
+  T *value;
   AstList *next;
-  explicit AstList(ExprCtx *v) : value(v) { next = nullptr; }
+  explicit AstList(T *v) : value(v) { next = nullptr; }
   AstList(const AstList &) = delete;
   AstList(AstList &&) = delete;
   AstList &operator=(const AstList &) = delete;
@@ -74,6 +74,7 @@ private:
 };
 
 struct VarExprCtx : public TopLevelExprCtx {
+  // TODO: Set location
   bool isFinal;
   std::string name;
   std::unique_ptr<ExprCtx> value;
@@ -97,11 +98,13 @@ struct FnDeclExprCtx : public TopLevelExprCtx {
 };
 
 struct VoidLiteralCtx : public ExprCtx {
+  // TODO: Set location
   void accept(ExprVisitor &visitor) override;
 };
 
 struct IdExprCtx : public ExprCtx {
   std::string name;
+  // TODO: Set location
   IdExprCtx(const Location &l, std::string n) : name(std::move(n)) {
     location = l;
   }
@@ -110,6 +113,7 @@ struct IdExprCtx : public ExprCtx {
 
 class NumberLiteralCtx : public ExprCtx {
 public:
+  // TODO: Set location
   double value;
   NumberLiteralCtx(const Location &l, double v) : value(v) { location = l; }
   void accept(ExprVisitor &visitor) override;
@@ -124,17 +128,20 @@ public:
 };
 
 struct BoolLiteralCtx : public ExprCtx {
+  // TODO: Set location
   bool value;
   explicit BoolLiteralCtx(bool v) : value(v) {}
   void accept(ExprVisitor &visitor) override;
 };
 
 struct BlockExprCtx : public ExprCtx {
+  // TODO: Set location
   void accept(ExprVisitor &visitor) override;
   std::vector<std::unique_ptr<ExprCtx>> body;
 };
 
 struct TupleExprCtx : public ExprCtx {
+  // TODO: Set location
   void accept(ExprVisitor &visitor) override;
   std::vector<std::unique_ptr<ExprCtx>> items;
 };
@@ -146,7 +153,9 @@ struct CastExprCtx : public ExprCtx {
 };
 
 struct CallExprCtx : public ExprCtx {
-  explicit CallExprCtx(ExprCtx *tgt) : target(tgt) {}
+  explicit CallExprCtx(ExprCtx *tgt) : target(tgt) {
+    location = target->location;
+  }
   void accept(ExprVisitor &visitor) override;
   std::unique_ptr<ExprCtx> target;
   std::vector<std::unique_ptr<ExprCtx>> arguments;

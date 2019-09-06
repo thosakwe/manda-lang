@@ -7,12 +7,19 @@ class DeclVisitor;
 
 struct DeclCtx {
   Location location;
+  DeclCtx() = default;
+  DeclCtx(const DeclCtx &) = default;
+  DeclCtx(DeclCtx &&) = default;
+  DeclCtx &operator=(const DeclCtx &) = default;
+  DeclCtx &operator=(DeclCtx &&) = default;
+  virtual ~DeclCtx() = default;
   virtual void accept(DeclVisitor &visitor) = 0;
 };
 
 struct ExprDeclCtx : public DeclCtx {
-  void accept(DeclVisitor &visitor) override;
   std::unique_ptr<ExprCtx> value;
+  explicit ExprDeclCtx(ExprCtx *v) : value(v) { location = value->location; }
+  void accept(DeclVisitor &visitor) override;
 };
 
 struct TypeDeclCtx : public DeclCtx {
@@ -29,6 +36,7 @@ public:
 };
 
 struct CompilationUnitCtx {
+  // TODO: Location
   Location location;
   std::vector<std::unique_ptr<DeclCtx>> declarations;
 };

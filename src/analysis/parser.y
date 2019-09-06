@@ -17,6 +17,9 @@
 %param {manda::analysis::Parser* parser}
 
 %union {
+  CompilationUnitCtx* cunitval;
+  DeclCtx* declval;
+  DeclList* decllistval;
   ExprCtx* exprval;
   ExprList* elistval;
   IdExprCtx* idval;
@@ -32,6 +35,7 @@
     void yyerror(Parser*, const char*);
   }
   using namespace manda::analysis;
+  using DeclList = AstList<DeclCtx>;
   using ExprList = AstList<ExprCtx>;
   #define tok parser->lastToken
   #define l tok.location
@@ -42,7 +46,10 @@
   #include <parser.hpp>
 %}
 
-%start expr
+%start compilation_unit
+%type <cunitval> compilation_unit
+%type <declval> decl
+%type <decllistval> decl_list
 %type <exprval> expr
 %type <elistval> expr_list
 %type <elistval> arg_list
@@ -50,7 +57,32 @@
 
 %%
 
-id: ID { $$ = new IdExprCtx{l, txt}; }
+compilation_unit:
+  decl_list
+    {
+      $$ = new CompilationUnitCtx;
+      toVector($1, $$->declarations);
+    }
+;
+
+decl:
+  expr { $$ = new ExprDeclCtx($1); }
+;
+
+decl_list:
+  %empty { $$ = nullptr; }
+  | decl { $$ = new DeclList($1); }
+  | decl_list decl
+    {
+      auto *v = new DeclList($2);
+      if ($1 == nullptr) {
+        $$ = v;
+      } else {
+        $$ = $$->add(v);
+      }
+    }
+
+id: ID { $$ = new IdExprCtx{l, txt}; };
 
 expr:
   ID { $$ = new IdExprCtx{l, txt}; }
