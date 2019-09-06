@@ -125,11 +125,7 @@ int runREPL(const VMOptions &options) {
         Interpreter interpreter(options, module);
         node->accept(interpreter);
         auto result = interpreter.getLastObject();
-        if (!result) {
-          if (options.developerMode) {
-            cout << "Evaluation failed." << endl;
-          }
-        } else {
+        if (result) {
           auto ptr = *result;
           if (ptr) {
             ptr->print(cout, true);

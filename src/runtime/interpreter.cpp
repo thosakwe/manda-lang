@@ -9,7 +9,9 @@ using namespace manda::runtime;
 using namespace std;
 
 Interpreter::Interpreter(VMOptions options, shared_ptr<Module> &module)
-    : options(std::move(options)), module(module) {}
+    : options(std::move(options)), module(module) {
+  scopeStack.push(module->getSymbolTable());
+}
 
 std::optional<std::shared_ptr<Object>> &Interpreter::getLastObject() {
   return lastObject;
