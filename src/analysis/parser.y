@@ -44,6 +44,7 @@
 
 %{
   #include <parser.hpp>
+  using namespace std;
 %}
 
 %start compilation_unit
@@ -62,6 +63,7 @@ compilation_unit:
     {
       $$ = new CompilationUnitCtx;
       toVector($1, $$->declarations);
+      parser->result = shared_ptr<CompilationUnitCtx>($$);
     }
 ;
 

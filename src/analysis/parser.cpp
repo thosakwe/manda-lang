@@ -36,5 +36,5 @@ shared_ptr<CompilationUnitCtx> Parser::parseCompilationUnit() {
   // TODO: Implement this...
   it = tokens.begin();
   yyparse(this);
-  return nullptr;
+  return result;
 }

@@ -16,10 +16,9 @@ public:
   friend int yylex(YYSTYPE *, Parser *parser);
   friend void yyerror(Parser *, const char *);
   Token lastToken;
+  std::shared_ptr<CompilationUnitCtx> result;
 
 private:
-  bool next(Token::TokenType type);
-  bool anyNext(const std::vector<Token::TokenType> &types);
   std::vector<Token>::const_iterator it;
   const std::vector<Token> &tokens;
 };

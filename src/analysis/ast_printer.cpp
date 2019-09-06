@@ -5,17 +5,18 @@ using namespace std;
 
 AstPrinter::AstPrinter(ostream &out) : out(out) { level = 0; }
 
-void AstPrinter::indent() {
+void AstPrinter::indent() { level++; }
+
+void AstPrinter::outdent() {
   if (level > 0)
     level--;
 }
-
-void AstPrinter::outdent() { level++; }
 
 ostream &AstPrinter::print() {
   for (unsigned long i = 0; i < level; i++) {
     out << "  ";
   }
+  out << "- ";
   return out;
 }
 

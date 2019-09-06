@@ -68,6 +68,16 @@ int runRepl(int argc, char **argv) {
   while (true) {
     string line(readline("manda> "));
     add_history(line.c_str());
+    Scanner scanner("", line);
+    Parser parser(scanner);
+    scanner.scan();
+    auto compilationUnit = parser.parseCompilationUnit();
+    if (compilationUnit == nullptr) {
+      cout << "NULL" << endl;
+    } else {
+      AstPrinter printer(cout);
+      compilationUnit->accept(printer);
+    }
   }
 #pragma clang diagnostic pop
 }
