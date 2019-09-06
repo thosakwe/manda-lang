@@ -2,6 +2,7 @@
 #include "ansi_printer.hpp"
 #include <sstream>
 
+using namespace manda::analysis;
 using namespace manda::runtime;
 using namespace std;
 
@@ -11,10 +12,10 @@ const vector<Parameter> &BuiltinFunction::getParameters() const {
   return parameters;
 }
 
-std::shared_ptr<Object> BuiltinFunction::invoke(
-    Interpreter &interpreter, const manda::analysis::Location &location,
-    std::shared_ptr<Object> &thisObject,
-    const std::vector<std::shared_ptr<Object>> &args) const {
+shared_ptr<Object>
+BuiltinFunction::invoke(Interpreter &interpreter, const Location &location,
+                        shared_ptr<Object> &thisObject,
+                        const vector<shared_ptr<Object>> &args) const {
   return fn(interpreter, location, thisObject, args);
 }
 

@@ -38,6 +38,7 @@ bool Interpreter::ensureArgumentCount(const Location &location,
   reportError(location, oss.str());
   return false;
 }
+
 bool Interpreter::ensureArguments(const Location &location,
                                   const vector<shared_ptr<Object>> &args,
                                   vector<shared_ptr<Type>> &parameters) {
