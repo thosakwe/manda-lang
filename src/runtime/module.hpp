@@ -18,7 +18,7 @@ public:
 
 private:
   std::string name;
-  SymbolTable symbolTable;
+  std::shared_ptr<SymbolTable> symbolTable;
   //  std::unordered_map<std::string, std::shared_ptr<Module>> children;
 };
 } // namespace manda::runtime
