@@ -11,11 +11,11 @@ const vector<Parameter> &BuiltinFunction::getParameters() const {
   return parameters;
 }
 
-shared_ptr<Object>
-BuiltinFunction::invoke(Interpreter &interpreter,
-                        shared_ptr<Object> &thisObject,
-                        const vector<shared_ptr<Object>> &args) const {
-  return fn(interpreter, thisObject, args);
+std::shared_ptr<Object> BuiltinFunction::invoke(
+    Interpreter &interpreter, const manda::analysis::Location &location,
+    std::shared_ptr<Object> &thisObject,
+    const std::vector<std::shared_ptr<Object>> &args) const {
+  return fn(interpreter, location, thisObject, args);
 }
 
 void BuiltinFunction::print(ostream &out, bool ansiSupported) const {

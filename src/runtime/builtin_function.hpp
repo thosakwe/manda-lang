@@ -8,13 +8,14 @@ struct BuiltinFunction : public Function {
   std::string name;
   std::vector<Parameter> parameters;
   std::function<std::shared_ptr<Object>(
-      Interpreter &, std::shared_ptr<Object> &,
+      Interpreter &, const manda::analysis::Location, std::shared_ptr<Object> &,
       const std::vector<std::shared_ptr<Object>> &)>
       fn;
-  const std::string &getName() const override;
-  const std::vector<Parameter> &getParameters() const override;
+  [[nodiscard]] const std::string &getName() const override;
+  [[nodiscard]] const std::vector<Parameter> &getParameters() const override;
   std::shared_ptr<Object>
-  invoke(Interpreter &interpreter, std::shared_ptr<Object> &thisObject,
+  invoke(Interpreter &interpreter, const manda::analysis::Location &location,
+         std::shared_ptr<Object> &thisObject,
          const std::vector<std::shared_ptr<Object>> &args) const override;
   void print(std::ostream &out, bool ansiSupported) const override;
 };

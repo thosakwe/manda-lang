@@ -18,7 +18,8 @@ public:
   [[nodiscard]] virtual const std::string &getName() const = 0;
   [[nodiscard]] virtual const std::vector<Parameter> &getParameters() const = 0;
   [[nodiscard]] virtual std::shared_ptr<Object>
-  invoke(Interpreter &interpreter, std::shared_ptr<Object> &thisObject,
+  invoke(Interpreter &interpreter, const manda::analysis::Location &location,
+         std::shared_ptr<Object> &thisObject,
          const std::vector<std::shared_ptr<Object>> &args) const = 0;
 };
 } // namespace manda::runtime
