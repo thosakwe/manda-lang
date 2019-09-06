@@ -23,6 +23,7 @@
   ExprCtx* exprval;
   ExprList* elistval;
   IdExprCtx* idval;
+  TupleExprCtx* tupval;
 }
 
 %code requires {
@@ -53,6 +54,7 @@
 %type <decllistval> decl_list
 %type <exprval> expr
 %type <elistval> expr_list
+%type <tupval> tuple_expr_list
 %type <elistval> arg_list
 %type <idval> id
 
@@ -99,12 +101,7 @@ expr:
       toVector($2, ctx->body);
       $$ = ctx;
     }
-  | LPAREN arg_list RPAREN
-    {
-      auto *ctx = new TupleExprCtx;
-      toVector($2, ctx->items);
-      $$ = ctx;
-    }
+  | tuple_expr_list { $$ = $1; }
   | expr LPAREN arg_list RPAREN
     {
       auto *ctx = new CallExprCtx($1);
@@ -136,6 +133,19 @@ expr_list:
       }
     }
 
+tuple_expr_list:
+  expr COMMA expr
+    {
+      $$ = new TupleExprCtx;
+      $$->location = $1->location;
+      $$->items.emplace_back($1);
+      $$->items.emplace_back($3);
+    }
+  | tuple_expr_list expr
+    {
+      $$ = $1;
+      $1->items.emplace_back($2);
+    }
 
 arg_list:
   %empty { $$ = nullptr; }
