@@ -7,4 +7,4 @@ add_library(manda_runtime
     module.cpp module.hpp
     type.cpp type.hpp
     symbol_table.cpp symbol_table.hpp
-    module_compiler.cpp module_compiler.hpp late_bound_object.cpp late_bound_object.hpp function.cpp function.hpp number.cpp number.hpp vm_options.cpp vm_options.hpp)
+    module_compiler.cpp module_compiler.hpp late_bound_object.cpp late_bound_object.hpp function.cpp function.hpp number.cpp number.hpp vm_options.cpp vm_options.hpp interpreter.cpp interpreter.hpp)

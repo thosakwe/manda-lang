@@ -6,6 +6,8 @@
 namespace manda::runtime {
 class Object {
 public:
+  virtual void print(std::ostream &out) const = 0;
+
   virtual const std::shared_ptr<Type> &getType() const {
     // TODO: Actually force classes to implement this.
     return type;

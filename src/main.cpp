@@ -1,6 +1,7 @@
 #include "analysis/ast_printer.hpp"
 #include "analysis/parser.hpp"
 #include "analysis/scanner.hpp"
+#include "runtime/interpreter.hpp"
 #include "runtime/module_compiler.hpp"
 #include "runtime/vm.hpp"
 #include "runtime/vm_options.hpp"
@@ -116,9 +117,16 @@ int runREPL(const VMOptions &options) {
       module->getTopLevelExpressions().clear();
       ModuleCompiler compiler(options, module);
       compilationUnit->accept(compiler);
+      Interpreter interpreter(options, module);
       for (auto &node : module->getTopLevelExpressions()) {
-        cout << "Found top-level" << endl;
-        // TODO: Actually execute
+        node->accept(interpreter);
+        auto result = interpreter.getLastObject();
+        if (result) {
+          auto ptr = *result;
+          if (ptr) {
+            ptr->print(cout);
+          }
+        }
       }
     }
   }
