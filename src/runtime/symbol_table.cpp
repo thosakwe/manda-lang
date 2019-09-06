@@ -1,37 +1,38 @@
 #include "symbol_table.hpp"
 
-const manda::runtime::Symbol
-manda::runtime::SymbolTable::resolve(const std::string name) const {
+using namespace manda::runtime;
+using namespace std;
+
+const unordered_map<string, Symbol> &SymbolTable::getSymbols() {
+  return symbols;
+}
+
+const Symbol SymbolTable::resolve(const string name) const {
   auto it = symbols.find(name);
   if (it != symbols.end()) {
     return it->second;
   } else if (parent) {
     return parent->resolve(name);
   } else {
-    return std::monostate();
+    return monostate();
   }
 }
 
-manda::runtime::Symbol
-manda::runtime::SymbolTable::add(std::string &name,
-                                 const manda::runtime::Symbol &value,
-                                 bool allowRedefine) {
+Symbol SymbolTable::add(string &name, const Symbol &value, bool allowRedefine) {
   auto it = symbols.find(name);
-  if ((it != symbols.end() || std::holds_alternative<std::monostate>(value)) &&
-      !allowRedefine) {
+  if ((it != symbols.end() && !allowRedefine) ||
+      holds_alternative<monostate>(value)) {
     // The symbol cannot be redefined...
-    return std::monostate();
+    return monostate();
   } else {
     return symbols[name] = value;
   }
 }
 
-std::shared_ptr<manda::runtime::SymbolTable>
-manda::runtime::SymbolTable::createChild() const {
+shared_ptr<SymbolTable> SymbolTable::createChild() const {
   auto child = shared_from_this();
-  return std::make_shared<SymbolTable>(child);
+  return make_shared<SymbolTable>(child);
 }
 
-manda::runtime::SymbolTable::SymbolTable(
-    std::shared_ptr<const manda::runtime::SymbolTable> &parent)
+SymbolTable::SymbolTable(shared_ptr<const SymbolTable> &parent)
     : parent(parent) {}
