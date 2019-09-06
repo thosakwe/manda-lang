@@ -1,6 +1,7 @@
 #include "analysis/ast_printer.hpp"
 #include "analysis/parser.hpp"
 #include "analysis/scanner.hpp"
+#include "runtime/module_compiler.hpp"
 #include "runtime/vm.hpp"
 #include "runtime/vm_options.hpp"
 #include <cstdio>
@@ -98,7 +99,7 @@ int runREPL(const VMOptions &options) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
   VM vm(options);
-  Module module{"<stdin>"};
+  auto module = make_shared<Module>("<stdin>");
   while (true) {
     string line(readline("manda> "));
     add_history(line.c_str());
@@ -112,6 +113,13 @@ int runREPL(const VMOptions &options) {
     } else {
       AstPrinter printer(cout);
       compilationUnit->accept(printer);
+      module->getTopLevelExpressions().clear();
+      ModuleCompiler compiler(options, module);
+      compilationUnit->accept(compiler);
+      for (auto &node : module->getTopLevelExpressions()) {
+        cout << "Found top-level" << endl;
+        // TODO: Actually execute
+      }
     }
   }
 #pragma clang diagnostic pop

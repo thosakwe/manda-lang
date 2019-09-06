@@ -6,11 +6,18 @@ using namespace manda::runtime;
 using namespace std;
 
 ModuleCompiler::ModuleCompiler(VMOptions options)
-    : module{""}, options(std::move(options)) {
-  scopeStack.push(module.getSymbolTable());
+    : options(std::move(options)) {
+  module = make_shared<Module>("");
+  scopeStack.push(module->getSymbolTable());
 }
 
-Module &ModuleCompiler::getModule() { return module; }
+ModuleCompiler::ModuleCompiler(VMOptions options,
+                               std::shared_ptr<Module> &module)
+    : options(std::move(options)), module(module) {
+  scopeStack.push(module->getSymbolTable());
+}
+
+shared_ptr<Module> &ModuleCompiler::getModule() { return module; }
 
 void ModuleCompiler::visitCompilationUnit(CompilationUnitCtx &ctx) {
   for (auto &node : ctx.declarations) {

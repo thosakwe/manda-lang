@@ -12,8 +12,9 @@ class ModuleCompiler : public manda::analysis::CompilationUnitVisitor,
                        public manda::analysis::DeclVisitor,
                        public manda::analysis::ExprVisitor {
 public:
-  ModuleCompiler(VMOptions options);
-  Module &getModule();
+  explicit ModuleCompiler(VMOptions options);
+  ModuleCompiler(VMOptions options, std::shared_ptr<Module> &module);
+  std::shared_ptr<Module> &getModule();
   void visitCompilationUnit(analysis::CompilationUnitCtx &ctx) override;
   void visitExprDecl(analysis::ExprDeclCtx &ctx) override;
   void visitTypeDecl(analysis::TypeDeclCtx &ctx) override;
@@ -31,7 +32,7 @@ public:
   void visitParenExpr(analysis::ParenExprCtx &ctx) override;
 
 private:
-  Module module;
+  std::shared_ptr<Module> module;
   VMOptions options;
   std::optional<std::shared_ptr<Object>> lastObject;
   std::stack<std::shared_ptr<SymbolTable>> scopeStack;
