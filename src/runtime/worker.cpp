@@ -6,9 +6,11 @@ using namespace manda::analysis;
 using namespace manda::runtime;
 using namespace std;
 
+Worker::Worker(VMOptions options) : options(std::move(options)) {}
+
 void Worker::loadCompilationUnit(shared_ptr<CompilationUnitCtx> &ctx) {
   // TODO: Do the logic...
-  ModuleCompiler compiler;
+  ModuleCompiler compiler(options);
   ctx->accept(compiler);
 
   auto &module = compiler.getModule();

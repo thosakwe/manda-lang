@@ -3,6 +3,7 @@
 #include "../analysis/ast.hpp"
 #include "module.hpp"
 #include "symbol_table.hpp"
+#include "vm_options.hpp"
 #include <optional>
 #include <stack>
 
@@ -11,7 +12,7 @@ class ModuleCompiler : public manda::analysis::CompilationUnitVisitor,
                        public manda::analysis::DeclVisitor,
                        public manda::analysis::ExprVisitor {
 public:
-  ModuleCompiler();
+  ModuleCompiler(VMOptions options);
   Module &getModule();
   void visitCompilationUnit(analysis::CompilationUnitCtx &ctx) override;
   void visitExprDecl(analysis::ExprDeclCtx &ctx) override;
@@ -31,6 +32,7 @@ public:
 
 private:
   Module module;
+  VMOptions options;
   std::optional<std::shared_ptr<Object>> lastObject;
   std::stack<std::shared_ptr<SymbolTable>> scopeStack;
 };

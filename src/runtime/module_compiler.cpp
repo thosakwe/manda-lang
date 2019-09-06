@@ -5,7 +5,8 @@ using namespace manda::analysis;
 using namespace manda::runtime;
 using namespace std;
 
-ModuleCompiler::ModuleCompiler() : module{""} {
+ModuleCompiler::ModuleCompiler(VMOptions options)
+    : module{""}, options(options) {
   scopeStack.push(module.getSymbolTable());
 }
 

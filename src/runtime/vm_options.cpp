@@ -89,6 +89,7 @@ void VMOptions::parse(const vector<string> &args) {
     }
   }
 }
+
 void VMOptions::parseDefine(const string &str, size_t startIndex) {
   if (startIndex >= str.length()) {
     parseErrors.emplace_back("Missing name in -D or --define option.");

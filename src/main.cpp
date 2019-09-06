@@ -79,7 +79,7 @@ int runFile(const VMOptions &options) {
 
   string contents = {istreambuf_iterator<char>(ifs),
                      istreambuf_iterator<char>()};
-  VM vm;
+  VM vm(options);
   return execute(filename, contents, options, vm);
 }
 
@@ -87,7 +87,7 @@ int runREPL(const VMOptions &options) {
   // TODO: Run from file...
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
-  VM vm;
+  VM vm(options);
   while (true) {
     string line(readline("manda> "));
     add_history(line.c_str());
@@ -108,7 +108,7 @@ int execute(const string &filename, const string &text,
   } else {
     AstPrinter printer(cout);
     compilationUnit->accept(printer);
-    Worker mainWorker;
+    Worker mainWorker(options);
     mainWorker.loadCompilationUnit(compilationUnit);
     //  vm.addWorker(mainWorker.shared_from_this());
     return vm.run();
