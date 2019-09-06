@@ -14,6 +14,8 @@ class Interpreter : public manda::analysis::CompilationUnitVisitor,
 public:
   Interpreter(VMOptions options, std::shared_ptr<Module> &module);
   std::optional<std::shared_ptr<Object>> &getLastObject();
+  void reportError(const manda::analysis::Location &location,
+                   const std::string &message);
   void visitExprDecl(analysis::ExprDeclCtx &ctx) override;
   void visitTypeDecl(analysis::TypeDeclCtx &ctx) override;
   void visitCompilationUnit(analysis::CompilationUnitCtx &ctx) override;

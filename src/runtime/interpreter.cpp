@@ -1,6 +1,8 @@
 #include "interpreter.hpp"
+#include "ansi_printer.hpp"
 #include "number.hpp"
 #include <iostream>
+#include <sstream>
 
 using namespace manda::analysis;
 using namespace manda::runtime;
@@ -11,6 +13,14 @@ Interpreter::Interpreter(VMOptions options, shared_ptr<Module> &module)
 
 std::optional<std::shared_ptr<Object>> &Interpreter::getLastObject() {
   return lastObject;
+}
+
+void Interpreter::reportError(const manda::analysis::Location &location,
+                              const std::string &message) {
+  // TODO: What about thrown errors?
+  ostringstream oss;
+  oss << "Error: " << location << ": " << message;
+  cerr << red(oss.str());
 }
 
 void Interpreter::visitExprDecl(ExprDeclCtx &ctx) {}
@@ -25,8 +35,10 @@ void Interpreter::visitVarExpr(VarExprCtx &ctx) {
     // Eagerly resolve the value.
     ctx.value->accept(*this);
     if (!lastObject) {
-      // TODO: Properly report errors.
-      cerr << "error when evaluating var decl" << endl;
+      ostringstream oss;
+      oss << "Could not resolve a value for variable '";
+      oss << ctx.name << "'.";
+      reportError(ctx.location, oss.str());
       lastObject = nullopt;
     } else {
       // Add the symbol to the current scope.
@@ -48,8 +60,16 @@ void Interpreter::visitVoidLiteral(VoidLiteralCtx &ctx) {}
 void Interpreter::visitIdExpr(IdExprCtx &ctx) {
   auto symbol = scopeStack.top()->resolve(ctx.name);
   if (holds_alternative<monostate>(symbol)) {
+    ostringstream oss;
+    oss << "The name '";
+    oss << ctx.name << "' does not exist in this context.";
+    reportError(ctx.location, oss.str());
     lastObject = nullopt;
   } else if (holds_alternative<shared_ptr<Type>>(symbol)) {
+    ostringstream oss;
+    oss << "The value of symbol '";
+    oss << ctx.name << "' is a type, not a value.";
+    reportError(ctx.location, oss.str());
     lastObject = nullopt;
   } else if (holds_alternative<shared_ptr<Object>>(symbol)) {
     lastObject = get<shared_ptr<Object>>(symbol);
