@@ -14,7 +14,7 @@ void Worker::executeProgram(shared_ptr<CompilationUnitCtx> &ctx) {
   ctx->accept(compiler);
 
   auto &module = compiler.getModule();
-  auto main = module.getSymbolTable()->resolve("main");
+  auto main = module->getSymbolTable()->resolve("main");
 
   if (!holds_alternative<shared_ptr<Object>>(main)) {
     // TODO: Throw error if no main function was found.

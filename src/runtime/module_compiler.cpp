@@ -7,7 +7,8 @@ using namespace std;
 
 ModuleCompiler::ModuleCompiler(VMOptions options)
     : options(std::move(options)) {
-  module = make_shared<Module>("");
+  // TODO: Use C++17 fs::path::filename
+  module = make_shared<Module>(options.inputFile);
   scopeStack.push(module->getSymbolTable());
 }
 
@@ -32,7 +33,7 @@ void ModuleCompiler::visitExprDecl(ExprDeclCtx &ctx) {
     if (options.isREPL()) {
       // TODO: Evaluate top-level expressions
       // IMPORTANT: The value is MOVED.
-      module.getTopLevelExpressions().push_back(move(ctx.value));
+      module->getTopLevelExpressions().push_back(move(ctx.value));
     } else {
       // TODO: Disallow top-level evaluations in regular mode.
     }
