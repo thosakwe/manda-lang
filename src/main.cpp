@@ -1,6 +1,7 @@
 #include "analysis/ast_printer.hpp"
 #include "analysis/parser.hpp"
 #include "analysis/scanner.hpp"
+#include "runtime/core_library.hpp"
 #include "runtime/interpreter.hpp"
 #include "runtime/module_compiler.hpp"
 #include "runtime/vm.hpp"
@@ -108,6 +109,7 @@ int runREPL(const VMOptions &options) {
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
   VM vm(options);
   auto module = replModule = make_shared<Module>("<stdin>");
+  CoreLibrary::install(*(module->getSymbolTable()));
   rl_attempted_completion_function = manda_repl_completer;
   while (true) {
     string line(readline("manda> "));
