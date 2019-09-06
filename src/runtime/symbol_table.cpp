@@ -14,9 +14,11 @@ manda::runtime::SymbolTable::resolve(const std::string name) const {
 
 manda::runtime::Symbol
 manda::runtime::SymbolTable::add(std::string &name,
-                                 const manda::runtime::Symbol &value) {
+                                 const manda::runtime::Symbol &value,
+                                 bool allowRedefine) {
   auto it = symbols.find(name);
-  if (it != symbols.end() || std::holds_alternative<std::monostate>(value)) {
+  if ((it != symbols.end() || std::holds_alternative<std::monostate>(value)) &&
+      !allowRedefine) {
     // The symbol cannot be redefined...
     return std::monostate();
   } else {
