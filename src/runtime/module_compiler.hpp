@@ -4,11 +4,13 @@
 #include "module.hpp"
 
 namespace manda::runtime {
-class ModuleCompiler : public manda::analysis::DeclVisitor,
+class ModuleCompiler : public manda::analysis::CompilationUnitVisitor,
+                       public manda::analysis::DeclVisitor,
                        public manda::analysis::ExprVisitor {
 public:
   ModuleCompiler();
   Module &getModule();
+  void visitCompilationUnit(analysis::CompilationUnitCtx &ctx) override;
   void visitExprDecl(analysis::ExprDeclCtx &ctx) override;
   void visitTypeDecl(analysis::TypeDeclCtx &ctx) override;
   void visitVarExpr(analysis::VarExprCtx &ctx) override;

@@ -6,6 +6,13 @@ manda::runtime::Module &manda::runtime::ModuleCompiler::getModule() {
   return module;
 }
 
+void manda::runtime::ModuleCompiler::visitCompilationUnit(
+    manda::analysis::CompilationUnitCtx &ctx) {
+  for (auto &node : ctx.declarations) {
+    node->accept(*this);
+  }
+}
+
 void manda::runtime::ModuleCompiler::visitExprDecl(
     manda::analysis::ExprDeclCtx &ctx) {
   using namespace manda::analysis;

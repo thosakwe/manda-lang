@@ -33,13 +33,12 @@ int runFile(int argc, char **argv) {
   shared_ptr<CompilationUnitCtx> compilationUnit;
 
   if (!ifs) {
-    cerr << "Error: File \"" << filename << "\" does not exist."
-              << endl;
+    cerr << "Error: File \"" << filename << "\" does not exist." << endl;
     return 1;
   }
 
   string contents = {istreambuf_iterator<char>(ifs),
-                          istreambuf_iterator<char>()};
+                     istreambuf_iterator<char>()};
   Scanner scanner(filename, contents);
   Parser parser(scanner);
   scanner.scan();
@@ -50,15 +49,13 @@ int runFile(int argc, char **argv) {
     AstPrinter printer(cout);
     compilationUnit->accept(printer);
   }
-  return 0;
-
   //   // TODO: Dump any errors...
 
-  //   VM vm;
-  //   Worker mainWorker;
-  //   mainWorker.loadCompilationUnit(compilationUnit);
-  //   vm.addWorker(mainWorker.shared_from_this());
-  //   return vm.run();
+  VM vm;
+  Worker mainWorker;
+  mainWorker.loadCompilationUnit(compilationUnit);
+//  vm.addWorker(mainWorker.shared_from_this());
+  return vm.run();
 }
 
 int runRepl(int argc, char **argv) {
