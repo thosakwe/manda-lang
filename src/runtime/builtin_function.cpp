@@ -1,0 +1,33 @@
+#include "builtin_function.hpp"
+#include "ansi_printer.hpp"
+#include <sstream>
+
+using namespace manda::runtime;
+using namespace std;
+
+const string &BuiltinFunction::getName() const { return name; }
+
+const vector<Parameter> &BuiltinFunction::getParameters() const {
+  return parameters;
+}
+
+shared_ptr<Object>
+BuiltinFunction::invoke(Interpreter &interpreter,
+                        shared_ptr<Object> &thisObject,
+                        const vector<shared_ptr<Object>> &args) const {
+  return fn(interpreter, thisObject, args);
+}
+
+void BuiltinFunction::print(ostream &out, bool ansiSupported) const {
+  ostringstream oss;
+  oss << "[Function";
+  if (!name.empty()) {
+    oss << ": " << name;
+  }
+  oss << "]";
+  if (!ansiSupported) {
+    out << oss.str();
+  } else {
+    out << cyan(oss.str());
+  }
+}
