@@ -51,7 +51,6 @@ void VMOptions::parse(const vector<string> &args) {
       encounteredBareDoubleDash = true;
     } else if (s == "-h" || s == "--help") {
       showHelp = true;
-      break;
     } else if (s == "--devel") {
       developerMode = true;
     } else if (s == "--define") {

@@ -30,11 +30,15 @@ int main(int argc, const char **argv) {
     cout << options << endl;
   }
 
-  if (options.isREPL()) {
-    return runREPL(options);
-  } else if (options.inputFile.empty()) {
+  if (options.showHelp) {
     printHelp(cout);
     return 0;
+  } else if (options.isREPL()) {
+    return runREPL(options);
+  } else if (options.inputFile.empty()) {
+    cerr << "Error: No input file was given." << endl;
+    printHelp(cerr);
+    return EX_USAGE;
   } else if (!options.parseErrors.empty()) {
     for (auto &err : options.parseErrors) {
       cerr << "Error: " << err << endl;
