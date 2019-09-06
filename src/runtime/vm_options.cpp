@@ -65,7 +65,7 @@ void VMOptions::parse(const vector<string> &args) {
       } else {
         parseErrors.emplace_back("--define cannot be the last argument.");
       }
-    } else if (s.compare(0, 2, "-D")) {
+    } else if (s.compare(0, 2, "-D") == 0) {
       parseDefine(s, 2);
     } else {
       if (inputFile.empty()) {
