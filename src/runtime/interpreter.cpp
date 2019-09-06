@@ -2,6 +2,7 @@
 #include "ansi_printer.hpp"
 #include "number.hpp"
 #include "tuple.hpp"
+#include "void.hpp"
 #include <iostream>
 #include <sstream>
 
@@ -88,7 +89,24 @@ void Interpreter::visitStringLiteral(StringLiteralCtx &ctx) {}
 
 void Interpreter::visitBoolLiteral(BoolLiteralCtx &ctx) {}
 
-void Interpreter::visitBlockExpr(BlockExprCtx &ctx) {}
+void Interpreter::visitBlockExpr(BlockExprCtx &ctx) {
+  for (unsigned long i = 0; i < ctx.body.size(); i++) {
+    auto &ptr = ctx.body[i];
+    lastObject = nullopt;
+    ptr->accept(*this);
+    if (!lastObject) {
+      ostringstream oss;
+      oss << "Failed to resolve item " << i;
+      oss << " in block.";
+      reportError(ptr->location, oss.str());
+      lastObject = nullopt;
+      return;
+    }
+  }
+  if (ctx.body.empty()) {
+    lastObject = make_shared<Void>();
+  }
+}
 
 void Interpreter::visitTupleExpr(TupleExprCtx &ctx) {
   auto tup = make_shared<Tuple>();
