@@ -8,7 +8,7 @@ using namespace std;
 
 Worker::Worker(VMOptions options) : options(std::move(options)) {}
 
-void Worker::loadCompilationUnit(shared_ptr<CompilationUnitCtx> &ctx) {
+void Worker::executeProgram(shared_ptr<CompilationUnitCtx> &ctx) {
   // TODO: Do the logic...
   ModuleCompiler compiler(options);
   ctx->accept(compiler);

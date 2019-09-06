@@ -13,7 +13,7 @@ namespace manda::runtime {
 class Worker : public std::enable_shared_from_this<Worker> {
 public:
   explicit Worker(VMOptions options);
-  void loadCompilationUnit(std::shared_ptr<analysis::CompilationUnitCtx> &ctx);
+  void executeProgram(std::shared_ptr<analysis::CompilationUnitCtx> &ctx);
 
 private:
   std::vector<std::shared_ptr<Module>> modules;

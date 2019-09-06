@@ -19,8 +19,6 @@ using namespace std;
 
 int runFile(const VMOptions &options);
 int runREPL(const VMOptions &options);
-int execute(const string &filename, const string &text,
-            const VMOptions &options, VM &vm);
 void printHelp(ostream &out);
 
 int main(int argc, const char **argv) {
@@ -70,8 +68,6 @@ void printHelp(ostream &out) {
 int runFile(const VMOptions &options) {
   auto &filename = options.inputFile;
   ifstream ifs(filename);
-  shared_ptr<CompilationUnitCtx> compilationUnit;
-
   if (!ifs) {
     cerr << "Error: File \"" << filename << "\" does not exist." << endl;
     return 1;
@@ -80,25 +76,7 @@ int runFile(const VMOptions &options) {
   string contents = {istreambuf_iterator<char>(ifs),
                      istreambuf_iterator<char>()};
   VM vm(options);
-  return execute(filename, contents, options, vm);
-}
-
-int runREPL(const VMOptions &options) {
-  // TODO: Run from file...
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
-  VM vm(options);
-  while (true) {
-    string line(readline("manda> "));
-    add_history(line.c_str());
-    return execute("<stdin>", line, options, vm);
-  }
-#pragma clang diagnostic pop
-}
-
-int execute(const string &filename, const string &text,
-            const VMOptions &options, VM &vm) {
-  Scanner scanner(filename, text);
+  Scanner scanner(filename, contents);
   Parser parser(scanner);
   scanner.scan();
   auto compilationUnit = parser.parseCompilationUnit();
@@ -109,8 +87,32 @@ int execute(const string &filename, const string &text,
     AstPrinter printer(cout);
     compilationUnit->accept(printer);
     Worker mainWorker(options);
-    mainWorker.loadCompilationUnit(compilationUnit);
+    mainWorker.executeProgram(compilationUnit);
     //  vm.addWorker(mainWorker.shared_from_this());
     return vm.run();
   }
+}
+
+int runREPL(const VMOptions &options) {
+  // TODO: Run from file...
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
+  VM vm(options);
+  Module module{"<stdin>"};
+  while (true) {
+    string line(readline("manda> "));
+    add_history(line.c_str());
+    Scanner scanner("<stdin>", line);
+    Parser parser(scanner);
+    scanner.scan();
+    auto compilationUnit = parser.parseCompilationUnit();
+    if (compilationUnit == nullptr) {
+      cout << "NULL" << endl;
+      return 1;
+    } else {
+      AstPrinter printer(cout);
+      compilationUnit->accept(printer);
+    }
+  }
+#pragma clang diagnostic pop
 }
