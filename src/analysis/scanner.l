@@ -10,7 +10,7 @@ using TT = manda::analysis::Token::TokenType;
 
 WS [ \r\t]
 NUM -?[0-9]+(\.[0-9]+)?
-ID [A-Za-z_][A-Za-z0-9]*
+ID [A-Za-z_][A-Za-z0-9_]*
 
 %%
 
