@@ -59,7 +59,7 @@ void ObjectResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {
   for (auto &node : ctx.params) {
     shared_ptr<Type> type;
     if (!node->type) {
-      type = make_shared<AnyType>();
+      type = interpreter.getCoreLibrary().anyType;
     } else {
       TypeResolver typeResolver(interpreter, scope);
       node->type->accept(typeResolver);
