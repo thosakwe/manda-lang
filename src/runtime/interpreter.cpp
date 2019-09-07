@@ -18,6 +18,7 @@ using namespace std;
 
 Interpreter::Interpreter(VMOptions options, shared_ptr<Module> &module)
     : options(move(options)), module(module) {
+  coreLibrary.install(*(module->getSymbolTable()));
   scopeStack.push(module->getSymbolTable());
 }
 

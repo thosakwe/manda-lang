@@ -117,7 +117,6 @@ int runREPL(const VMOptions &options) {
   cout << "Type \".help\" for usage information." << endl;
   VM vm(options);
   auto module = replModule = make_shared<Module>("<stdin>");
-  CoreLibrary::install(*(module->getSymbolTable()));
   rl_attempted_completion_function = manda_repl_completer;
   while (true) {
     string line(readline("> "));
