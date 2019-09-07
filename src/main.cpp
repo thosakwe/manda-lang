@@ -36,6 +36,9 @@ int main(int argc, const char **argv) {
   if (options.showHelp) {
     printHelp(cout);
     return 0;
+  } else if (options.showVersion) {
+    cout << "Manda " << MANDA_VERSION << endl;
+    return 0;
   } else if (options.isREPL()) {
     return runREPL(options);
   } else if (options.inputFile.empty()) {
