@@ -9,11 +9,11 @@ using namespace std;
 String::String(std::string s) : value(move(s)) {}
 
 void String::print(ostream &out, bool ansiSupported) const {
-  ostringstream oss;
-  oss << "\"" << value << "\"";
   if (!ansiSupported) {
-    out << oss.str();
+    out << value;
   } else {
+    ostringstream oss;
+    oss << "\"" << value << "\"";
     out << green(oss.str());
   }
 }
