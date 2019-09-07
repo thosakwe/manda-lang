@@ -11,7 +11,7 @@ using TT = manda::analysis::Token::TokenType;
 WS [ \r\t]
 NUM -?[0-9]+(\.[0-9]+)?
 HEX_ESC \\x[A-Fa-f0-9][A-Fa-f0-9]
-TEXT [^\n]+
+TEXT [^\n]
 ID [A-Za-z_][A-Za-z0-9_]*
 
 %%

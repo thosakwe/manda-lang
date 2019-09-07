@@ -121,9 +121,15 @@ public:
 
 class StringPartCtx {
 public:
+  // TODO: Set location
   Location location;
-  bool singleQuote;
   [[nodiscard]] virtual std::string convert(bool singleQuote) const = 0;
+  StringPartCtx() = default;
+  StringPartCtx(const StringPartCtx &) = default;
+  StringPartCtx(StringPartCtx &&) = default;
+  StringPartCtx &operator=(const StringPartCtx &) = default;
+  StringPartCtx &operator=(StringPartCtx &&) = default;
+  virtual ~StringPartCtx() = default;
 };
 
 class TextStringPartCtx : public StringPartCtx {
@@ -150,15 +156,19 @@ public:
 class QuoteEscapeStringPartCtx : public StringPartCtx {
 public:
   [[nodiscard]] std::string convert(bool singleQuote) const override;
+  explicit QuoteEscapeStringPartCtx(const Location &l) { location = l; }
 };
 
 class StringLiteralCtx : public ExprCtx {
 public:
+  // TODO: Location
+  explicit StringLiteralCtx(bool sq) : singleQuote(sq) {}
   void accept(ExprVisitor &visitor) override;
 
 public:
+  bool singleQuote;
   std::string value;
-  std::vector<StringPartCtx> parts;
+  std::vector<std::unique_ptr<StringPartCtx>> parts;
 };
 
 struct BoolLiteralCtx : public ExprCtx {

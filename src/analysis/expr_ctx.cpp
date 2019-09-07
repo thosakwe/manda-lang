@@ -1,4 +1,5 @@
 #include "expr_ctx.hpp"
+#include <string>
 
 using namespace manda::analysis;
 using namespace std;
@@ -48,7 +49,7 @@ string QuoteEscapeStringPartCtx::convert(bool singleQuote) const {
 }
 string HexEscapeStringPartCtx::convert(bool singleQuote) const {
   string s;
-  s += (char)stol(text, 2, 16);
+  s += (char)stol(text.substr(2), nullptr, 16);
   return s;
 }
 

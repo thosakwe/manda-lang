@@ -25,6 +25,7 @@
   IdExprCtx* idval;
   TupleExprCtx* tupval;
   StringPartCtx* strpartval;
+  StringPartList* strpartlistval;
 }
 
 %code requires {
@@ -39,6 +40,7 @@
   using namespace manda::analysis;
   using DeclList = AstList<DeclCtx>;
   using ExprList = AstList<ExprCtx>;
+  using StringPartList = AstList<StringPartCtx>;
   #define tok parser->lastToken
   #define l tok.location
   #define txt tok.text
@@ -58,6 +60,8 @@
 %type <tupval> tuple_expr_list
 %type <elistval> arg_list
 %type <idval> id
+%type <strpartval> str_part
+%type <strpartlistval> str_part_list
 
 %left COMMA
 %right EQUALS LPAREN
@@ -98,6 +102,20 @@ expr:
   | TRUE { $$ = new BoolLiteralCtx(true); }
   | VOID { $$ = new VoidLiteralCtx; }
   | FALSE { $$ = new BoolLiteralCtx(false); }
+  | SINGLE_QUOTE str_part SINGLE_QUOTE
+    {
+      auto *ctx = new StringLiteralCtx(true);
+      ctx->location = $2->location;
+      ctx->value = $2->convert(true);
+      delete $2;
+      $$ = ctx;
+    }
+  | DOUBLE_QUOTE str_part_list DOUBLE_QUOTE
+    {
+      auto *ctx = new StringLiteralCtx(true);
+      toVector($2, ctx->parts);
+      $$ = ctx;
+    }
   | LCURLY expr_list RCURLY
     {
       auto *ctx = new BlockExprCtx;
@@ -160,7 +178,7 @@ tuple_expr_list:
 arg_list:
   %empty { $$ = nullptr; }
   | expr { $$ = new ExprList($1); }
-  | expr_list COMMA expr
+  | arg_list COMMA expr
     {
       auto *v = new ExprList($3);
       if ($1 == nullptr) {
@@ -169,3 +187,23 @@ arg_list:
         $$ = $$->add(v);
       }
     }
+
+str_part_list:
+  %empty { $$ = nullptr; }
+  | str_part { $$ = new StringPartList($1); }
+  | str_part_list str_part
+    {
+      auto *v = new StringPartList($2);
+      if ($1 == nullptr) {
+        $$ = v;
+      } else {
+        $$ = $$->add(v);
+      }
+    }
+;
+
+str_part:
+  TEXT { $$ = new TextStringPartCtx(l, txt); }
+  | HEX_ESCAPE { $$ = new HexEscapeStringPartCtx(l, txt); }
+  | QUOTE_ESCAPE { $$ = new QuoteEscapeStringPartCtx(l); }
+;
