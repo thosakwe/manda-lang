@@ -8,6 +8,8 @@ using namespace manda::analysis;
 using namespace manda::runtime;
 using namespace std;
 
+CoreLibrary::CoreLibrary() { anyType = make_shared<AnyType>(); }
+
 shared_ptr<Object>
 CoreLibrary::printFn(Interpreter &i, const Location &l, shared_ptr<Object> &,
                      const vector<shared_ptr<Object>> &args) {
