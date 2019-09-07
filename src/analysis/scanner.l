@@ -10,6 +10,8 @@ using TT = manda::analysis::Token::TokenType;
 
 WS [ \r\t]
 NUM -?[0-9]+(\.[0-9]+)?
+HEX_ESC \\x[A-Fa-f0-9][A-Fa-f0-9]
+TEXT [^\n]+
 ID [A-Za-z_][A-Za-z0-9_]*
 
 %%
@@ -64,3 +66,10 @@ void    emit(TT::VOID);
 "\""    { emit(TT::DOUBLE_QUOTE); BEGIN(DQ); }
 "'"     { emit(TT::SINGLE_QUOTE); BEGIN(SQ); }
 {ID}    emit(TT::ID);
+
+<DQ>"\\\""        emit(TT::QUOTE_ESCAPE);
+<SQ>"\\'"         emit(TT::QUOTE_ESCAPE);
+<DQ>"\""          { emit(TT::DOUBLE_QUOTE); BEGIN(INITIAL); }
+<SQ>"'"           { emit(TT::SINGLE_QUOTE); BEGIN(INITIAL); }
+<DQ,SQ>{HEX_ESC}  emit(TT::HEX_ESCAPE);
+<DQ,SQ>{TEXT}     emit(TT::TEXT);
