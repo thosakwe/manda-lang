@@ -130,12 +130,21 @@ class TextStringPartCtx : public StringPartCtx {
 public:
   std::string text;
   [[nodiscard]] std::string convert(bool singleQuote) const override;
+
+  TextStringPartCtx(const Location &l, std::string t) : text(std::move(t)) {
+    location = l;
+  }
 };
 
 class HexEscapeStringPartCtx : public StringPartCtx {
 public:
   std::string text;
   [[nodiscard]] std::string convert(bool singleQuote) const override;
+
+  HexEscapeStringPartCtx(const Location &l, std::string t)
+      : text(std::move(t)) {
+    location = l;
+  }
 };
 
 class QuoteEscapeStringPartCtx : public StringPartCtx {
