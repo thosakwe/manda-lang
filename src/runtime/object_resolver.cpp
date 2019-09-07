@@ -1,4 +1,16 @@
 #include "object_resolver.hpp"
+#include "ansi_printer.hpp"
+#include "ast_function.hpp"
+#include "bool.hpp"
+#include "char.hpp"
+#include "function.hpp"
+#include "number.hpp"
+#include "string.hpp"
+#include "tuple.hpp"
+#include "type_resolver.hpp"
+#include "void.hpp"
+#include <iostream>
+#include <sstream>
 
 using namespace manda::analysis;
 using namespace manda::runtime;
@@ -14,25 +26,24 @@ const shared_ptr<Object> &ObjectResolver::getLastObject() const {
 
 void ObjectResolver::visitVarExpr(VarExprCtx &ctx) {
   // TODO: Plain mode implementation (lazy?, etc.?)
-  if (options.isREPL()) {
+  if (interpreter.getOptions().isREPL()) {
     // Eagerly resolve the value.
     ctx.value->accept(*this);
     if (!lastObject) {
       ostringstream oss;
       oss << "Could not resolve a value for variable '";
       oss << ctx.name << "'.";
-      reportError(ctx.location, oss.str());
-      lastObject = nullopt;
+      interpreter.reportError(ctx.location, oss.str());
+      lastObject = nullptr;
     } else {
       // Add the symbol to the current scope.
-      auto symbol = scopeStack.top()->add(ctx.name, *lastObject, true);
+      auto symbol = scope->add(ctx.name, lastObject, true);
       // Resolve the value as an identifier in the top-level.
-      auto id = make_unique<IdExprCtx>(ctx.location, ctx.name);
-      module->getTopLevelExpressions().push_back(move(id));
+      interpreter.emitTopLevelExpression(make_unique<IdExprCtx>(ctx.location, ctx.name));
       lastObject = get<shared_ptr<Object>>(symbol);
     }
   } else {
-    lastObject = nullopt;
+    lastObject = nullptr;
   }
 }
 
@@ -44,7 +55,7 @@ void ObjectResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {
   lastObject = value;
   if (!ctx.name.empty()) {
     // TODO: Handle redefined names
-    scopeStack.top()->add(ctx.name, value, options.isREPL());
+    scope->add(ctx.name, value, interpreter.getOptions().isREPL());
   }
 }
 
@@ -53,19 +64,19 @@ void ObjectResolver::visitVoidLiteral(VoidLiteralCtx &ctx) {
 }
 
 void ObjectResolver::visitIdExpr(IdExprCtx &ctx) {
-  auto symbol = scopeStack.top()->resolve(ctx.name);
+  auto symbol = scope->resolve(ctx.name);
   if (holds_alternative<monostate>(symbol)) {
     ostringstream oss;
     oss << "The name '";
     oss << ctx.name << "' does not exist in this context.";
-    reportError(ctx.location, oss.str());
-    lastObject = nullopt;
+    interpreter.reportError(ctx.location, oss.str());
+    lastObject = nullptr;
   } else if (holds_alternative<shared_ptr<Type>>(symbol)) {
     ostringstream oss;
     oss << "The value of symbol '";
     oss << ctx.name << "' is a type, not a value.";
-    reportError(ctx.location, oss.str());
-    lastObject = nullopt;
+    interpreter.reportError(ctx.location, oss.str());
+    lastObject = nullptr;
   } else if (holds_alternative<shared_ptr<Object>>(symbol)) {
     lastObject = get<shared_ptr<Object>>(symbol);
   }
@@ -90,42 +101,40 @@ void ObjectResolver::visitBoolLiteral(BoolLiteralCtx &ctx) {
 
 void ObjectResolver::visitBlockExpr(BlockExprCtx &ctx) {
   // TODO: Location
-  scopeStack.push(scopeStack.top()->createChild());
+  ObjectResolver child(interpreter, scope->createChild());
   for (unsigned long i = 0; i < ctx.body.size(); i++) {
     auto &ptr = ctx.body[i];
-    lastObject = nullopt;
-    ptr->accept(*this);
+    lastObject = nullptr;
+    ptr->accept(child);
     if (!lastObject) {
       ostringstream oss;
       oss << "Failed to resolve item " << i;
       oss << " in block.";
-      reportError(ptr->location, oss.str());
-      lastObject = nullopt;
-      scopeStack.pop();
+      interpreter.reportError(ptr->location, oss.str());
+      lastObject = nullptr;
       return;
     }
   }
   if (ctx.body.empty()) {
     lastObject = make_shared<Void>();
   }
-  scopeStack.pop();
 }
 
 void ObjectResolver::visitTupleExpr(TupleExprCtx &ctx) {
   auto tup = make_shared<Tuple>();
   for (unsigned long i = 0; i < ctx.items.size(); i++) {
     auto &ptr = ctx.items[i];
-    lastObject = nullopt;
+    lastObject = nullptr;
     ptr->accept(*this);
     if (!lastObject) {
       ostringstream oss;
       oss << "Failed to resolve item " << i;
       oss << " in tuple.";
-      reportError(ptr->location, oss.str());
-      lastObject = nullopt;
+      interpreter.reportError(ptr->location, oss.str());
+      lastObject = nullptr;
       return;
     } else {
-      tup->getItems().push_back(*lastObject);
+      tup->getItems().push_back(lastObject);
     }
   }
   lastObject = tup;
@@ -138,40 +147,40 @@ void ObjectResolver::visitCallExpr(CallExprCtx &ctx) {
   ctx.target->accept(*this);
 
   if (!lastObject) {
-    reportError(ctx.location,
-                "An error occurred when resolving the call target.");
-    lastObject = nullopt;
+    interpreter.reportError(
+        ctx.location, "An error occurred when resolving the call target.");
+    lastObject = nullptr;
     return;
   }
 
-  auto *fn = dynamic_cast<Function *>(lastObject->get());
+  auto *fn = dynamic_cast<Function *>(lastObject.get());
   if (fn == nullptr) {
-    reportError(ctx.location, "Only functions can be called.");
-    lastObject = nullopt;
+    interpreter.reportError(ctx.location, "Only functions can be called.");
+    lastObject = nullptr;
   } else {
     // Resolve all arguments;
     vector<shared_ptr<Object>> args;
     for (unsigned long i = 0; i < ctx.arguments.size(); i++) {
       auto &ptr = ctx.arguments[i];
-      lastObject = nullopt;
+      lastObject = nullptr;
       ptr->accept(*this);
       if (!lastObject) {
         ostringstream oss;
         oss << "Failed to resolve item " << i;
         oss << " in call.";
-        reportError(ptr->location, oss.str());
-        lastObject = nullopt;
+        interpreter.reportError(ptr->location, oss.str());
+        lastObject = nullptr;
         return;
       } else {
-        args.push_back(*lastObject);
+        args.push_back(lastObject);
       }
     }
     // TODO: This object???
     shared_ptr<Object> thisObject;
-    auto result = fn->invoke(*this, ctx.location, thisObject, args);
+    auto result = fn->invoke(interpreter, ctx.location, thisObject, args);
     if (!result) {
       // If nullptr is returned, the function has already set an error.
-      lastObject = nullopt;
+      lastObject = nullptr;
     } else {
       lastObject = result;
     }
