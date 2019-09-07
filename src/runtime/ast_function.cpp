@@ -32,6 +32,6 @@ AstFunction::invoke(Interpreter &interpreter, const Location &location,
   // TODO: Inject parameters into scope
   auto childScope = scope->createChild();
   ObjectResolver resolver(interpreter, childScope);
-  node.accept(resolver);
+  node.body.accept(resolver);
   return resolver.getLastObject();
 }
