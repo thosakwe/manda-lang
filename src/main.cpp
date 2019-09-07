@@ -1,6 +1,7 @@
 #include "analysis/ast_printer.hpp"
 #include "analysis/parser.hpp"
 #include "analysis/scanner.hpp"
+#include "defs.hpp"
 #include "runtime/core_library.hpp"
 #include "runtime/interpreter.hpp"
 #include "runtime/module_compiler.hpp"
@@ -106,7 +107,7 @@ char *manda_completion_generator(const char *text, int state);
 int runREPL(const VMOptions &options) {
   // TODO: Put version information, etc. in a consistent location.
   // TODO: Include general usage information, like commands, etc.
-  cout << "Welcome to Manda 0.0.0!" << endl;
+  cout << "Welcome to Manda " << MANDA_VERSION << "!" << endl;
   cout << "Type \".help\" for usage information." << endl;
   VM vm(options);
   auto module = replModule = make_shared<Module>("<stdin>");

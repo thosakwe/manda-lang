@@ -1,6 +1,6 @@
 find_package(Readline REQUIRED)
 add_subdirectory(analysis)
 add_subdirectory(runtime)
-add_executable(manda main.cpp)
+add_executable(manda main.cpp defs.hpp)
 target_include_directories(manda PUBLIC ${READLINE_INCLUDE_DIRS})
 target_link_libraries(manda manda_analysis manda_runtime ${READLINE_LIBRARIES})
