@@ -12,6 +12,8 @@ using namespace std;
 
 Worker::Worker(VMOptions options) : options(std::move(options)) {}
 
+int Worker::getExitCode() const { return exitCode; }
+
 void Worker::executeProgram(shared_ptr<CompilationUnitCtx> &ctx) {
   // TODO: Worker exit codes???
   // TODO: Do the logic...

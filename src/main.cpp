@@ -100,8 +100,9 @@ int runFile(const VMOptions &options) {
     }
     Worker mainWorker(options);
     mainWorker.executeProgram(compilationUnit);
-    //  vm.addWorker(mainWorker.shared_from_this());
-    return vm.run();
+    // TODO: Proper error handling, etc.
+    return mainWorker.getExitCode();
+    //    return vm.run();
   }
 }
 
