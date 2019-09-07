@@ -12,7 +12,7 @@ shared_ptr<Object>
 CoreLibrary::printFn(Interpreter &i, const Location &l, shared_ptr<Object> &,
                      const vector<shared_ptr<Object>> &args) {
   if (i.ensureArgumentCount(l, args, 1)) {
-    args[0]->print(cout, i.getOptions().isREPL());
+    args[0]->print(cout, false);
     cout << endl;
     return make_shared<Void>();
   } else {
