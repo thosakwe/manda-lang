@@ -14,6 +14,7 @@ public:
   //  const std::string &getName() const;
   //  void setName(std::string value);
   std::shared_ptr<SymbolTable> getSymbolTable();
+  const std::string &getName() const;
   std::vector<std::unique_ptr<manda::analysis::ExprCtx>> &
   getTopLevelExpressions();
   //  std::shared_ptr<const SymbolTable> getSymbolTable() const;

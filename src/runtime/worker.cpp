@@ -1,4 +1,5 @@
 #include "worker.hpp"
+#include "function.hpp"
 #include "interpreter.hpp"
 #include "module_compiler.hpp"
 #include <iostream>
@@ -18,13 +19,23 @@ void Worker::executeProgram(shared_ptr<CompilationUnitCtx> &ctx) {
   ctx->accept(compiler);
 
   auto main = module->getSymbolTable()->resolve("main");
+  Location startLocation = {module->getName(), 1, 1};
 
   if (!holds_alternative<shared_ptr<Object>>(main)) {
     // TODO: Throw error if no main function was found.
-    cout << "No main :/" << endl;
+    interpreter.reportError(
+        startLocation,
+        "No function named \"main\" was defined in the top-level context.");
   } else {
-    auto mainMethod = get<shared_ptr<Object>>(main).get();
-    // TODO: Dynamic cast to function, and execute
-    cout << "Found main! :)" << endl;
+    auto *mainMethod =
+        dynamic_cast<Function *>(get<shared_ptr<Object>>(main).get());
+    if (!mainMethod) {
+      interpreter.reportError(startLocation,
+                              "A symbol \"main\" was defined in the top-level "
+                              "context, but it was not a function.");
+    } else {
+      // TODO: Dynamic cast to function, and execute
+      cout << "Found main! :)" << endl;
+    }
   }
 }

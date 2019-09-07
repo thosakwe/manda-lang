@@ -20,6 +20,8 @@ vector<unique_ptr<ExprCtx>> &Module::getTopLevelExpressions() {
   return topLevelExpressions;
 }
 
+const string &Module::getName() const { return name; }
+
 // shared_ptr<const SymbolTable> Module::getSymbolTable() const {
 //  return symbolTable;
 //}
