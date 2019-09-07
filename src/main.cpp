@@ -67,6 +67,8 @@ void printHelp(ostream &out) {
   out << tab << "Enable (extremely verbose) debugging information." << endl;
   out << "-DNAME[=VALUE] or --define NAME=VALUE" << endl;
   out << tab << "Define NAME to be VALUE, or empty." << endl;
+  out << "--version or -v" << endl;
+  out << tab << "Print the version of the installed runtime." << endl;
 }
 
 int runFile(const VMOptions &options) {

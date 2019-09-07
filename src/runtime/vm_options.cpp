@@ -9,6 +9,7 @@ bool VMOptions::isREPL() const { return inputFile.empty(); }
 ostream &manda::runtime::operator<<(std::ostream &out, const VMOptions &a) {
   out << "Manda VM options: " << endl;
   out << "Show help? " << a.showHelp << endl;
+  out << "Show version? " << a.showVersion << endl;
   out << "Developer mode? " << a.developerMode << endl;
   out << "REPL? " << a.isREPL() << endl;
   if (a.inputFile.empty()) {
@@ -53,6 +54,8 @@ void VMOptions::parse(const vector<string> &args) {
       showHelp = true;
     } else if (s == "--devel") {
       developerMode = true;
+    } else if (s == "-v" || s == "--version") {
+      showVersion = true;
     } else if (s == "--define") {
       if (it < args.end()) {
         auto arg = *(it++);

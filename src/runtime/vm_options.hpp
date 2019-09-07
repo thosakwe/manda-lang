@@ -12,6 +12,7 @@ struct VMOptions {
   std::vector<std::string> rest;
   bool developerMode;
   bool showHelp;
+  bool showVersion;
   [[nodiscard]] bool isREPL() const;
   void parse(int argc, const char **argv);
   void parse(const std::vector<std::string> &args);
