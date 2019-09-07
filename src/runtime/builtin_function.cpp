@@ -1,5 +1,4 @@
 #include "builtin_function.hpp"
-#include "ansi_printer.hpp"
 #include <sstream>
 
 using namespace manda::analysis;
@@ -26,17 +25,3 @@ BuiltinFunction::BuiltinFunction(
                                 const vector<shared_ptr<Object>> &)>
         fn)
     : name(move(name)), parameters(move(parameters)), fn(move(fn)) {}
-
-void BuiltinFunction::print(ostream &out, bool ansiSupported) const {
-  ostringstream oss;
-  oss << "[Function";
-  if (!name.empty()) {
-    oss << ": " << name;
-  }
-  oss << "]";
-  if (!ansiSupported) {
-    out << oss.str();
-  } else {
-    out << cyan(oss.str());
-  }
-}

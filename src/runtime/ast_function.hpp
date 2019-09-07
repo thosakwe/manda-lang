@@ -7,7 +7,9 @@
 namespace manda::runtime {
 class AstFunction : public Function {
 public:
-  explicit AstFunction(const manda::analysis::FnDeclExprCtx &node);
+  // Copy the original node...
+  // TODO: Should this be a reference?
+  explicit AstFunction(manda::analysis::FnDeclExprCtx node);
   const manda::analysis::FnDeclExprCtx &getNode();
 
   [[nodiscard]] const std::string &getName() const override;

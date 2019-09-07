@@ -21,6 +21,7 @@ public:
   invoke(Interpreter &interpreter, const manda::analysis::Location &location,
          std::shared_ptr<Object> &thisObject,
          const std::vector<std::shared_ptr<Object>> &args) const = 0;
+  void print(std::ostream &out, bool ansiSupported) const override;
 };
 } // namespace manda::runtime
 
