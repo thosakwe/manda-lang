@@ -146,6 +146,15 @@ int runREPL(const VMOptions &options) {
       module->getTopLevelExpressions().clear();
       ModuleCompiler compiler(options, module);
       compilationUnit->accept(compiler);
+      // TODO: Type decl visiting should probably be in the module compiler.
+      for (auto &ptr : compilationUnit->declarations) {
+        auto *typeDecl = dynamic_cast<TypeDeclCtx *>(ptr.get());
+        if (typeDecl) {
+          Interpreter interpreter(options, module);
+          typeDecl->accept(interpreter);
+        }
+      }
+
       for (auto &node : module->getTopLevelExpressions()) {
         Interpreter interpreter(options, module);
         node->accept(interpreter);
