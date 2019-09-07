@@ -35,6 +35,11 @@ void Interpreter::reportError(const manda::analysis::Location &location,
   cerr << red(oss.str()) << endl;
 }
 
+void Interpreter::emitTopLevelExpression(
+    std::unique_ptr<manda::analysis::ExprCtx> ctx) {
+  module->getTopLevelExpressions().push_back(move(ctx));
+}
+
 bool Interpreter::ensureArgumentCount(const Location &location,
                                       const vector<shared_ptr<Object>> &args,
                                       unsigned long size) {

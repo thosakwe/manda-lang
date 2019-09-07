@@ -22,6 +22,7 @@ public:
                        std::vector<std::shared_ptr<Type>> &parameters);
   void reportError(const manda::analysis::Location &location,
                    const std::string &message);
+  void emitTopLevelExpression(std::unique_ptr<manda::analysis::ExprCtx> ctx);
   void visitExprDecl(analysis::ExprDeclCtx &ctx) override;
   void visitTypeDecl(analysis::TypeDeclCtx &ctx) override;
   void visitCompilationUnit(analysis::CompilationUnitCtx &ctx) override;
