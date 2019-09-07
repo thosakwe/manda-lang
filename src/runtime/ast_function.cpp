@@ -30,6 +30,8 @@ AstFunction::invoke(Interpreter &interpreter, const Location &location,
                     const vector<shared_ptr<Object>> &args) const {
   // TODO: Validate parameters
   // TODO: Inject parameters into scope
-  // TODO: Invoke AstFunction
-  return make_shared<Void>();
+  auto childScope = scope->createChild();
+  ObjectResolver resolver(interpreter, childScope);
+  node.accept(resolver);
+  return resolver.getLastObject();
 }

@@ -24,7 +24,7 @@ const shared_ptr<Object> &ObjectResolver::getLastObject() const {
   return lastObject;
 }
 
-void ObjectResolver::visitVarExpr(VarExprCtx &ctx) {
+void ObjectResolver::visitVarExpr(const VarExprCtx &ctx) {
   // TODO: Plain mode implementation (lazy?, etc.?)
   if (interpreter.getOptions().isREPL()) {
     // Eagerly resolve the value.
@@ -48,7 +48,7 @@ void ObjectResolver::visitVarExpr(VarExprCtx &ctx) {
   }
 }
 
-void ObjectResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {
+void ObjectResolver::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
   // TODO: There should probably be more evaluation done here, lol...
   // TODO: Pass parameters from ctx to AstFunction
   // TODO: Deduplicate this code
@@ -94,11 +94,11 @@ void ObjectResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {
   }
 }
 
-void ObjectResolver::visitVoidLiteral(VoidLiteralCtx &ctx) {
+void ObjectResolver::visitVoidLiteral(const VoidLiteralCtx &ctx) {
   lastObject = make_shared<Void>();
 }
 
-void ObjectResolver::visitIdExpr(IdExprCtx &ctx) {
+void ObjectResolver::visitIdExpr(const IdExprCtx &ctx) {
   auto symbol = scope->resolve(ctx.name);
   if (holds_alternative<monostate>(symbol)) {
     ostringstream oss;
@@ -117,12 +117,12 @@ void ObjectResolver::visitIdExpr(IdExprCtx &ctx) {
   }
 }
 
-void ObjectResolver::visitNumberLiteral(NumberLiteralCtx &ctx) {
+void ObjectResolver::visitNumberLiteral(const NumberLiteralCtx &ctx) {
   // TODO: Location
   lastObject = make_shared<Number>(ctx.value);
 }
 
-void ObjectResolver::visitStringLiteral(StringLiteralCtx &ctx) {
+void ObjectResolver::visitStringLiteral(const StringLiteralCtx &ctx) {
   if (ctx.isChar()) {
     lastObject = make_shared<Char>(ctx.getValue()[0]);
   } else {
@@ -130,11 +130,11 @@ void ObjectResolver::visitStringLiteral(StringLiteralCtx &ctx) {
   }
 }
 
-void ObjectResolver::visitBoolLiteral(BoolLiteralCtx &ctx) {
+void ObjectResolver::visitBoolLiteral(const BoolLiteralCtx &ctx) {
   lastObject = make_shared<Bool>(ctx.value);
 }
 
-void ObjectResolver::visitBlockExpr(BlockExprCtx &ctx) {
+void ObjectResolver::visitBlockExpr(const BlockExprCtx &ctx) {
   // TODO: Location
   ObjectResolver child(interpreter, scope->createChild());
   for (unsigned long i = 0; i < ctx.body.size(); i++) {
@@ -155,7 +155,7 @@ void ObjectResolver::visitBlockExpr(BlockExprCtx &ctx) {
   }
 }
 
-void ObjectResolver::visitTupleExpr(TupleExprCtx &ctx) {
+void ObjectResolver::visitTupleExpr(const TupleExprCtx &ctx) {
   auto tup = make_shared<Tuple>();
   for (unsigned long i = 0; i < ctx.items.size(); i++) {
     auto &ptr = ctx.items[i];
@@ -175,9 +175,9 @@ void ObjectResolver::visitTupleExpr(TupleExprCtx &ctx) {
   lastObject = tup;
 }
 
-void ObjectResolver::visitCastExpr(CastExprCtx &ctx) {}
+void ObjectResolver::visitCastExpr(const CastExprCtx &ctx) {}
 
-void ObjectResolver::visitCallExpr(CallExprCtx &ctx) {
+void ObjectResolver::visitCallExpr(const CallExprCtx &ctx) {
   // Resolve the target first.
   ctx.target->accept(*this);
 
@@ -222,6 +222,6 @@ void ObjectResolver::visitCallExpr(CallExprCtx &ctx) {
   }
 }
 
-void ObjectResolver::visitParenExpr(ParenExprCtx &ctx) {
+void ObjectResolver::visitParenExpr(const ParenExprCtx &ctx) {
   ctx.inner->accept(*this);
 }

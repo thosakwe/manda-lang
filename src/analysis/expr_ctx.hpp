@@ -19,7 +19,7 @@ public:
   ExprCtx &operator=(const ExprCtx &) = default;
   ExprCtx &operator=(ExprCtx &&) = default;
   virtual ~ExprCtx() = default;
-  virtual void accept(ExprVisitor &visitor) = 0;
+  virtual void accept(ExprVisitor &visitor) const = 0;
 };
 
 template <typename T> struct AstList {
@@ -91,12 +91,12 @@ struct FnDeclExprCtx : public TopLevelExprCtx {
   std::vector<std::unique_ptr<ParamCtx>> params;
   std::unique_ptr<TypeCtx> returnType;
   std::unique_ptr<ExprCtx> body;
-  void accept(ExprVisitor &visitor) override;
+  void accept(ExprVisitor &visitor) const override;
 };
 
 struct VoidLiteralCtx : public ExprCtx {
   // TODO: Set location
-  void accept(ExprVisitor &visitor) override;
+  void accept(ExprVisitor &visitor) const override;
 };
 
 struct IdExprCtx : public ExprCtx {
@@ -105,7 +105,7 @@ struct IdExprCtx : public ExprCtx {
   IdExprCtx(const Location &l, std::string n) : name(std::move(n)) {
     location = l;
   }
-  void accept(ExprVisitor &visitor) override;
+  void accept(ExprVisitor &visitor) const override;
 };
 
 class NumberLiteralCtx : public ExprCtx {
@@ -113,7 +113,7 @@ public:
   // TODO: Set location
   double value;
   NumberLiteralCtx(const Location &l, double v) : value(v) { location = l; }
-  void accept(ExprVisitor &visitor) override;
+  void accept(ExprVisitor &visitor) const override;
 };
 
 class StringPartCtx {
@@ -160,7 +160,7 @@ class StringLiteralCtx : public ExprCtx {
 public:
   // TODO: Location
   explicit StringLiteralCtx(bool sq) : singleQuote(sq) {}
-  void accept(ExprVisitor &visitor) override;
+  void accept(ExprVisitor &visitor) const override;
   [[nodiscard]] std::string getValue() const;
   [[nodiscard]] bool isChar() const;
 
@@ -174,23 +174,23 @@ struct BoolLiteralCtx : public ExprCtx {
   // TODO: Set location
   bool value;
   explicit BoolLiteralCtx(bool v) : value(v) {}
-  void accept(ExprVisitor &visitor) override;
+  void accept(ExprVisitor &visitor) const override;
 };
 
 struct BlockExprCtx : public ExprCtx {
   // TODO: Set location
-  void accept(ExprVisitor &visitor) override;
+  void accept(ExprVisitor &visitor) const override;
   std::vector<std::unique_ptr<ExprCtx>> body;
 };
 
 struct TupleExprCtx : public ExprCtx {
   // TODO: Set location
-  void accept(ExprVisitor &visitor) override;
+  void accept(ExprVisitor &visitor) const override;
   std::vector<std::unique_ptr<ExprCtx>> items;
 };
 
 struct CastExprCtx : public ExprCtx {
-  void accept(ExprVisitor &visitor) override;
+  void accept(ExprVisitor &visitor) const override;
   std::unique_ptr<ExprCtx> value;
   std::unique_ptr<TypeCtx> type;
 };
@@ -199,7 +199,7 @@ struct CallExprCtx : public ExprCtx {
   explicit CallExprCtx(ExprCtx *tgt) : target(tgt) {
     location = target->location;
   }
-  void accept(ExprVisitor &visitor) override;
+  void accept(ExprVisitor &visitor) const override;
   std::unique_ptr<ExprCtx> target;
   std::vector<std::unique_ptr<ExprCtx>> arguments;
 };
@@ -208,23 +208,23 @@ struct ParenExprCtx : public ExprCtx {
   // TODO: Location
   std::unique_ptr<ExprCtx> inner;
   explicit ParenExprCtx(ExprCtx *i) : inner(i) {}
-  void accept(ExprVisitor &visitor) override;
+  void accept(ExprVisitor &visitor) const override;
 };
 
 class ExprVisitor {
 public:
-  virtual void visitVarExpr(VarExprCtx &ctx) = 0;
-  virtual void visitFnDeclExpr(FnDeclExprCtx &ctx) = 0;
-  virtual void visitVoidLiteral(VoidLiteralCtx &ctx) = 0;
-  virtual void visitIdExpr(IdExprCtx &ctx) = 0;
-  virtual void visitNumberLiteral(NumberLiteralCtx &ctx) = 0;
-  virtual void visitStringLiteral(StringLiteralCtx &ctx) = 0;
-  virtual void visitBoolLiteral(BoolLiteralCtx &ctx) = 0;
-  virtual void visitBlockExpr(BlockExprCtx &ctx) = 0;
-  virtual void visitTupleExpr(TupleExprCtx &ctx) = 0;
-  virtual void visitCastExpr(CastExprCtx &ctx) = 0;
-  virtual void visitCallExpr(CallExprCtx &ctx) = 0;
-  virtual void visitParenExpr(ParenExprCtx &ctx) = 0;
+  virtual void visitVarExpr(const VarExprCtx &ctx) = 0;
+  virtual void visitFnDeclExpr(const FnDeclExprCtx &ctx) = 0;
+  virtual void visitVoidLiteral(const VoidLiteralCtx &ctx) = 0;
+  virtual void visitIdExpr(const IdExprCtx &ctx) = 0;
+  virtual void visitNumberLiteral(const NumberLiteralCtx &ctx) = 0;
+  virtual void visitStringLiteral(const StringLiteralCtx &ctx) = 0;
+  virtual void visitBoolLiteral(const BoolLiteralCtx &ctx) = 0;
+  virtual void visitBlockExpr(const BlockExprCtx &ctx) = 0;
+  virtual void visitTupleExpr(const TupleExprCtx &ctx) = 0;
+  virtual void visitCastExpr(const CastExprCtx &ctx) = 0;
+  virtual void visitCallExpr(const CallExprCtx &ctx) = 0;
+  virtual void visitParenExpr(const ParenExprCtx &ctx) = 0;
 };
 } // namespace manda::analysis
 

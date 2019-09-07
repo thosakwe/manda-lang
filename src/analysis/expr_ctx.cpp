@@ -5,13 +5,15 @@
 using namespace manda::analysis;
 using namespace std;
 
-void FnDeclExprCtx::accept(ExprVisitor &visitor) {
+void FnDeclExprCtx::accept(ExprVisitor &visitor) const {
   visitor.visitFnDeclExpr(*this);
 }
 
-void VarExprCtx::accept(ExprVisitor &visitor) { visitor.visitVarExpr(*this); }
+void VarExprCtx::accept(ExprVisitor &visitor) const {
+  visitor.visitVarExpr(*this);
+}
 
-void StringLiteralCtx::accept(ExprVisitor &visitor) {
+void StringLiteralCtx::accept(ExprVisitor &visitor) const {
   visitor.visitStringLiteral(*this);
 }
 
@@ -29,33 +31,39 @@ string StringLiteralCtx::getValue() const {
 
 bool StringLiteralCtx::isChar() const { return singleQuote; }
 
-void IdExprCtx::accept(ExprVisitor &visitor) { visitor.visitIdExpr(*this); }
+void IdExprCtx::accept(ExprVisitor &visitor) const {
+  visitor.visitIdExpr(*this);
+}
 
-void CallExprCtx::accept(ExprVisitor &visitor) { visitor.visitCallExpr(*this); }
+void CallExprCtx::accept(ExprVisitor &visitor) const {
+  visitor.visitCallExpr(*this);
+}
 
-void VoidLiteralCtx::accept(ExprVisitor &visitor) {
+void VoidLiteralCtx::accept(ExprVisitor &visitor) const {
   visitor.visitVoidLiteral(*this);
 }
 
-void CastExprCtx::accept(ExprVisitor &visitor) { visitor.visitCastExpr(*this); }
+void CastExprCtx::accept(ExprVisitor &visitor) const {
+  visitor.visitCastExpr(*this);
+}
 
-void NumberLiteralCtx::accept(ExprVisitor &visitor) {
+void NumberLiteralCtx::accept(ExprVisitor &visitor) const {
   visitor.visitNumberLiteral(*this);
 }
 
-void BlockExprCtx::accept(ExprVisitor &visitor) {
+void BlockExprCtx::accept(ExprVisitor &visitor) const {
   visitor.visitBlockExpr(*this);
 }
 
-void TupleExprCtx::accept(ExprVisitor &visitor) {
+void TupleExprCtx::accept(ExprVisitor &visitor) const {
   visitor.visitTupleExpr(*this);
 }
 
-void BoolLiteralCtx::accept(ExprVisitor &visitor) {
+void BoolLiteralCtx::accept(ExprVisitor &visitor) const {
   visitor.visitBoolLiteral(*this);
 }
 
-void ParenExprCtx::accept(ExprVisitor &visitor) {
+void ParenExprCtx::accept(ExprVisitor &visitor) const {
   visitor.visitParenExpr(*this);
 }
 
