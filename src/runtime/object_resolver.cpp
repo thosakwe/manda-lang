@@ -56,6 +56,10 @@ void ObjectResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {
   // Build the list of parameters.
   // TODO: Handle default values on parameters
   vector<Parameter> params;
+  if (interpreter.getOptions().developerMode) {
+    // TODO: Print param types
+    cout << "Total params: " << ctx.params.size();
+  }
   for (auto &node : ctx.params) {
     shared_ptr<Type> type;
     if (!node->type) {
@@ -74,6 +78,10 @@ void ObjectResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {
       lastObject = nullptr;
       return;
     } else {
+      if (interpreter.getOptions().developerMode) {
+        // TODO: Print param types
+        cout << "Found param \"" << node->name << "\"";
+      }
       params.push_back({node->location, node->name, type});
     }
   }
