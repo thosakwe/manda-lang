@@ -1,4 +1,5 @@
 #include "worker.hpp"
+#include "interpreter.hpp"
 #include "module_compiler.hpp"
 #include <iostream>
 
@@ -10,10 +11,11 @@ Worker::Worker(VMOptions options) : options(std::move(options)) {}
 
 void Worker::executeProgram(shared_ptr<CompilationUnitCtx> &ctx) {
   // TODO: Do the logic...
-  ModuleCompiler compiler(options);
+  auto module = make_shared<Module>("TODO: File name or something");
+  Interpreter interpreter(options, module);
+  ModuleCompiler compiler(interpreter);
   ctx->accept(compiler);
 
-  auto &module = compiler.getModule();
   auto main = module->getSymbolTable()->resolve("main");
 
   if (!holds_alternative<shared_ptr<Object>>(main)) {
