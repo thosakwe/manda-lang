@@ -8,7 +8,7 @@ using namespace std;
 
 TypeResolver::TypeResolver(Interpreter &interpreter,
                            shared_ptr<SymbolTable> scope)
-    : interpreter(interpreter), scope(std::move(scope)) {}
+    : interpreter(interpreter), scope(move(scope)) {}
 
 const shared_ptr<Type> &TypeResolver::getLastType() const { return lastType; }
 
