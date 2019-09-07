@@ -43,7 +43,9 @@ void ModuleCompiler::visitExprDecl(ExprDeclCtx &ctx) {
     }
   } else {
     // TODO: Visit top-level
-    topLevel->accept(*this);
+    //    topLevel->accept(*this);
+    ObjectResolver resolver(interpreter, module->getSymbolTable());
+    topLevel->accept(resolver);
   }
 }
 
@@ -60,6 +62,7 @@ void ModuleCompiler::visitVarExpr(VarExprCtx &ctx) {
 }
 
 void ModuleCompiler::visitFnDeclExpr(FnDeclExprCtx &ctx) {
+  // TODO: I can probably delete these...
   // Emit an "empty" function object, that simply points to the fn decl.
   // TODO: There should probably be more evaluation done here, lol...
   // TODO: Pass parameters from ctx to AstFunction
