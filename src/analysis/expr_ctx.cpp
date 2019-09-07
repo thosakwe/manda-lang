@@ -27,6 +27,8 @@ string StringLiteralCtx::getValue() const {
   }
 }
 
+bool StringLiteralCtx::isChar() const { return singleQuote; }
+
 void IdExprCtx::accept(ExprVisitor &visitor) { visitor.visitIdExpr(*this); }
 
 void CallExprCtx::accept(ExprVisitor &visitor) { visitor.visitCallExpr(*this); }
