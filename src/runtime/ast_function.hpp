@@ -9,6 +9,8 @@ class AstFunction : public Function {
 public:
   // Copy the original node...
   explicit AstFunction(const manda::analysis::FnDeclExprCtx &node);
+  AstFunction(const manda::analysis::FnDeclExprCtx &node,
+              std::vector<Parameter> parameters);
   const manda::analysis::FnDeclExprCtx &getNode();
 
   [[nodiscard]] const std::string &getName() const override;

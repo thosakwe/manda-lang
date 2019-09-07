@@ -8,6 +8,10 @@ using namespace std;
 AstFunction::AstFunction(const FnDeclExprCtx &node)
     : name(node.name), node(node) {}
 
+AstFunction::AstFunction(const manda::analysis::FnDeclExprCtx &node,
+                         std::vector<Parameter> parameters)
+    : name(node.name), node(node), parameters(move(parameters)) {}
+
 const string &AstFunction::getName() const { return name; }
 
 const FnDeclExprCtx &AstFunction::getNode() { return node; }
