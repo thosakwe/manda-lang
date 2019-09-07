@@ -12,6 +12,7 @@
 %token MATCH PUB SUM THEN TRUE TYPE WITH VAR VOID
 %token ID NUMBER DOUBLE_QUOTE SINGLE_QUOTE TEXT
 %token HEX_ESCAPE UNICODE_ESCAPE QUOTE_ESCAPE
+%token ARROW
 
 %define api.pure full
 %param {manda::analysis::Parser* parser}
@@ -27,6 +28,8 @@
   StringPartCtx* strpartval;
   StringPartList* strpartlistval;
   TypeCtx* tval;
+  ParamCtx* pval;
+  ParamList* plistval;
 }
 
 %code requires {
@@ -42,6 +45,7 @@
   using DeclList = AstList<DeclCtx>;
   using ExprList = AstList<ExprCtx>;
   using StringPartList = AstList<StringPartCtx>;
+  using ParamList = AstList<ParamCtx>;
   #define tok parser->lastToken
   #define l tok.location
   #define txt tok.text
@@ -61,9 +65,12 @@
 %type <tupval> tuple_expr_list
 %type <elistval> arg_list
 %type <idval> id
+%type <idval> id_opt
 %type <strpartval> str_part
 %type <strpartlistval> str_part_list
 %type <tval> type
+%type <pval> param
+%type <plistval> param_list
 
 %left COMMA
 %right EQUALS LPAREN
@@ -99,6 +106,9 @@ decl_list:
     }
 
 id: ID { $$ = new IdExprCtx{l, txt}; };
+id_opt:
+  %empty { $$ = nullptr; }
+  | id { $$ = $1; }
 
 type:
   ID { $$ = new TypeRefCtx{l, txt}; }
@@ -145,6 +155,13 @@ expr:
     {
       $$ = new VarExprCtx(false, $2->name, $4);
       delete $2;
+    }
+  | FN id_opt LPAREN param_list RPAREN arrow expr
+    {
+      // TODO: Locations
+      // TODO: Delete unused stuff
+      delete $2;
+      delete $4;
     }
   | LPAREN expr RPAREN { $$ = new ParenExprCtx($2); }
 ;
@@ -214,3 +231,48 @@ str_part:
   | HEX_ESCAPE { $$ = new HexEscapeStringPartCtx(l, txt); }
   | QUOTE_ESCAPE { $$ = new QuoteEscapeStringPartCtx(l); }
 ;
+
+arrow:
+  %empty
+  | ARROW
+;
+
+param:
+  id
+    {
+      $$ = new ParamCtx{$1->location, $1->name, nullptr, nullptr};
+      delete $1;
+    }
+  | id COLON type
+    {
+      $$ = new ParamCtx{$1->location, $1->name,
+        unique_ptr<TypeCtx>($3), nullptr};
+      delete $1;
+    }
+  | id EQUALS expr
+    {
+      $$ = new ParamCtx{$1->location, $1->name, nullptr,
+        unique_ptr<ExprCtx>($3)};
+      delete $1;
+    }
+  | id COLON type EQUALS expr
+    {
+      $$ = new ParamCtx{$1->location, $1->name,
+        unique_ptr<TypeCtx>($3),
+        unique_ptr<ExprCtx>($5)};
+      delete $1;
+    }
+;
+
+param_list:
+  %empty { $$ = nullptr; }
+  | param { $$ = new ParamList($1); }
+  | param_list COMMA param
+    {
+      auto *v = new ParamList($3);
+      if ($1 == nullptr) {
+        $$ = v;
+      } else {
+        $$ = $$->add(v);
+      }
+    }
