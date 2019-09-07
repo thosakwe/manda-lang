@@ -15,6 +15,7 @@
 #include <sstream>
 #include <string>
 #include <sysexits.h>
+#define tab "  "
 
 using namespace manda::analysis;
 using namespace manda::runtime;
@@ -52,7 +53,6 @@ int main(int argc, const char **argv) {
 }
 
 void printHelp(ostream &out) {
-  auto tab = "  ";
   out << "Usage: manda [<options>] [<input_file>] [--] [<input_file_options>]"
       << endl;
   out << endl
@@ -104,16 +104,27 @@ char **manda_repl_completer(const char *text, int start, int end);
 char *manda_completion_generator(const char *text, int state);
 
 int runREPL(const VMOptions &options) {
-  // TODO: Run from file...
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
+  // TODO: Put version information, etc. in a consistent location.
+  // TODO: Include general usage information, like commands, etc.
+  cout << "Welcome to Manda 0.0.0!" << endl;
+  cout << "Type \".help\" for usage information." << endl;
   VM vm(options);
   auto module = replModule = make_shared<Module>("<stdin>");
   CoreLibrary::install(*(module->getSymbolTable()));
   rl_attempted_completion_function = manda_repl_completer;
   while (true) {
-    string line(readline("manda> "));
+    string line(readline("> "));
     add_history(line.c_str());
+
+    if (line == ".quit" || line == ".q") {
+      break;
+    } else if (line == ".help") {
+      cout << "Commands:" << endl;
+      cout << tab << ".help     Print this help information." << endl;
+      cout << tab << ".quit,.q  Exit the Manda REPL." << endl;
+      continue;
+    }
+
     Scanner scanner("<stdin>", line);
     Parser parser(scanner);
     scanner.scan();
@@ -143,7 +154,7 @@ int runREPL(const VMOptions &options) {
       }
     }
   }
-#pragma clang diagnostic pop
+  return 0;
 }
 
 char **manda_repl_completer(const char *text, int start, int end) {
