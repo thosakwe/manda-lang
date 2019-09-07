@@ -66,10 +66,7 @@ public:
   TopLevelExprCtx(TopLevelExprCtx &&) = default;
   TopLevelExprCtx &operator=(const TopLevelExprCtx &) = default;
   TopLevelExprCtx &operator=(TopLevelExprCtx &&) = default;
-
-private:
-  // Visibility?
-  bool isPublic;
+  bool isPublic = false;
   std::string name;
 };
 

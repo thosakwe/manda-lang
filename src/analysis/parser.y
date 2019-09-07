@@ -71,6 +71,7 @@
 %type <tval> type
 %type <pval> param
 %type <plistval> param_list
+%type <tval> return_type
 
 %left COMMA
 %right EQUALS LPAREN
@@ -156,12 +157,17 @@ expr:
       $$ = new VarExprCtx(false, $2->name, $4);
       delete $2;
     }
-  | FN id_opt LPAREN param_list RPAREN arrow expr
+  | FN id_opt LPAREN param_list RPAREN return_type arrow expr
     {
       // TODO: Locations
       // TODO: Delete unused stuff
+      auto *v = new FnDeclExprCtx;
+      v->body = unique_ptr<ExprCtx>($8);
+      if ($2) v->name = $2->name;
+      if ($6) v->returnType = unique_ptr<TypeCtx>($6);
+      toVector($4, v->params);
+      $$ = v;
       delete $2;
-      delete $4;
     }
   | LPAREN expr RPAREN { $$ = new ParenExprCtx($2); }
 ;
@@ -236,6 +242,10 @@ arrow:
   %empty
   | ARROW
 ;
+
+return_type:
+  %empty { $$ = nullptr; }
+  | COLON type { $$ = $2; }
 
 param:
   id
