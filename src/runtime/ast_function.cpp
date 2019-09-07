@@ -10,3 +10,15 @@ AstFunction::AstFunction(const FnDeclExprCtx &node)
 const string &AstFunction::getName() const { return name; }
 
 const FnDeclExprCtx &AstFunction::getNode() { return node; }
+
+const vector<Parameter> &AstFunction::getParameters() const {
+  return parameters;
+}
+
+shared_ptr<Object>
+AstFunction::invoke(Interpreter &interpreter, const Location &location,
+                    shared_ptr<Object> &thisObject,
+                    const vector<shared_ptr<Object>> &args) const {
+  // TODO: Invoke AstFunction
+  return nullptr;
+}
