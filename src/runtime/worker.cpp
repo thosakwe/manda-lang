@@ -48,6 +48,15 @@ void Worker::executeProgram(shared_ptr<CompilationUnitCtx> &ctx) {
       // Set the exit code, if result was a number.
       auto result =
           mainMethod->invoke(interpreter, startLocation, thisObject, args);
+      if (options.developerMode) {
+        if (result) {
+          cout << "Result: ";
+          result->print(cout, true);
+          cout << endl;
+        } else {
+          cout << "Result produced null pointer." << endl;
+        }
+      }
       auto *resultAsNumber = dynamic_cast<Number *>(result.get());
       if (resultAsNumber) {
         exitCode = (int)resultAsNumber->getValue();
