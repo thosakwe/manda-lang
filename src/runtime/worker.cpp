@@ -13,7 +13,7 @@ Worker::Worker(VMOptions options) : options(std::move(options)) {}
 void Worker::executeProgram(shared_ptr<CompilationUnitCtx> &ctx) {
   // TODO: Worker exit codes???
   // TODO: Do the logic...
-  auto module = make_shared<Module>("TODO: File name or something");
+  auto module = make_shared<Module>(options.inputFile);
   Interpreter interpreter(options, module);
   ModuleCompiler compiler(interpreter, module);
   ctx->accept(compiler);
