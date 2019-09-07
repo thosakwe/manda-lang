@@ -1,5 +1,6 @@
 #include "interpreter.hpp"
 #include "ansi_printer.hpp"
+#include "bool.hpp"
 #include "function.hpp"
 #include "number.hpp"
 #include "tuple.hpp"
@@ -111,7 +112,9 @@ void Interpreter::visitNumberLiteral(NumberLiteralCtx &ctx) {
 
 void Interpreter::visitStringLiteral(StringLiteralCtx &ctx) {}
 
-void Interpreter::visitBoolLiteral(BoolLiteralCtx &ctx) {}
+void Interpreter::visitBoolLiteral(BoolLiteralCtx &ctx) {
+  lastObject = make_shared<Bool>(ctx.value);
+}
 
 void Interpreter::visitBlockExpr(BlockExprCtx &ctx) {
   for (unsigned long i = 0; i < ctx.body.size(); i++) {
