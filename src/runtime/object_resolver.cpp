@@ -1,5 +1,5 @@
 #include "object_resolver.hpp"
-#include "ansi_printer.hpp"
+#include "any_type.hpp"
 #include "ast_function.hpp"
 #include "bool.hpp"
 #include "char.hpp"
@@ -39,7 +39,8 @@ void ObjectResolver::visitVarExpr(VarExprCtx &ctx) {
       // Add the symbol to the current scope.
       auto symbol = scope->add(ctx.name, lastObject, true);
       // Resolve the value as an identifier in the top-level.
-      interpreter.emitTopLevelExpression(make_unique<IdExprCtx>(ctx.location, ctx.name));
+      interpreter.emitTopLevelExpression(
+          make_unique<IdExprCtx>(ctx.location, ctx.name));
       lastObject = get<shared_ptr<Object>>(symbol);
     }
   } else {
@@ -51,7 +52,33 @@ void ObjectResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {
   // TODO: There should probably be more evaluation done here, lol...
   // TODO: Pass parameters from ctx to AstFunction
   // TODO: Deduplicate this code
-  auto value = make_shared<AstFunction>(ctx);
+
+  // Build the list of parameters.
+  // TODO: Handle default values on parameters
+  vector<Parameter> params;
+  for (auto &node : ctx.params) {
+    shared_ptr<Type> type;
+    if (!node->type) {
+      type = make_shared<AnyType>();
+    } else {
+      TypeResolver typeResolver(interpreter, scope);
+      node->type->accept(typeResolver);
+      type = typeResolver.getLastType();
+    }
+
+    if (!type) {
+      ostringstream oss;
+      oss << "Failed to resolve a type for parameter \"";
+      oss << node->name << "\".";
+      interpreter.reportError(node->location, oss.str());
+      lastObject = nullptr;
+      return;
+    } else {
+      params.push_back({node->location, node->name, type});
+    }
+  }
+
+  auto value = make_shared<AstFunction>(ctx, params);
   lastObject = value;
   if (!ctx.name.empty()) {
     // TODO: Handle redefined names
