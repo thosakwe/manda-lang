@@ -112,7 +112,7 @@ expr:
     }
   | DOUBLE_QUOTE str_part_list DOUBLE_QUOTE
     {
-      auto *ctx = new StringLiteralCtx(true);
+      auto *ctx = new StringLiteralCtx(false);
       toVector($2, ctx->parts);
       $$ = ctx;
     }

@@ -173,7 +173,7 @@ public:
   std::vector<std::unique_ptr<StringPartCtx>> parts;
 };
 
-struct BoolLiteralCtx : c ExprCtx {
+struct BoolLiteralCtx : public ExprCtx {
   // TODO: Set location
   bool value;
   explicit BoolLiteralCtx(bool v) : value(v) {}
