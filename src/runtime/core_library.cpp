@@ -26,6 +26,7 @@ CoreLibrary::printFn(Interpreter &i, const Location &l, shared_ptr<Object> &,
 void CoreLibrary::install(SymbolTable &scope) {
   // TODO: Why does make_shared not work here???
   // TODO: Add required parameters?
+  scope.add("any", anyType);
   scope.add("print",
             shared_ptr<Object>(new BuiltinFunction("print", {}, printFn)));
 }

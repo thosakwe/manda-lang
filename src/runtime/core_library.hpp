@@ -11,7 +11,7 @@ public:
 
   std::shared_ptr<AnyType> anyType;
 
-  static void install(SymbolTable &scope);
+  void install(SymbolTable &scope);
 
   static std::shared_ptr<Object>
   printFn(manda::runtime::Interpreter &, const manda::analysis::Location &,
