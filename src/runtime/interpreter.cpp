@@ -1,5 +1,6 @@
 #include "interpreter.hpp"
 #include "ansi_printer.hpp"
+#include "function.hpp"
 #include "number.hpp"
 #include "tuple.hpp"
 #include "void.hpp"
@@ -153,7 +154,50 @@ void Interpreter::visitTupleExpr(TupleExprCtx &ctx) {
 
 void Interpreter::visitCastExpr(CastExprCtx &ctx) {}
 
-void Interpreter::visitCallExpr(CallExprCtx &ctx) {}
+void Interpreter::visitCallExpr(CallExprCtx &ctx) {
+  // Resolve the target first.
+  ctx.target->accept(*this);
+
+  if (!lastObject) {
+    reportError(ctx.location,
+                "An error occurred when resolving the call target.");
+    lastObject = nullopt;
+    return;
+  }
+
+  auto *fn = dynamic_cast<Function *>(lastObject->get());
+  if (fn == nullptr) {
+    reportError(ctx.location, "Only functions can be called.");
+    lastObject = nullopt;
+  } else {
+    // Resolve all arguments;
+    vector<shared_ptr<Object>> args;
+    for (unsigned long i = 0; i < ctx.arguments.size(); i++) {
+      auto &ptr = ctx.arguments[i];
+      lastObject = nullopt;
+      ptr->accept(*this);
+      if (!lastObject) {
+        ostringstream oss;
+        oss << "Failed to resolve item " << i;
+        oss << " in call.";
+        reportError(ptr->location, oss.str());
+        lastObject = nullopt;
+        return;
+      } else {
+        args.push_back(*lastObject);
+      }
+    }
+    // TODO: This object???
+    shared_ptr<Object> thisObject;
+    auto result = fn->invoke(*this, ctx.location, thisObject, args);
+    if (!result) {
+      // If nullptr is returned, the function has already set an error.
+      lastObject = nullopt;
+    } else {
+      lastObject = result;
+    }
+  }
+}
 
 void Interpreter::visitParenExpr(ParenExprCtx &ctx) {
   ctx.inner->accept(*this);

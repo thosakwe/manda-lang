@@ -16,8 +16,8 @@ CoreLibrary::printFn(Interpreter &i, const Location &l, shared_ptr<Object> &,
     cout << endl;
     return make_shared<Void>();
   } else {
-    // TODO: Return a nullptr here to signify failure.
-    return make_shared<Void>();
+    // Return a nullptr here to signify failure.
+    return nullptr;
   }
 }
 
