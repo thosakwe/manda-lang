@@ -81,6 +81,8 @@ compilation_unit:
 
 decl:
   expr { $$ = new ExprDeclCtx($1); }
+  /* TODO: Type parameters, location */
+  | TYPE id EQUALS type { $$ = new TypeDeclCtx($2->name, $4); delete $2; }
 ;
 
 decl_list:

@@ -24,10 +24,14 @@ struct ExprDeclCtx : public DeclCtx {
 };
 
 struct TypeDeclCtx : public DeclCtx {
-  void accept(DeclVisitor &visitor) override;
   std::string name;
   std::vector<std::string> typeParameters;
   std::unique_ptr<TypeCtx> type;
+  explicit TypeDeclCtx(std::string n, TypeCtx *v)
+      : name(std::move(n)), type(v) {
+    location = type->location;
+  }
+  void accept(DeclVisitor &visitor) override;
 };
 
 class DeclVisitor {
@@ -40,7 +44,7 @@ struct CompilationUnitCtx {
   // TODO: Location
   Location location;
   std::vector<std::unique_ptr<DeclCtx>> declarations;
-  void accept(CompilationUnitVisitor& visitor);
+  void accept(CompilationUnitVisitor &visitor);
 };
 
 class CompilationUnitVisitor {
