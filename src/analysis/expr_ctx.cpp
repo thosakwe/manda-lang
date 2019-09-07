@@ -1,4 +1,5 @@
 #include "expr_ctx.hpp"
+#include <sstream>
 #include <string>
 
 using namespace manda::analysis;
@@ -12,6 +13,18 @@ void VarExprCtx::accept(ExprVisitor &visitor) { visitor.visitVarExpr(*this); }
 
 void StringLiteralCtx::accept(ExprVisitor &visitor) {
   visitor.visitStringLiteral(*this);
+}
+
+string StringLiteralCtx::getValue() const {
+  if (singleQuote) {
+    return value;
+  } else {
+    ostringstream oss;
+    for (auto &part : parts) {
+      oss << part->convert(false);
+    }
+    return oss.str();
+  }
 }
 
 void IdExprCtx::accept(ExprVisitor &visitor) { visitor.visitIdExpr(*this); }

@@ -164,6 +164,7 @@ public:
   // TODO: Location
   explicit StringLiteralCtx(bool sq) : singleQuote(sq) {}
   void accept(ExprVisitor &visitor) override;
+  [[nodiscard]] std::string getValue() const;
 
 public:
   bool singleQuote;
@@ -171,7 +172,7 @@ public:
   std::vector<std::unique_ptr<StringPartCtx>> parts;
 };
 
-struct BoolLiteralCtx : public ExprCtx {
+struct BoolLiteralCtx :c ExprCtx {
   // TODO: Set location
   bool value;
   explicit BoolLiteralCtx(bool v) : value(v) {}
