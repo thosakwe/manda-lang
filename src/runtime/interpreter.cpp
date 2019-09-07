@@ -1,8 +1,10 @@
 #include "interpreter.hpp"
 #include "ansi_printer.hpp"
 #include "bool.hpp"
+#include "char.hpp"
 #include "function.hpp"
 #include "number.hpp"
+#include "string.hpp"
 #include "tuple.hpp"
 #include "void.hpp"
 #include <iostream>
@@ -110,7 +112,13 @@ void Interpreter::visitNumberLiteral(NumberLiteralCtx &ctx) {
   lastObject = make_shared<Number>(ctx.value);
 }
 
-void Interpreter::visitStringLiteral(StringLiteralCtx &ctx) {}
+void Interpreter::visitStringLiteral(StringLiteralCtx &ctx) {
+  if (ctx.isChar()) {
+    lastObject = make_shared<Char>(ctx.getValue()[0]);
+  } else {
+    lastObject = make_shared<String>(ctx.getValue());
+  }
+}
 
 void Interpreter::visitBoolLiteral(BoolLiteralCtx &ctx) {
   lastObject = make_shared<Bool>(ctx.value);
