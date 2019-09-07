@@ -1,5 +1,8 @@
 #include "module_compiler.hpp"
+#include "../analysis/ast_printer.hpp"
+#include "ast_function.hpp"
 #include "number.hpp"
+#include <iostream>
 
 using namespace manda::analysis;
 using namespace manda::runtime;
@@ -57,6 +60,15 @@ void ModuleCompiler::visitVarExpr(VarExprCtx &ctx) {
 
 void ModuleCompiler::visitFnDeclExpr(FnDeclExprCtx &ctx) {
   // Emit an "empty" function object, that simply points to the fn decl.
+  // TODO: There should probably be more evaluation done here, lol...
+  // TODO: Pass parameters from ctx to AstFunction
+  // TODO: Deduplicate this code
+  auto value = make_shared<AstFunction>(ctx);
+  auto &scope = scopeStack.top();
+  if (!ctx.name.empty()) {
+    // TODO: Handle redefined names
+    scope->add(ctx.name, value, options.isREPL());
+  }
 }
 
 void ModuleCompiler::visitVoidLiteral(VoidLiteralCtx &ctx) {}

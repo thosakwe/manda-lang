@@ -103,6 +103,7 @@ void Interpreter::visitVarExpr(VarExprCtx &ctx) {
 void Interpreter::visitFnDeclExpr(FnDeclExprCtx &ctx) {
   // TODO: There should probably be more evaluation done here, lol...
   // TODO: Pass parameters from ctx to AstFunction
+  // TODO: Deduplicate this code
   auto value = make_shared<AstFunction>(ctx);
   lastObject = value;
   if (!ctx.name.empty()) {
