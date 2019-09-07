@@ -8,8 +8,7 @@ namespace manda::runtime {
 class AstFunction : public Function {
 public:
   // Copy the original node...
-  // TODO: Should this be a reference?
-  explicit AstFunction(manda::analysis::FnDeclExprCtx node);
+  explicit AstFunction(const manda::analysis::FnDeclExprCtx &node);
   const manda::analysis::FnDeclExprCtx &getNode();
 
   [[nodiscard]] const std::string &getName() const override;
@@ -23,7 +22,6 @@ public:
 
 private:
   std::string name;
-  // TODO: Should this instead be a shared_ptr???
   const manda::analysis::FnDeclExprCtx &node;
   // TODO: Get parameters from actual node
   std::vector<Parameter> parameters;

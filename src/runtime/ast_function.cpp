@@ -4,8 +4,8 @@ using namespace manda::analysis;
 using namespace manda::runtime;
 using namespace std;
 
-AstFunction::AstFunction(FnDeclExprCtx node)
-    : name(node.name), node(move(node)) {}
+AstFunction::AstFunction(const FnDeclExprCtx &node)
+    : name(node.name), node(node) {}
 
 const string &AstFunction::getName() const { return name; }
 
