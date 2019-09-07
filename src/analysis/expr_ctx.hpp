@@ -77,7 +77,7 @@ struct VarExprCtx : public TopLevelExprCtx {
   std::unique_ptr<ExprCtx> value;
   VarExprCtx(bool f, std::string n, ExprCtx *v)
       : isFinal(f), name(std::move(n)), value(v) {}
-  void accept(ExprVisitor &visitor) override;
+  void accept(ExprVisitor &visitor) const override;
 };
 
 struct ParamCtx {

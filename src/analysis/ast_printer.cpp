@@ -40,36 +40,36 @@ void AstPrinter::visitTypeDecl(TypeDeclCtx &ctx) {
   // TODO: Print
 }
 
-void AstPrinter::visitVarExpr(VarExprCtx &ctx) {
+void AstPrinter::visitVarExpr(const VarExprCtx &ctx) {
   print() << "VarExpr(" << ctx.name << ")" << endl;
   indent();
   ctx.value->accept(*this);
   outdent();
 }
 
-void AstPrinter::visitFnDeclExpr(FnDeclExprCtx &ctx) {
+void AstPrinter::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
   // TODO: Print
 }
 
-void AstPrinter::visitVoidLiteral(VoidLiteralCtx &ctx) {
+void AstPrinter::visitVoidLiteral(const VoidLiteralCtx &ctx) {
   print() << "VoidLiteral" << endl;
 }
 
-void AstPrinter::visitIdExpr(IdExprCtx &ctx) {
+void AstPrinter::visitIdExpr(const IdExprCtx &ctx) {
   print() << "IdExpr(" << ctx.name << ")" << endl;
 }
 
-void AstPrinter::visitNumberLiteral(NumberLiteralCtx &ctx) {
+void AstPrinter::visitNumberLiteral(const NumberLiteralCtx &ctx) {
   print() << "NumberLiteral(" << ctx.value << ")" << endl;
 }
 
-void AstPrinter::visitStringLiteral(StringLiteralCtx &ctx) {}
+void AstPrinter::visitStringLiteral(const StringLiteralCtx &ctx) {}
 
-void AstPrinter::visitBoolLiteral(BoolLiteralCtx &ctx) {
+void AstPrinter::visitBoolLiteral(const BoolLiteralCtx &ctx) {
   print() << "BoolLiteral(" << ctx.value << ")" << endl;
 }
 
-void AstPrinter::visitBlockExpr(BlockExprCtx &ctx) {
+void AstPrinter::visitBlockExpr(const BlockExprCtx &ctx) {
   print() << "BlockExpr" << endl;
   indent();
   for (auto &node : ctx.body) {
@@ -78,7 +78,7 @@ void AstPrinter::visitBlockExpr(BlockExprCtx &ctx) {
   outdent();
 }
 
-void AstPrinter::visitTupleExpr(TupleExprCtx &ctx) {
+void AstPrinter::visitTupleExpr(const TupleExprCtx &ctx) {
   print() << "TupleExpr" << endl;
   indent();
   for (auto &node : ctx.items) {
@@ -87,11 +87,11 @@ void AstPrinter::visitTupleExpr(TupleExprCtx &ctx) {
   outdent();
 }
 
-void AstPrinter::visitCastExpr(CastExprCtx &ctx) {
+void AstPrinter::visitCastExpr(const CastExprCtx &ctx) {
   // TODO: Print
 }
 
-void AstPrinter::visitCallExpr(CallExprCtx &ctx) {
+void AstPrinter::visitCallExpr(const CallExprCtx &ctx) {
   print() << "CallExpr" << endl;
   indent();
   ctx.target->accept(*this);
@@ -101,7 +101,7 @@ void AstPrinter::visitCallExpr(CallExprCtx &ctx) {
   outdent();
 }
 
-void AstPrinter::visitParenExpr(ParenExprCtx &ctx) {
+void AstPrinter::visitParenExpr(const ParenExprCtx &ctx) {
   print() << "ParenExpr" << endl;
   indent();
   ctx.inner->accept(*this);
