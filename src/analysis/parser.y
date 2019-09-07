@@ -71,6 +71,7 @@
 %type <tval> type
 %type <pval> param
 %type <plistval> param_list
+%type <plistval> param_list_opt
 %type <tval> return_type
 
 %left COMMA
@@ -157,7 +158,7 @@ expr:
       $$ = new VarExprCtx(false, $2->name, $4);
       delete $2;
     }
-  | FN id_opt LPAREN param_list RPAREN return_type arrow expr
+  | FN id_opt LPAREN param_list_opt RPAREN return_type arrow expr
     {
       // TODO: Locations
       // TODO: Delete unused stuff
@@ -272,6 +273,11 @@ param:
         unique_ptr<ExprCtx>($5)};
       delete $1;
     }
+;
+
+param_list_opt:
+  %empty { $$ = nullptr; }
+  | LPAREN param_list RPAREN { $$ = $2; }
 ;
 
 param_list:
