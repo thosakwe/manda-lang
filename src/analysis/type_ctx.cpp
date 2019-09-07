@@ -1,8 +1,6 @@
 #include "type_ctx.hpp"
 
-manda::analysis::TypeReferenceCtx::TypeReferenceCtx(std::string &name)
-    : name(name) {}
+using namespace manda::analysis;
+using namespace std;
 
-const std::string &manda::analysis::TypeReferenceCtx::getName() const {
-  return name;
-}
+void TypeRefCtx::accept(TypeVisitor &visitor) { visitor.visitTypeRef(*this); }

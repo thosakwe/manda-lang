@@ -1,17 +1,34 @@
 #ifndef MANDA_ANALYSIS_TYPE_HPP
 #define MANDA_ANALYSIS_TYPE_HPP
+#include "location.hpp"
 #include <string>
 
 namespace manda::analysis {
-class TypeCtx {};
+class TypeVisitor;
 
-class TypeReferenceCtx : public TypeCtx {
+class TypeCtx {
 public:
-  explicit TypeReferenceCtx(std::string &name);
-  const std::string &getName() const;
+  Location location;
+  TypeCtx() = default;
+  TypeCtx(const TypeCtx &) = default;
+  TypeCtx(TypeCtx &&) = default;
+  TypeCtx &operator=(const TypeCtx &) = default;
+  TypeCtx &operator=(TypeCtx &&) = default;
+  virtual ~TypeCtx() = default;
+  virtual void accept(TypeVisitor &visitor) = 0;
+};
 
-private:
+struct TypeRefCtx : public TypeCtx {
   std::string name;
+  TypeRefCtx(const Location &l, std::string name) : name(std::move(name)) {
+    location = l;
+  }
+  void accept(TypeVisitor &visitor) override;
+};
+
+class TypeVisitor {
+public:
+  virtual void visitTypeRef(TypeRefCtx &ctx) = 0;
 };
 } // namespace manda::analysis
 
