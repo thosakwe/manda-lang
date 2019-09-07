@@ -22,6 +22,9 @@ public:
                        std::vector<std::shared_ptr<Type>> &parameters);
   void reportError(const manda::analysis::Location &location,
                    const std::string &message);
+  void visitExprDecl(analysis::ExprDeclCtx &ctx) override;
+  void visitTypeDecl(analysis::TypeDeclCtx &ctx) override;
+  void visitCompilationUnit(analysis::CompilationUnitCtx &ctx) override;
 
 private:
   std::shared_ptr<Module> module;
