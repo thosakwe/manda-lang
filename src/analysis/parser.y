@@ -26,6 +26,7 @@
   TupleExprCtx* tupval;
   StringPartCtx* strpartval;
   StringPartList* strpartlistval;
+  TypeCtx* tval;
 }
 
 %code requires {
@@ -62,6 +63,7 @@
 %type <idval> id
 %type <strpartval> str_part
 %type <strpartlistval> str_part_list
+%type <tval> type
 
 %left COMMA
 %right EQUALS LPAREN
@@ -95,6 +97,9 @@ decl_list:
     }
 
 id: ID { $$ = new IdExprCtx{l, txt}; };
+
+type:
+  ID { $$ = new TypeRefCtx{l, txt}; }
 
 expr:
   ID { $$ = new IdExprCtx{l, txt}; }
