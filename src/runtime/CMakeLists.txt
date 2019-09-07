@@ -22,4 +22,4 @@ add_library(manda_runtime
     bool.cpp bool.hpp
     string.cpp string.hpp
     char.cpp char.hpp
-    type_resolver.cpp type_resolver.hpp object_resolver.cpp object_resolver.hpp)
+    type_resolver.cpp type_resolver.hpp object_resolver.cpp object_resolver.hpp any_type.cpp any_type.hpp)
