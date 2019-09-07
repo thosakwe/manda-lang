@@ -61,7 +61,8 @@ struct Token {
     TEXT,
     HEX_ESCAPE,
     UNICODE_ESCAPE,
-    QUOTE_ESCAPE
+    QUOTE_ESCAPE,
+    ARROW
   };
 
   TokenType type;

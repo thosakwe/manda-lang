@@ -19,12 +19,13 @@ ID [A-Za-z_][A-Za-z0-9_]*
 \n      location.line++;
 {WS}    { location.line++; location.column = 1; }
 =       emit(TT::EQUALS);
+"->"    emit(TT::ARROW);
 "<"     emit(TT::LT);
 ">"     emit(TT::GT);
 "<="    emit(TT::LT);
 ">="    emit(TT::GT);
-"{"       emit(TT::LCURLY);
-"}"       emit(TT::RCURLY);
+"{"     emit(TT::LCURLY);
+"}"     emit(TT::RCURLY);
 "("     emit(TT::LPAREN);
 ")"     emit(TT::RPAREN);
 :       emit(TT::COLON);
