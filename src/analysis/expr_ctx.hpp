@@ -122,7 +122,25 @@ public:
 class StringPartCtx {
 public:
   Location location;
-  [[nodiscard]] virtual std::string convert() const = 0;
+  bool singleQuote;
+  [[nodiscard]] virtual std::string convert(bool singleQuote) const = 0;
+};
+
+class TextStringPartCtx : public StringPartCtx {
+public:
+  std::string text;
+  [[nodiscard]] std::string convert(bool singleQuote) const override;
+};
+
+class HexEscapeStringPartCtx : public StringPartCtx {
+public:
+  std::string text;
+  [[nodiscard]] std::string convert(bool singleQuote) const override;
+};
+
+class QuoteEscapeStringPartCtx : public StringPartCtx {
+public:
+  [[nodiscard]] std::string convert(bool singleQuote) const override;
 };
 
 class StringLiteralCtx : public ExprCtx {

@@ -24,6 +24,7 @@
   ExprList* elistval;
   IdExprCtx* idval;
   TupleExprCtx* tupval;
+  StringPartCtx* strpartval;
 }
 
 %code requires {
