@@ -2,6 +2,7 @@
 #define MANDA_MODULE_COMPILER_HPP
 #include "../analysis/ast.hpp"
 #include "module.hpp"
+#include "interpreter.hpp"
 #include "symbol_table.hpp"
 #include "vm_options.hpp"
 #include <optional>
@@ -12,8 +13,8 @@ class ModuleCompiler : public manda::analysis::CompilationUnitVisitor,
                        public manda::analysis::DeclVisitor,
                        public manda::analysis::ExprVisitor {
 public:
-  explicit ModuleCompiler(VMOptions options);
-  ModuleCompiler(VMOptions options, std::shared_ptr<Module> &module);
+  explicit ModuleCompiler(Interpreter& interpreter);
+  ModuleCompiler(Interpreter& interpreter, std::shared_ptr<Module> &module);
   std::shared_ptr<Module> &getModule();
   void visitCompilationUnit(analysis::CompilationUnitCtx &ctx) override;
   void visitExprDecl(analysis::ExprDeclCtx &ctx) override;
@@ -32,8 +33,8 @@ public:
   void visitParenExpr(analysis::ParenExprCtx &ctx) override;
 
 private:
+  Interpreter& interpreter;
   std::shared_ptr<Module> module;
-  VMOptions options;
   std::optional<std::shared_ptr<Object>> lastObject;
   std::stack<std::shared_ptr<SymbolTable>> scopeStack;
 };

@@ -2,22 +2,23 @@
 #include "../analysis/ast_printer.hpp"
 #include "ast_function.hpp"
 #include "number.hpp"
+#include "object_resolver.hpp"
 #include <iostream>
 
 using namespace manda::analysis;
 using namespace manda::runtime;
 using namespace std;
 
-ModuleCompiler::ModuleCompiler(VMOptions options)
-    : options(std::move(options)) {
+ModuleCompiler::ModuleCompiler(Interpreter &interpreter)
+    : interpreter(interpreter) {
   // TODO: Use C++17 fs::path::filename
-  module = make_shared<Module>(options.inputFile);
+  module = make_shared<Module>(interpreter.getOptions().inputFile);
   scopeStack.push(module->getSymbolTable());
 }
 
-ModuleCompiler::ModuleCompiler(VMOptions options,
+ModuleCompiler::ModuleCompiler(Interpreter &interpreter,
                                std::shared_ptr<Module> &module)
-    : options(std::move(options)), module(module) {
+    : interpreter(interpreter), module(module) {
   scopeStack.push(module->getSymbolTable());
 }
 
@@ -33,7 +34,7 @@ void ModuleCompiler::visitExprDecl(ExprDeclCtx &ctx) {
   using namespace manda::analysis;
   auto *topLevel = dynamic_cast<TopLevelExprCtx *>(ctx.value.get());
   if (!topLevel) {
-    if (options.isREPL()) {
+    if (interpreter.getOptions().isREPL()) {
       // TODO: Evaluate top-level expressions
       // IMPORTANT: The value is MOVED.
       module->getTopLevelExpressions().push_back(move(ctx.value));
@@ -67,7 +68,7 @@ void ModuleCompiler::visitFnDeclExpr(FnDeclExprCtx &ctx) {
   auto &scope = scopeStack.top();
   if (!ctx.name.empty()) {
     // TODO: Handle redefined names
-    scope->add(ctx.name, value, options.isREPL());
+    scope->add(ctx.name, value, interpreter.getOptions().isREPL());
   }
 }
 
