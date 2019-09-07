@@ -136,8 +136,7 @@ int runREPL(const VMOptions &options) {
     scanner.scan();
     auto compilationUnit = parser.parseCompilationUnit();
     if (compilationUnit == nullptr) {
-      cout << "NULL" << endl;
-      return 1;
+      continue;
     } else {
       if (options.developerMode) {
         AstPrinter printer(cout);
