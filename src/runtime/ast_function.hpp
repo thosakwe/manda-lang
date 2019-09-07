@@ -3,13 +3,17 @@
 #include "../analysis/expr_ctx.hpp"
 #include "function.hpp"
 #include "object.hpp"
+#include "symbol_table.hpp"
+#include <memory>
 
 namespace manda::runtime {
 class AstFunction : public Function {
 public:
   // Copy the original node...
-  explicit AstFunction(const manda::analysis::FnDeclExprCtx &node);
+  explicit AstFunction(const manda::analysis::FnDeclExprCtx &node,
+                       std::shared_ptr<SymbolTable> scope);
   AstFunction(const manda::analysis::FnDeclExprCtx &node,
+              std::shared_ptr<SymbolTable> scope,
               std::vector<Parameter> parameters);
   const manda::analysis::FnDeclExprCtx &getNode();
 
@@ -27,6 +31,7 @@ private:
   const manda::analysis::FnDeclExprCtx &node;
   // TODO: Get parameters from actual node
   std::vector<Parameter> parameters;
+  std::shared_ptr<SymbolTable> scope;
 };
 } // namespace manda::runtime
 
