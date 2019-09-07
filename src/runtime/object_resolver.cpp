@@ -58,7 +58,7 @@ void ObjectResolver::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
   vector<Parameter> params;
   if (interpreter.getOptions().developerMode) {
     // TODO: Print param types
-    cout << "Total params: " << ctx.params.size();
+    cout << "Total params: " << ctx.params.size() << endl;
   }
   for (auto &node : ctx.params) {
     shared_ptr<Type> type;
@@ -90,6 +90,9 @@ void ObjectResolver::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
   lastObject = value;
   if (!ctx.name.empty()) {
     // TODO: Handle redefined names
+    if (interpreter.getOptions().developerMode) {
+      cout << "Defining " << ctx.name << " in current scope." << endl;
+    }
     scope->add(ctx.name, value, interpreter.getOptions().isREPL());
   }
 }

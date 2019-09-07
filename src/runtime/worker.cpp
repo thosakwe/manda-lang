@@ -10,10 +10,11 @@ using namespace std;
 Worker::Worker(VMOptions options) : options(std::move(options)) {}
 
 void Worker::executeProgram(shared_ptr<CompilationUnitCtx> &ctx) {
+  // TODO: Worker exit codes???
   // TODO: Do the logic...
   auto module = make_shared<Module>("TODO: File name or something");
   Interpreter interpreter(options, module);
-  ModuleCompiler compiler(interpreter);
+  ModuleCompiler compiler(interpreter, module);
   ctx->accept(compiler);
 
   auto main = module->getSymbolTable()->resolve("main");

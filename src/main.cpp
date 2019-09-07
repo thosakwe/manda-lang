@@ -155,7 +155,6 @@ int runREPL(const VMOptions &options) {
       }
 
       for (auto &node : module->getTopLevelExpressions()) {
-        Interpreter interpreter(options, module);
         ObjectResolver resolver(interpreter, module->getSymbolTable());
         node->accept(resolver);
         auto result = resolver.getLastObject();
