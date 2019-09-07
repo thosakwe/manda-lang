@@ -117,6 +117,7 @@ void Interpreter::visitBoolLiteral(BoolLiteralCtx &ctx) {
 }
 
 void Interpreter::visitBlockExpr(BlockExprCtx &ctx) {
+  scopeStack.push(scopeStack.top()->createChild());
   for (unsigned long i = 0; i < ctx.body.size(); i++) {
     auto &ptr = ctx.body[i];
     lastObject = nullopt;
@@ -127,12 +128,14 @@ void Interpreter::visitBlockExpr(BlockExprCtx &ctx) {
       oss << " in block.";
       reportError(ptr->location, oss.str());
       lastObject = nullopt;
+      scopeStack.pop();
       return;
     }
   }
   if (ctx.body.empty()) {
     lastObject = make_shared<Void>();
   }
+  scopeStack.pop();
 }
 
 void Interpreter::visitTupleExpr(TupleExprCtx &ctx) {
