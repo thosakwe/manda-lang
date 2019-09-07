@@ -2,6 +2,8 @@
 #include "function.hpp"
 #include "interpreter.hpp"
 #include "module_compiler.hpp"
+#include "number.hpp"
+#include "string.hpp"
 #include <iostream>
 
 using namespace manda::analysis;
@@ -34,8 +36,20 @@ void Worker::executeProgram(shared_ptr<CompilationUnitCtx> &ctx) {
                               "A symbol \"main\" was defined in the top-level "
                               "context, but it was not a function.");
     } else {
-      // TODO: Dynamic cast to function, and execute
-      cout << "Found main! :)" << endl;
+      // TODO: Pass arguments to main, only if it requests them
+      shared_ptr<Object> thisObject;
+      // Forward command line args
+      vector<shared_ptr<Object>> args;
+      for (auto &s : options.rest) {
+        args.push_back(make_shared<String>(s));
+      }
+      // Set the exit code, if result was a number.
+      auto result =
+          mainMethod->invoke(interpreter, startLocation, thisObject, args);
+      auto *resultAsNumber = dynamic_cast<Number *>(result.get());
+      if (resultAsNumber) {
+        exitCode = (int)resultAsNumber->getValue();
+      }
     }
   }
 }
