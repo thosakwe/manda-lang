@@ -1,6 +1,7 @@
 #ifndef MANDA_INTERPRETER_HPP
 #define MANDA_INTERPRETER_HPP
 #include "../analysis/ast.hpp"
+#include "core_library.hpp"
 #include "module.hpp"
 #include "symbol_table.hpp"
 #include "vm_options.hpp"
@@ -14,6 +15,7 @@ public:
   Interpreter(VMOptions options, std::shared_ptr<Module> &module);
   std::optional<std::shared_ptr<Object>> &getLastObject();
   [[nodiscard]] const VMOptions &getOptions() const;
+  const CoreLibrary &getCoreLibrary() const;
   bool ensureArgumentCount(const manda::analysis::Location &location,
                            const std::vector<std::shared_ptr<Object>> &args,
                            unsigned long size);
@@ -28,6 +30,7 @@ public:
   void visitCompilationUnit(analysis::CompilationUnitCtx &ctx) override;
 
 private:
+  CoreLibrary coreLibrary;
   std::shared_ptr<Module> module;
   VMOptions options;
   std::optional<std::shared_ptr<Object>> lastObject;

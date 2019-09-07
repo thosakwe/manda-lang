@@ -80,3 +80,5 @@ void Interpreter::visitTypeDecl(TypeDeclCtx &ctx) {
 }
 
 void Interpreter::visitCompilationUnit(CompilationUnitCtx &ctx) {}
+
+const CoreLibrary &Interpreter::getCoreLibrary() const { return coreLibrary; }
