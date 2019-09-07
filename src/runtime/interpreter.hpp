@@ -9,8 +9,7 @@
 
 namespace manda::runtime {
 class Interpreter : public manda::analysis::CompilationUnitVisitor,
-                    public manda::analysis::DeclVisitor,
-                    public manda::analysis::ExprVisitor {
+                    public manda::analysis::DeclVisitor {
 public:
   Interpreter(VMOptions options, std::shared_ptr<Module> &module);
   std::optional<std::shared_ptr<Object>> &getLastObject();
@@ -23,21 +22,6 @@ public:
                        std::vector<std::shared_ptr<Type>> &parameters);
   void reportError(const manda::analysis::Location &location,
                    const std::string &message);
-  void visitExprDecl(analysis::ExprDeclCtx &ctx) override;
-  void visitTypeDecl(analysis::TypeDeclCtx &ctx) override;
-  void visitCompilationUnit(analysis::CompilationUnitCtx &ctx) override;
-  void visitVarExpr(analysis::VarExprCtx &ctx) override;
-  void visitFnDeclExpr(analysis::FnDeclExprCtx &ctx) override;
-  void visitVoidLiteral(analysis::VoidLiteralCtx &ctx) override;
-  void visitIdExpr(analysis::IdExprCtx &ctx) override;
-  void visitNumberLiteral(analysis::NumberLiteralCtx &ctx) override;
-  void visitStringLiteral(analysis::StringLiteralCtx &ctx) override;
-  void visitBoolLiteral(analysis::BoolLiteralCtx &ctx) override;
-  void visitBlockExpr(analysis::BlockExprCtx &ctx) override;
-  void visitTupleExpr(analysis::TupleExprCtx &ctx) override;
-  void visitCastExpr(analysis::CastExprCtx &ctx) override;
-  void visitCallExpr(analysis::CallExprCtx &ctx) override;
-  void visitParenExpr(analysis::ParenExprCtx &ctx) override;
 
 private:
   std::shared_ptr<Module> module;
