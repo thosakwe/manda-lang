@@ -14,8 +14,10 @@ class Worker : public std::enable_shared_from_this<Worker> {
 public:
   explicit Worker(VMOptions options);
   void executeProgram(std::shared_ptr<analysis::CompilationUnitCtx> &ctx);
+  [[nodiscard]] int getExitCode() const;
 
 private:
+  int exitCode = 0;
   std::vector<std::shared_ptr<Module>> modules;
   VMOptions options;
   std::list<std::shared_ptr<Task>> tasks;
