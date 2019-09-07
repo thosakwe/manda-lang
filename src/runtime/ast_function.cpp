@@ -1,4 +1,5 @@
 #include "ast_function.hpp"
+#include "void.hpp"
 
 using namespace manda::analysis;
 using namespace manda::runtime;
@@ -20,5 +21,5 @@ AstFunction::invoke(Interpreter &interpreter, const Location &location,
                     shared_ptr<Object> &thisObject,
                     const vector<shared_ptr<Object>> &args) const {
   // TODO: Invoke AstFunction
-  return nullptr;
+  return make_shared<Void>();
 }
