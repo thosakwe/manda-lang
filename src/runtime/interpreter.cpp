@@ -6,6 +6,7 @@
 #include "number.hpp"
 #include "string.hpp"
 #include "tuple.hpp"
+#include "type_resolver.hpp"
 #include "void.hpp"
 #include <iostream>
 #include <sstream>
@@ -54,7 +55,23 @@ bool Interpreter::ensureArguments(const Location &location,
 
 void Interpreter::visitExprDecl(ExprDeclCtx &ctx) {}
 
-void Interpreter::visitTypeDecl(TypeDeclCtx &ctx) {}
+void Interpreter::visitTypeDecl(TypeDeclCtx &ctx) {
+  // TODO: Plain mode implementation (lazy?, etc.?)
+  TypeResolver resolver(*this, scopeStack.top());
+  ctx.type->accept(resolver);
+  auto result = resolver.getLastType();
+  if (!result) {
+    ostringstream oss;
+    oss << "Could not resolve the right hand side of type '";
+    oss << ctx.name << "'.";
+    reportError(ctx.location, oss.str());
+    lastObject = nullopt;
+  } else {
+    // TODO: Handle type parameters for generic types
+    // TODO: Handle redefined symbols in non-REPL mode
+    scopeStack.top()->add(ctx.name, result, options.isREPL());
+  }
+}
 
 void Interpreter::visitCompilationUnit(CompilationUnitCtx &ctx) {}
 
