@@ -119,12 +119,19 @@ public:
   void accept(ExprVisitor &visitor) override;
 };
 
+class StringPartCtx {
+public:
+  Location location;
+  [[nodiscard]] virtual std::string convert() const = 0;
+};
+
 class StringLiteralCtx : public ExprCtx {
 public:
   void accept(ExprVisitor &visitor) override;
 
 public:
   std::string value;
+  std::vector<StringPartCtx> parts;
 };
 
 struct BoolLiteralCtx : public ExprCtx {
