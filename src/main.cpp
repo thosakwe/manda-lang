@@ -5,6 +5,7 @@
 #include "runtime/core_library.hpp"
 #include "runtime/interpreter.hpp"
 #include "runtime/module_compiler.hpp"
+#include "runtime/object_resolver.hpp"
 #include "runtime/vm.hpp"
 #include "runtime/vm_options.hpp"
 #include <cstdio>
@@ -156,13 +157,11 @@ int runREPL(const VMOptions &options) {
 
       for (auto &node : module->getTopLevelExpressions()) {
         Interpreter interpreter(options, module);
-        node->accept(interpreter);
-        auto result = interpreter.getLastObject();
+        ObjectResolver resolver(interpreter, module->getSymbolTable());
+        node->accept(resolver);
+        auto result = resolver.getLastObject();
         if (result) {
-          auto ptr = *result;
-          if (ptr) {
-            ptr->print(cout, true);
-          }
+          result->print(cout, true);
         }
         cout << endl;
       }
