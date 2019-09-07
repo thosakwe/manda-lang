@@ -1,9 +1,12 @@
 #include "ast_function.hpp"
-manda::runtime::AstFunction::AstFunction(std::string name,
-                                   const manda::analysis::FnDeclExprCtx &node)
-    : name(std::move(name)), node(node) {}
 
-const std::string &manda::runtime::AstFunction::getName() const { return name; }
-const manda::analysis::FnDeclExprCtx &manda::runtime::AstFunction::getNode() {
-  return node;
-}
+using namespace manda::analysis;
+using namespace manda::runtime;
+using namespace std;
+
+AstFunction::AstFunction(const FnDeclExprCtx &node)
+    : name(node.name), node(node) {}
+
+const string &AstFunction::getName() const { return name; }
+
+const FnDeclExprCtx &AstFunction::getNode() { return node; }

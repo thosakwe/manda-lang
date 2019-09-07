@@ -6,7 +6,7 @@
 namespace manda::runtime {
 class AstFunction : public Object {
 public:
-  AstFunction(std::string name, const manda::analysis::FnDeclExprCtx &node);
+  explicit AstFunction(const manda::analysis::FnDeclExprCtx &node);
   [[nodiscard]] const std::string &getName() const;
   const manda::analysis::FnDeclExprCtx &getNode();
 

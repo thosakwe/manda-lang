@@ -1,5 +1,6 @@
 #include "interpreter.hpp"
 #include "ansi_printer.hpp"
+#include "ast_function.hpp"
 #include "bool.hpp"
 #include "char.hpp"
 #include "function.hpp"
@@ -99,7 +100,15 @@ void Interpreter::visitVarExpr(VarExprCtx &ctx) {
   }
 }
 
-void Interpreter::visitFnDeclExpr(FnDeclExprCtx &ctx) {}
+void Interpreter::visitFnDeclExpr(FnDeclExprCtx &ctx) {
+  // TODO: There should probably be more evaluation done here, lol...
+  auto value = make_shared<AstFunction>(ctx);
+  lastObject = value;
+  if (!ctx.name.empty()) {
+    // TODO: Handle redefined names
+    scopeStack.top()->add(ctx.name, value, options.isREPL());
+  }
+}
 
 void Interpreter::visitVoidLiteral(VoidLiteralCtx &ctx) {
   lastObject = make_shared<Void>();
