@@ -15,8 +15,8 @@ manda::runtime::Number::Number(double value) : value(value) {}
 double manda::runtime::Number::getValue() const { return value; }
 
 void manda::runtime::Number::print(ostream &out, bool ansiSupported) const {
-  //  out << value;
-  //  return;
+    out << value;
+    return;
   ostringstream oss;
   oss << fixed << value;
   auto str = oss.str();
@@ -46,6 +46,14 @@ typedef jit_float64 (*HackExec)();
 
 shared_ptr<manda::runtime::Object>
 manda::runtime::NumberType::deserialize(Interpreter &interpreter, void *ptr) {
+  //  auto *asFloat64 = (jit_float64 **)ptr;
+  //  auto *first = asFloat64[0];
+  //  cout << "HMM: " << (*first) << endl;
+  //  return make_shared<Number>(*first);
+    auto *asFloat64 = (jit_float64 *)ptr;
+    //  throw logic_error("aaa");
+    return make_shared<Number>(*asFloat64);
+
   // See the explanation in applyJitFunction for why we are using this hack.
   auto &context = interpreter.getJitContext();
   context.build_start();
@@ -64,16 +72,8 @@ manda::runtime::NumberType::deserialize(Interpreter &interpreter, void *ptr) {
   }
 
   auto exec = (HackExec)jit_function_to_closure(hack);
-  auto result = exec();
-  return make_shared<Number>(result);
-  //  auto *asFloat64 = (jit_float64 **)ptr;
-  //  auto *first = asFloat64[0];
-  //  cout << "HMM: " << (*first) << endl;
-  //  return make_shared<Number>(*first);
-  //  auto *asFloat64 = (jit_float64 *)ptr;
-  //  //  throw logic_error("aaa");
-  //  return make_shared<Number>(*asFloat64);
-  //  return make_shared<Number>(420.0);
+  auto hackResult = exec();
+  return make_shared<Number>(hackResult);
 }
 
 shared_ptr<manda::runtime::Object> manda::runtime::NumberType::applyJitFunction(

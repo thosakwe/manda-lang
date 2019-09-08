@@ -1,7 +1,8 @@
 #include "tuple.hpp"
 #include "ansi_printer.hpp"
-#include <sstream>
 #include <exception>
+#include <iostream>
+#include <sstream>
 
 using namespace manda::runtime;
 using namespace std;
@@ -58,11 +59,19 @@ jit_type_t TupleType::toJitType() const {
 shared_ptr<manda::runtime::Object>
 TupleType::deserialize(Interpreter &interpreter, void *ptr) {
   // Deserialize each object, in turn.
-  auto *p = static_cast<char *>(ptr);
+  auto *p = static_cast<uint8_t *>(ptr);
   auto out = make_shared<Tuple>();
+  auto jitType = toJitType();
+  unsigned int i = 0;
   for (auto &item : items) {
-    out->getItems().push_back(item->deserialize(interpreter, (void *)p));
-    p += jit_type_get_size(item->toJitType());
+    auto *objPtr = p + (jit_type_get_offset(jitType, i++));
+    //    auto *dbl = (jit_float64 *) objPtr;
+    //    cout << "p: " << (void *)p << endl;
+    //    cout << "offset (" << (i - 1) << "): " << (void *)objPtr << endl;
+    //    cout << "dbl: " << *dbl << endl;
+    out->getItems().push_back(item->deserialize(interpreter, (void *)objPtr));
+    //    out->getItems().push_back(item->deserialize(interpreter, (void *)p));
+    //    p += jit_type_get_size(item->toJitType());
   }
   return out;
 }
