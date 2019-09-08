@@ -26,7 +26,7 @@ JitCompiledFunction::JitCompiledFunction(Interpreter &interpreter,
   create();
   set_recompilable();
   coerceToAny.push(false);
-  scope = make_shared<JitValueScope>();
+  scopeStack.push(make_shared<JitValueScope>());
 }
 
 jit_type_t JitCompiledFunction::create_signature() {
@@ -124,6 +124,7 @@ void JitCompiledFunction::visitIdExpr(const IdExprCtx &ctx) {
   // Search to see if we have already compiled the given symbol.
   // If not, compile it, and add it to the current scope.
   // TODO: Throw on redefines?
+  auto scope = scopeStack.top();
   auto jitSymbol = scope->resolve(ctx.name);
   if (jitSymbol) {
     // Load the variable.
@@ -151,6 +152,7 @@ void JitCompiledFunction::visitIdExpr(const IdExprCtx &ctx) {
         auto object = get<shared_ptr<Object>>(*rtSymbol);
         auto jitPtr = new_constant((void *)object.get(), jit_type_void_ptr);
         auto variable = new_value(jit_type_void_ptr);
+        scope->add(ctx.name, variable); // TODO: Handle redefines
         jit_insn_store(raw(), variable.raw(), jitPtr.raw());
         if (interpreter.getOptions().developerMode) {
           cout << "Emitting new var-as-any \"" << ctx.name << "\"" << endl;
@@ -221,9 +223,25 @@ void JitCompiledFunction::visitBoolLiteral(const BoolLiteralCtx &ctx) {
 }
 
 void JitCompiledFunction::visitBlockExpr(const BlockExprCtx &ctx) {
-  // TODO: Create a new label, and introduce a new scope. Then, resolve
+  // Create a new label, and introduce a new scope. Then, resolve
   // all expressions.
   // If there are no expressions, return void (a.k.a., do nothing here).
+  new_label();
+  scopeStack.push(scopeStack.top()->createChild());
+
+  for (auto &node : ctx.body) {
+    lastValue = nullopt;
+    node->accept(*this);
+    if (!lastValue) {
+      interpreter.reportError(
+          node->location,
+          "Compilation of some of the expressions in this block failed.");
+      return;
+    }
+  }
+
+  // At this point, whatever is here will be returned.
+  scopeStack.pop();
 }
 
 void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
