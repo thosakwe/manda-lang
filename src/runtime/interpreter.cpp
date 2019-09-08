@@ -83,3 +83,5 @@ void Interpreter::visitTypeDecl(const TypeDeclCtx &ctx) {
 void Interpreter::visitCompilationUnit(const CompilationUnitCtx &ctx) {}
 
 const CoreLibrary &Interpreter::getCoreLibrary() const { return coreLibrary; }
+
+jit_context &Interpreter::getJitContext() { return jitContext; }

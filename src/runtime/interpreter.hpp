@@ -5,6 +5,7 @@
 #include "module.hpp"
 #include "symbol_table.hpp"
 #include "vm_options.hpp"
+#include <jit/jit-plus.h>
 #include <optional>
 #include <stack>
 
@@ -16,6 +17,7 @@ public:
   std::optional<std::shared_ptr<Object>> &getLastObject();
   [[nodiscard]] const VMOptions &getOptions() const;
   const CoreLibrary &getCoreLibrary() const;
+  jit_context &getJitContext();
   bool ensureArgumentCount(const manda::analysis::Location &location,
                            const std::vector<std::shared_ptr<Object>> &args,
                            unsigned long size);
@@ -31,6 +33,7 @@ public:
 
 private:
   CoreLibrary coreLibrary;
+  jit_context jitContext;
   std::shared_ptr<Module> module;
   VMOptions options;
   std::optional<std::shared_ptr<Object>> lastObject;
