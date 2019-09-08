@@ -15,6 +15,7 @@ CoreLibrary::CoreLibrary() {
   charType = make_shared<CharType>();
   numberType = make_shared<NumberType>();
   stringType = make_shared<StringType>();
+  voidType = make_shared<VoidType>();
 }
 
 shared_ptr<Object>
@@ -38,6 +39,7 @@ void CoreLibrary::install(SymbolTable &scope) {
   scope.add("Char", charType);
   scope.add("Number", numberType);
   scope.add("String", stringType);
+  scope.add("Void", voidType);
   scope.add("print",
             shared_ptr<Object>(new BuiltinFunction("print", {}, printFn)));
 }

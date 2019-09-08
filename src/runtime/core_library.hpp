@@ -7,6 +7,7 @@
 #include "number.hpp"
 #include "string.hpp"
 #include "symbol_table.hpp"
+#include "void.hpp"
 
 namespace manda::runtime {
 class Interpreter;
@@ -19,6 +20,7 @@ public:
   std::shared_ptr<CharType> charType;
   std::shared_ptr<NumberType> numberType;
   std::shared_ptr<StringType> stringType;
+  std::shared_ptr<VoidType> voidType;
 
   void install(SymbolTable &scope);
 
