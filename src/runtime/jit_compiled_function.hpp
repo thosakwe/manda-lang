@@ -22,9 +22,11 @@ public:
   void visitCastExpr(const analysis::CastExprCtx &ctx) override;
   void visitCallExpr(const analysis::CallExprCtx &ctx) override;
   void visitParenExpr(const analysis::ParenExprCtx &ctx) override;
+  void publicBuild();
 
 protected:
   void build() override;
+  jit_type_t create_signature() override;
 
 private:
   Interpreter &interpreter;

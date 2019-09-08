@@ -12,10 +12,15 @@ JitCompiledFunction::JitCompiledFunction(Interpreter &interpreter,
     : interpreter(interpreter), astFunction(fn),
       jit_function(interpreter.getJitContext()) {
   // Create the JIT function.
-  auto signature = astFunction.getType(interpreter)->toJitType();
-  create(signature);
+  create();
   set_recompilable();
 }
+
+jit_type_t JitCompiledFunction::create_signature() {
+  return astFunction.getType(interpreter)->toJitType();
+}
+
+void JitCompiledFunction::publicBuild() { build(); }
 
 void JitCompiledFunction::build() {
   // Compile the body, and return it.
@@ -52,8 +57,7 @@ void JitCompiledFunction::visitIdExpr(const IdExprCtx &ctx) {}
 void JitCompiledFunction::visitNumberLiteral(const NumberLiteralCtx &ctx) {
   // Manda Numbers are sys doubles.
   auto jitNumberType = interpreter.getCoreLibrary().numberType->toJitType();
-  lastValue = jit_value_create_float64_constant(raw(), jitNumberType,
-                                                (jit_float64)ctx.value);
+  lastValue = new_constant((jit_float64)ctx.value, jitNumberType);
 }
 
 void JitCompiledFunction::visitStringLiteral(const StringLiteralCtx &ctx) {}
