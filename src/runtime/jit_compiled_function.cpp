@@ -119,7 +119,8 @@ void JitCompiledFunction::visitFnDeclExpr(const FnDeclExprCtx &ctx) {}
 
 void JitCompiledFunction::visitVoidLiteral(const VoidLiteralCtx &ctx) {}
 
-void JitCompiledFunction::visitIdExpr(const IdExprCtx &ctx) {}
+void JitCompiledFunction::visitIdExpr(const IdExprCtx &ctx) {
+}
 
 void JitCompiledFunction::visitNumberLiteral(const NumberLiteralCtx &ctx) {
   if (!coerceToAny.top()) {

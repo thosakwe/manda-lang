@@ -54,7 +54,7 @@ void ObjectResolver::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
   // TODO: Deduplicate this code
 
   // Build the list of parameters.
-  // TODO: Handle default values on parameters
+  // TODO: Handle default symbols on parameters
   vector<Parameter> params;
   if (interpreter.getOptions().developerMode) {
     // TODO: Print param types
