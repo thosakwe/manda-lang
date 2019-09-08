@@ -1,4 +1,5 @@
 #include "jit_compiled_function.hpp"
+#include "object_resolver.hpp"
 #include <iostream>
 #include <jit/jit-dump.h>
 #include <vector>
@@ -76,6 +77,35 @@ void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {}
 
 void JitCompiledFunction::visitCastExpr(const CastExprCtx &ctx) {}
 
-void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {}
+void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
+  // Resolve the target first.
+  ObjectResolver resolver(interpreter, astFunction.getScope());
+  ctx.target->accept(resolver);
+  auto target = resolver.getLastObject();
+  if (!target) {
+    // TODO: Better error message here?
+    interpreter.reportError(ctx.target->location,
+                            "Evaluation of this call target failed.");
+    fail();
+    return;
+  }
+
+  // Ensure that the target is a function.
+  // TODO: What if we are instantiating a type?
+  auto *targetFunction = dynamic_cast<Function *>(target.get());
+  if (!targetFunction) {
+    // TODO: Better error message here?
+    interpreter.reportError(ctx.target->location,
+                            "Only functions can be called.");
+    fail();
+    return;
+  }
+
+  // TODO: Match arguments to parameters
+  vector<jit_value> arguments;
+
+  // Compile the function call.
+  targetFunction->acceptForJitCall(*this, arguments);
+}
 
 void JitCompiledFunction::visitParenExpr(const ParenExprCtx &ctx) {}

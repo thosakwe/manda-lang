@@ -24,6 +24,8 @@ public:
 
   std::shared_ptr<Type> getReturnType(Interpreter &interpreter) const override;
 
+  const std::shared_ptr<SymbolTable> &getScope() const;
+
   const std::unique_ptr<manda::analysis::FnDeclExprCtx> &getNode() const;
 
   std::shared_ptr<Object>
