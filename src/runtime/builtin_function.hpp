@@ -26,6 +26,8 @@ struct BuiltinFunction : public Function {
   invoke(Interpreter &interpreter, const manda::analysis::Location &location,
          std::shared_ptr<Object> &thisObject,
          const std::vector<std::shared_ptr<Object>> &args) const override;
+  void acceptForJitCall(JitCompiledFunction &function,
+                        std::vector<jit_value> &arguments) override;
 };
 } // namespace manda::runtime
 

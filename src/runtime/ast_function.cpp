@@ -45,6 +45,11 @@ AstFunction::invoke(Interpreter &interpreter, const Location &location,
   return resolver.getLastObject();
 }
 
+void AstFunction::acceptForJitCall(JitCompiledFunction &fn,
+                                   std::vector<jit_value> &arguments) {
+
+}
+
 shared_ptr<Type> AstFunction::getReturnType(Interpreter &interpreter) const {
   return returnType;
 }
