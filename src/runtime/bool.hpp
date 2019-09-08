@@ -18,6 +18,7 @@ class BoolType : public Type {
 public:
   std::string getName() const override;
   jit_type_t toJitType() const override;
+  std::shared_ptr<manda::runtime::Object> deserialize(void *ptr) override;
 };
 } // namespace manda::runtime
 
