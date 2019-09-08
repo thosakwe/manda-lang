@@ -42,8 +42,30 @@ jit_type_t manda::runtime::NumberType::toJitType() const {
   return jit_type_float64;
 }
 
+typedef jit_float64 (*HackExec)();
+
 shared_ptr<manda::runtime::Object>
 manda::runtime::NumberType::deserialize(Interpreter &interpreter, void *ptr) {
+  // See the explanation in applyJitFunction for why we are using this hack.
+  auto &context = interpreter.getJitContext();
+  context.build_start();
+  auto sig =
+      jit_type_create_signature(jit_abi_cdecl, jit_type_float64, nullptr, 0, 0);
+  auto hack = jit_function_create(context.raw(), sig);
+  jit_constant_t constant = {jit_type_void_ptr, ptr};
+  auto jitPtr = jit_value_create_constant(hack, &constant);
+  auto returnValue = jit_insn_load_relative(hack, jitPtr, 0, jit_type_float64);
+  jit_insn_return(hack, returnValue);
+  jit_function_compile(hack);
+  context.build_end();
+
+  if (interpreter.getOptions().developerMode) {
+    jit_dump_function(stdout, hack, "number_deserialize_hack");
+  }
+
+  auto exec = (HackExec)jit_function_to_closure(hack);
+  auto result = exec();
+  return make_shared<Number>(result);
   //  auto *asFloat64 = (jit_float64 **)ptr;
   //  auto *first = asFloat64[0];
   //  cout << "HMM: " << (*first) << endl;
@@ -51,7 +73,7 @@ manda::runtime::NumberType::deserialize(Interpreter &interpreter, void *ptr) {
   //  auto *asFloat64 = (jit_float64 *)ptr;
   //  //  throw logic_error("aaa");
   //  return make_shared<Number>(*asFloat64);
-  return make_shared<Number>(420.0);
+  //  return make_shared<Number>(420.0);
 }
 
 shared_ptr<manda::runtime::Object> manda::runtime::NumberType::applyJitFunction(
@@ -79,19 +101,18 @@ shared_ptr<manda::runtime::Object> manda::runtime::NumberType::applyJitFunction(
   context.build_end();
 
   if (interpreter.getOptions().developerMode) {
-    jit_dump_function(stdout, hack, "number_hack");
+    jit_dump_function(stdout, hack, "number_apply_hack");
   }
 
-  typedef jit_float64 (*Exec)();
-  auto exec = (Exec)jit_function_to_closure(hack);
+  auto exec = (HackExec)jit_function_to_closure(hack);
   auto result = exec();
   return make_shared<Number>(result);
 
   // TODO: Process result of jit_function_apply
   // TODO: Why does this return bogus information with zero args?
   //  if (args.empty()) {
-  //    typedef jit_float64 (*Exec)();
-  //    auto exec = (Exec)func.closure();
+  //    typedef jit_float64 (*HackExec)();
+  //    auto exec = (HackExec)func.closure();
   //    auto result = exec();
   //    return make_shared<Number>(result);
   //  } else {
