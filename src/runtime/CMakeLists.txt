@@ -25,5 +25,5 @@ add_library(manda_runtime
     char.cpp char.hpp
     type_resolver.cpp type_resolver.hpp
     object_resolver.cpp object_resolver.hpp
-    any_type.cpp any_type.hpp jit_compiled_function.cpp jit_compiled_function.hpp)
+    any_type.cpp any_type.hpp jit_compiled_function.cpp jit_compiled_function.hpp manda_api_impl.hpp)
 target_include_directories(manda_runtime PUBLIC ${JIT_INCLUDE_DIR})
