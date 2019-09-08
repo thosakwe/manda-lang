@@ -26,7 +26,8 @@ JitCompiledFunction::JitCompiledFunction(Interpreter &interpreter,
   create();
   set_recompilable();
   coerceToAny.push(false);
-  scopeStack.push(make_shared<JitValueScope>());
+  scopeStack.push(fn.getScope());
+  jitValueScopeStack.push(make_shared<JitValueScope>());
 }
 
 jit_type_t JitCompiledFunction::create_signature() {
@@ -126,7 +127,7 @@ void JitCompiledFunction::visitVarExpr(const VarExprCtx &ctx) {
   } else {
     // Create a new variable, and inject it into scope.
     auto variable = new_value(jit_value_get_type(lastValue->raw()));
-    scopeStack.top()->add(ctx.name, variable);
+    jitValueScopeStack.top()->add(ctx.name, variable);
     jit_insn_store(raw(), variable.raw(), lastValue->raw());
     lastValue = variable;
   }
@@ -140,7 +141,7 @@ void JitCompiledFunction::visitIdExpr(const IdExprCtx &ctx) {
   // Search to see if we have already compiled the given symbol.
   // If not, compile it, and add it to the current scope.
   // TODO: Throw on redefines?
-  auto scope = scopeStack.top();
+  auto scope = jitValueScopeStack.top();
   auto jitSymbol = scope->resolve(ctx.name);
   if (jitSymbol) {
     // Load the variable.
@@ -150,7 +151,7 @@ void JitCompiledFunction::visitIdExpr(const IdExprCtx &ctx) {
     lastValue = *jitSymbol;
   } else {
     // Look up the symbol.
-    auto rtSymbol = astFunction.getScope()->resolve(ctx.name);
+    auto rtSymbol = scopeStack.top()->resolve(ctx.name);
     if (!rtSymbol) {
       ostringstream oss;
       oss << "The name \"" << ctx.name << "\" does not exist in this context.";
@@ -244,6 +245,7 @@ void JitCompiledFunction::visitBlockExpr(const BlockExprCtx &ctx) {
   // If there are no expressions, return void (a.k.a., do nothing here).
   new_label();
   scopeStack.push(scopeStack.top()->createChild());
+  jitValueScopeStack.push(jitValueScopeStack.top()->createChild());
 
   for (auto &node : ctx.body) {
     lastValue = nullopt;
@@ -262,6 +264,7 @@ void JitCompiledFunction::visitBlockExpr(const BlockExprCtx &ctx) {
   }
 
   // At this point, whatever is here will be returned.
+  jitValueScopeStack.pop();
   scopeStack.pop();
 }
 
@@ -270,7 +273,7 @@ void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
     // Create a new tuple instance, and return the pointer.
     //    auto *object = new Bool(ctx.value);
     //    lastValue = new_constant((void *)object, jit_type_void_ptr);
-    ObjectResolver resolver(interpreter, astFunction.getScope());
+    ObjectResolver resolver(interpreter, scopeStack.top());
     auto *object = gc.make<Tuple>();
     for (auto &item : ctx.items) {
       item->accept(resolver);
@@ -290,7 +293,7 @@ void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
     // Then, create a temporary structure value.
     // For each field, write into the current location.
     // Increment by the size of the field.
-    TypeResolver resolver(interpreter, astFunction.getScope());
+    TypeResolver resolver(interpreter, scopeStack.top());
     ctx.accept(resolver);
     auto resultType = resolver.getLastType();
     if (!resultType) {
@@ -343,7 +346,7 @@ void JitCompiledFunction::visitCastExpr(const CastExprCtx &ctx) {}
 
 void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
   // Resolve the target first.
-  ObjectResolver resolver(interpreter, astFunction.getScope());
+  ObjectResolver resolver(interpreter, scopeStack.top());
   ctx.target->accept(resolver);
   auto target = resolver.getLastObject();
   if (!target) {
@@ -366,6 +369,8 @@ void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
   }
 
   // TODO: Match arguments to parameters
+  // TODO: Not everything should be *Any*, only those with
+  // unresolved types, or explicitly declared Any.
   vector<jit_value> arguments;
   coerceToAny.push(true);
   for (auto &arg : ctx.arguments) {
@@ -375,9 +380,29 @@ void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
       // TODO: Better error message here?
       interpreter.reportError(ctx.target->location,
                               "Could not resolve all arguments for this call.");
-      fail();
       coerceToAny.pop();
       return;
+    }
+
+    // If we need this to be an Any, but it's not, use its type to convert it to
+    // an Any*. A.K.A - boxing. We will only ever have void* if it's an Any*.
+    auto isVoid = jit_value_get_type(lastValue->raw()) == jit_type_void_ptr;
+    if (!isVoid && coerceToAny.top()) {
+      // Create a one-off TypeResolver to figure out which type needs to perform
+      // boxing.
+      TypeResolver typeResolver(interpreter, scopeStack.top());
+      arg->accept(typeResolver);
+      auto resultType = typeResolver.getLastType();
+      if (!resultType) {
+        // If we couldn't resolve a type, obviously, we can't box a value.
+        // TODO: This is a compiler error, so give a good error message.
+        interpreter.reportError(
+            arg->location, "Could not box a value for this function call.");
+        coerceToAny.pop();
+        return;
+      } else {
+        // TODO: Box the value
+      }
     }
     arguments.push_back(*lastValue);
   }

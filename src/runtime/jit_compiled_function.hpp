@@ -41,7 +41,8 @@ private:
   GarbageCollector &gc;
   const AstFunction &astFunction;
   std::optional<jit_value> lastValue;
-  std::stack<std::shared_ptr<JitValueScope>> scopeStack;
+  std::stack<std::shared_ptr<JitValueScope>> jitValueScopeStack;
+  std::stack<std::shared_ptr<SymbolTable>> scopeStack;
   std::stack<bool> coerceToAny;
 };
 } // namespace manda::runtime
