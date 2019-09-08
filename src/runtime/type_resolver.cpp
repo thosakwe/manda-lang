@@ -1,4 +1,6 @@
 #include "type_resolver.hpp"
+#include "function.hpp"
+#include <iostream>
 #include <sstream>
 #include <utility>
 
@@ -42,7 +44,21 @@ void TypeResolver::visitVoidLiteral(const VoidLiteralCtx &ctx) {
   lastType = interpreter.getCoreLibrary().voidType;
 }
 
-void TypeResolver::visitIdExpr(const IdExprCtx &ctx) {}
+void TypeResolver::visitIdExpr(const IdExprCtx &ctx) {
+  auto symbol = scope->resolve(ctx.name);
+  if (holds_alternative<monostate>(symbol)) {
+    // TODO: Throw an error on unresolved symbols?
+    lastType = nullptr;
+  } else if (holds_alternative<shared_ptr<Type>>(symbol)) {
+    // TODO: Reify types?
+    lastType = nullptr;
+  } else if (holds_alternative<shared_ptr<Object>>(symbol)) {
+    lastType = get<shared_ptr<Object>>(symbol)->getType(interpreter);
+  } else {
+    // TODO: Throw an error here, since it should never be reached?
+    lastType = nullptr;
+  }
+}
 
 void TypeResolver::visitNumberLiteral(const NumberLiteralCtx &ctx) {
   lastType = interpreter.getCoreLibrary().numberType;
@@ -66,7 +82,26 @@ void TypeResolver::visitTupleExpr(const TupleExprCtx &ctx) {}
 
 void TypeResolver::visitCastExpr(const CastExprCtx &ctx) {}
 
-void TypeResolver::visitCallExpr(const CallExprCtx &ctx) {}
+void TypeResolver::visitCallExpr(const CallExprCtx &ctx) {
+  // TODO: Is there a need to resolve parameter types?
+  TypeResolver functionTypeResolver(interpreter, scope);
+  ctx.target->accept(functionTypeResolver);
+  auto targetType = functionTypeResolver.getLastType();
+  if (!targetType) {
+    // TODO: Should an error be thrown here?
+    lastType = nullptr;
+  } else {
+    // See if this is a function.
+    auto *functionType = dynamic_cast<FunctionType *>(targetType.get());
+    if (!functionType) {
+      // TODO: Should an error be thrown when trying to call something other
+      // than a function?
+      // TODO: What if this is an instantiation of some type?
+    } else {
+      lastType = functionType->getReturnType();
+    }
+  }
+}
 
 void TypeResolver::visitParenExpr(const ParenExprCtx &ctx) {
   ctx.inner->accept(*this);
