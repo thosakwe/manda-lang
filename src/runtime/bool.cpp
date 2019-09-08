@@ -23,3 +23,5 @@ std::shared_ptr<Type> Bool::getType(Interpreter &interpreter) const {
 }
 
 string BoolType::getName() const { return "Bool"; }
+
+jit_type_t BoolType::toJitType() const { return jit_type_sys_bool; }

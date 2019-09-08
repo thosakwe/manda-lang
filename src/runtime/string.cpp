@@ -24,3 +24,8 @@ shared_ptr<Type> String::getType(Interpreter &interpreter) const {
 }
 
 string StringType::getName() const { return "String"; }
+
+jit_type_t StringType::toJitType() const {
+  // Manda basic strings are just 8-bit lists, so char*
+  return jit_type_create_pointer(jit_type_sys_char, 0);
+}

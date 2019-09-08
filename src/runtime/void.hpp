@@ -11,6 +11,9 @@ public:
 
 class VoidType : public Type {
   std::string getName() const override;
+
+public:
+  jit_type_t toJitType() const override;
 };
 } // namespace manda::runtime
 

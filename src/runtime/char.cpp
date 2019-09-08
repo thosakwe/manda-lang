@@ -24,3 +24,5 @@ string CharType::getName() const { return "Char"; }
 shared_ptr<Type> Char::getType(Interpreter &interpreter) const {
   return interpreter.getCoreLibrary().charType;
 }
+
+jit_type_t CharType::toJitType() const { return jit_type_sys_char; }

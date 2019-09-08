@@ -18,3 +18,5 @@ shared_ptr<Type> Void::getType(Interpreter &interpreter) const {
 }
 
 string VoidType::getName() const { return "Void"; }
+
+jit_type_t VoidType::toJitType() const { return jit_type_void; }
