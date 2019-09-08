@@ -9,7 +9,10 @@ using namespace manda::analysis;
 using namespace manda::runtime;
 using namespace std;
 
-CoreLibrary::CoreLibrary() { anyType = make_shared<AnyType>(); }
+CoreLibrary::CoreLibrary() {
+  anyType = make_shared<AnyType>();
+  boolType = make_shared<BoolType>();
+}
 
 shared_ptr<Object>
 CoreLibrary::printFn(Interpreter &i, const Location &l, shared_ptr<Object> &,
@@ -28,6 +31,7 @@ void CoreLibrary::install(SymbolTable &scope) {
   // TODO: Why does make_shared not work here???
   // TODO: Add required parameters?
   scope.add("Any", anyType);
+  scope.add("Bool", boolType);
   scope.add("print",
             shared_ptr<Object>(new BuiltinFunction("print", {}, printFn)));
 }
