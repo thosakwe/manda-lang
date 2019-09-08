@@ -1,6 +1,7 @@
 #include "number.hpp"
 #include "ansi_printer.hpp"
 #include "interpreter.hpp"
+#include "jit_compiled_function.hpp"
 #include <exception>
 #include <iomanip>
 #include <iostream>
@@ -8,13 +9,14 @@
 #include <sstream>
 #include <string>
 
+using namespace manda::runtime;
 using namespace std;
 
-manda::runtime::Number::Number(double value) : value(value) {}
+Number::Number(double value) : value(value) {}
 
-double manda::runtime::Number::getValue() const { return value; }
+double Number::getValue() const { return value; }
 
-void manda::runtime::Number::print(ostream &out, bool ansiSupported) const {
+void Number::print(ostream &out, bool ansiSupported) const {
   ostringstream oss;
   oss << fixed << value;
   auto str = oss.str();
@@ -27,23 +29,34 @@ void manda::runtime::Number::print(ostream &out, bool ansiSupported) const {
   }
 }
 
-shared_ptr<manda::runtime::Type> manda::runtime::Number::getType(
-    manda::runtime::Interpreter &interpreter) const {
+shared_ptr<Type> Number::getType(Interpreter &interpreter) const {
   return interpreter.getCoreLibrary().numberType;
 }
 
-string manda::runtime::NumberType::getName() const { return "Number"; }
+string NumberType::getName() const { return "Number"; }
 
-jit_type_t manda::runtime::NumberType::toJitType() const {
+jit_type_t NumberType::toJitType() const {
   // Manda numbers are system doubles.
   // TODO: Should these be long doubles?
   return jit_type_float64;
 }
 
+jit_value NumberType::boxRawValue(JitCompiledFunction &fn,
+                                  const jit_value &rawValue) {
+  // void* box(f64)
+  jit_type_t params[1] = {jit_type_float64};
+  auto sig =
+      jit_type_create_signature(jit_abi_cdecl, jit_type_void_ptr, params, 1, 0);
+  jit_value_t args[1] = {rawValue.raw()};
+  return fn.insn_call_native("manda_box_number", (void *)&box, sig, args, 1, 0);
+}
+
+Number *NumberType::box(jit_float64 value) { return new Number(value); }
+
 typedef jit_float64 (*HackExec)();
 
-shared_ptr<manda::runtime::Object>
-manda::runtime::NumberType::deserialize(Interpreter &interpreter, void *ptr) {
+shared_ptr<Object> NumberType::deserialize(Interpreter &interpreter,
+                                           void *ptr) {
   //  auto *asFloat64 = (jit_float64 **)ptr;
   //  auto *first = asFloat64[0];
   //  cout << "HMM: " << (*first) << endl;
@@ -75,8 +88,9 @@ manda::runtime::NumberType::deserialize(Interpreter &interpreter, void *ptr) {
   //  return make_shared<Number>(hackResult);
 }
 
-shared_ptr<manda::runtime::Object> manda::runtime::NumberType::applyJitFunction(
-    Interpreter &interpreter, std::vector<void *> &args, jit_function &func) {
+shared_ptr<Object> NumberType::applyJitFunction(Interpreter &interpreter,
+                                                std::vector<void *> &args,
+                                                jit_function &func) {
   // This is an extreme hack, but for some reason, reading the
   // void* as a double simply does not work.
   // However, jit_function_to_closure DOES.

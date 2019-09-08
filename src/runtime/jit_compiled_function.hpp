@@ -13,6 +13,7 @@ class JitCompiledFunction : public jit_function,
 public:
   explicit JitCompiledFunction(Interpreter &interpreter, const AstFunction &fn);
   Interpreter &getInterpreter() const;
+  GarbageCollector &getGC();
   jit_value insn_malloc(const jit_value &size);
   jit_value insn_malloc(jit_uint size);
   jit_value insn_gc_ptr_callback(const char *name, const jit_value &ptr,

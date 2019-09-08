@@ -5,6 +5,7 @@
 #include <vector>
 
 namespace manda::runtime {
+class JitCompiledFunction;
 class Interpreter;
 class Object;
 class Type {
@@ -19,8 +20,12 @@ public:
   virtual std::shared_ptr<manda::runtime::Object>
   applyJitFunction(Interpreter &interpreter, std::vector<void *> &args,
                    jit_function &func);
+
   virtual std::shared_ptr<Object>
   deserialize(manda::runtime::Interpreter &interpreter, void *ptr) = 0;
+
+  virtual jit_value boxRawValue(JitCompiledFunction &fn,
+                                const jit_value &rawValue);
 };
 } // namespace manda::runtime
 

@@ -401,7 +401,8 @@ void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
         coerceToAny.pop();
         return;
       } else {
-        // TODO: Box the value
+        // Box the value.
+        lastValue = resultType->boxRawValue(*this, *lastValue);
       }
     }
     arguments.push_back(*lastValue);
@@ -417,3 +418,5 @@ void JitCompiledFunction::visitParenExpr(const ParenExprCtx &ctx) {
 }
 
 Interpreter &JitCompiledFunction::getInterpreter() const { return interpreter; }
+
+GarbageCollector &JitCompiledFunction::getGC() { return gc; }

@@ -58,7 +58,7 @@ private:
 };
 
 template <typename T, class... Args>
-GCPointer<T> *make_gc(GarbageCollector &gc, Args &&... args) {
+GCPointer<T> make_gc(GarbageCollector &gc, Args &&... args) {
   auto *ptr = new T(args...);
   return GCPointer<T>(gc, ptr);
 }

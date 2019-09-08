@@ -29,8 +29,16 @@ Type::applyJitFunction(Interpreter &interpreter, std::vector<void *> &args,
   //  throw logic_error(oss.str());
 }
 
+jit_value Type::boxRawValue(JitCompiledFunction &fn,
+                            const jit_value &rawValue) {
+  ostringstream oss;
+  oss << "boxRawValue not implemented for type ";
+  oss << getName();
+  throw logic_error(oss.str());
+}
+
 //
-//std::shared_ptr<manda::runtime::Object> Type::deserialize(void *ptr) {
+// std::shared_ptr<manda::runtime::Object> Type::deserialize(void *ptr) {
 //  ostringstream oss;
 //  oss << "deserialize not implemented for type ";
 //  oss << getName();

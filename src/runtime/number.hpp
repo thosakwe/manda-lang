@@ -23,6 +23,9 @@ public:
   std::shared_ptr<Object> applyJitFunction(Interpreter &interpreter,
                                            std::vector<void *> &args,
                                            jit_function &func) override;
+  jit_value boxRawValue(JitCompiledFunction &fn,
+                        const jit_value &rawValue) override;
+  static Number *box(jit_float64 value);
 };
 } // namespace manda::runtime
 
