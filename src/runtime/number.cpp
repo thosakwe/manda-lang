@@ -40,6 +40,12 @@ jit_type_t manda::runtime::NumberType::toJitType() const {
 }
 
 shared_ptr<manda::runtime::Object>
+manda::runtime::NumberType::deserialize(void *ptr) {
+  auto *asFloat64 = (jit_float64 *)ptr;
+  return make_shared<Number>(*asFloat64);
+}
+
+shared_ptr<manda::runtime::Object>
 manda::runtime::NumberType::applyJitFunction(std::vector<void *> &args,
                                              jit_function &func) {
   // TODO: Process result of jit_function_apply
@@ -50,8 +56,9 @@ manda::runtime::NumberType::applyJitFunction(std::vector<void *> &args,
     auto result = exec();
     return make_shared<Number>(result);
   } else {
-    jit_float64 result;
-    func.apply(args.data(), &result);
-    return make_shared<Number>(result);
+    return Type::applyJitFunction(args, func);
+    //    jit_float64 result;
+    //    func.apply(args.data(), &result);
+    //    return make_shared<Number>(result);
   }
 }

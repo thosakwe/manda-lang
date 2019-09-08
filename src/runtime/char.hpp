@@ -19,8 +19,9 @@ class CharType : public Type {
 
 public:
   jit_type_t toJitType() const override;
-  std::shared_ptr<manda::runtime::Object>
-  applyJitFunction(std::vector<void *> &args, jit_function &func) override;
+  std::shared_ptr<manda::runtime::Object> deserialize(void *ptr) override;
+  //  std::shared_ptr<manda::runtime::Object>
+//  applyJitFunction(std::vector<void *> &args, jit_function &func) override;
 };
 } // namespace manda::runtime
 
