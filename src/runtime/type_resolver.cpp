@@ -95,7 +95,7 @@ void TypeResolver::visitTupleExpr(const TupleExprCtx &ctx) {
     }
   }
 
-  lastType = make_shared<TupleType>();
+  lastType = make_shared<TupleType>(items);
 }
 
 void TypeResolver::visitCastExpr(const CastExprCtx &ctx) {}

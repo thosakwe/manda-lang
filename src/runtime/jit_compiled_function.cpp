@@ -57,6 +57,14 @@ void JitCompiledFunction::build() {
       // TODO: Come up with a better error message.
       interpreter.reportError(astFunction.getNode()->location,
                               "JIT compilation failed.");
+      if (interpreter.getOptions().developerMode) {
+        cout << "Function type: " << astFunction.getType(interpreter)->getName()
+             << endl;
+        cout << "Expected return type: "
+             << astFunction.getReturnType(interpreter)->getName() << endl;
+        cout << "The compilation of this function did not return a value."
+             << endl;
+      }
       fail();
       return;
     }
