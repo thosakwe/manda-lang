@@ -6,6 +6,7 @@
 namespace manda::runtime {
 struct BuiltinFunction : public Function {
   BuiltinFunction(std::string name, std::vector<Parameter> parameters,
+                  std::shared_ptr<Type> returnType,
                   std::function<std::shared_ptr<Object>(
                       Interpreter &, const manda::analysis::Location,
                       std::shared_ptr<Object> &,
@@ -13,12 +14,14 @@ struct BuiltinFunction : public Function {
                       fn);
   std::string name;
   std::vector<Parameter> parameters;
+  std::shared_ptr<Type> returnType;
   std::function<std::shared_ptr<Object>(
       Interpreter &, const manda::analysis::Location, std::shared_ptr<Object> &,
       const std::vector<std::shared_ptr<Object>> &)>
       fn;
   [[nodiscard]] const std::string &getName() const override;
   [[nodiscard]] const std::vector<Parameter> &getParameters() const override;
+  std::shared_ptr<Type> getReturnType(Interpreter &interpreter) const override;
   std::shared_ptr<Object>
   invoke(Interpreter &interpreter, const manda::analysis::Location &location,
          std::shared_ptr<Object> &thisObject,

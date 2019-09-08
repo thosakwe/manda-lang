@@ -34,7 +34,7 @@ void Function::print(ostream &out, bool ansiSupported) const {
 }
 
 shared_ptr<Type> Function::getType(Interpreter &interpreter) const {
-  return make_shared<FunctionType>(getParameters(), returnType);
+  return make_shared<FunctionType>(getParameters(), getReturnType(interpreter));
 }
 
 FunctionType::FunctionType(std::vector<Parameter> parameters,
@@ -48,5 +48,4 @@ string FunctionType::getName() const {
 
 jit_type_t FunctionType::toJitType() const {
   // A Manda Function maps directly to a JIT function.
-
 }
