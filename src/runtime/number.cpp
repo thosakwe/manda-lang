@@ -15,8 +15,6 @@ manda::runtime::Number::Number(double value) : value(value) {}
 double manda::runtime::Number::getValue() const { return value; }
 
 void manda::runtime::Number::print(ostream &out, bool ansiSupported) const {
-  out << value;
-  return;
   ostringstream oss;
   oss << fixed << value;
   auto str = oss.str();
