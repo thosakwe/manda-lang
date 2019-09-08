@@ -13,6 +13,8 @@ typedef struct _manda_context *manda_context_t;
 typedef struct _manda_object *manda_object_t;
 typedef enum { MANDA_RESULT_OK, MANDA_RESULT_ERROR } manda_result_t;
 
+typedef void (*MandaNativeFunction)(manda_context_t);
+
 MANDA_EXTERN_C manda_result_t manda_return(manda_context_t context,
                                            manda_object_t value);
 
