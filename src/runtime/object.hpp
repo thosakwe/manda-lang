@@ -4,17 +4,12 @@
 #include <memory>
 
 namespace manda::runtime {
+class Interpreter;
 class Object {
 public:
   virtual void print(std::ostream &out, bool ansiSupported) const = 0;
-
-  virtual const std::shared_ptr<Type> &getType() const {
-    // TODO: Actually force classes to implement this.
-    return type;
-  }
-
-private:
-  std::shared_ptr<Type> type;
+  virtual const std::shared_ptr<Type> &
+  getType(Interpreter &interpreter) const = 0;
 };
 } // namespace manda::runtime
 

@@ -42,7 +42,7 @@ void ModuleCompiler::visitExprDecl(const ExprDeclCtx &ctx) {
       // Disallow top-level evaluations in regular mode.
       interpreter.reportError(
           ctx.location,
-          "This expression is not allowed at in the top-level context.");
+          "This expression is not allowed in the top-level context.");
     }
   } else {
     // Visit top-level
