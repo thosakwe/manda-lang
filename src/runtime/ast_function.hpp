@@ -15,7 +15,6 @@ public:
   AstFunction(const manda::analysis::FnDeclExprCtx &node,
               std::shared_ptr<SymbolTable> scope,
               std::vector<Parameter> parameters);
-  const manda::analysis::FnDeclExprCtx &getNode();
 
   [[nodiscard]] const std::string &getName() const override;
 
@@ -28,7 +27,7 @@ public:
 
 private:
   std::string name;
-  const manda::analysis::FnDeclExprCtx &node;
+  std::unique_ptr<manda::analysis::FnDeclExprCtx> node;
   // TODO: Get parameters from actual node
   std::vector<Parameter> parameters;
   std::shared_ptr<SymbolTable> scope;

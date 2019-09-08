@@ -8,17 +8,15 @@ using namespace std;
 
 AstFunction::AstFunction(const FnDeclExprCtx &node,
                          std::shared_ptr<SymbolTable> scope)
-    : name(node.name), node(node), scope(move(scope)) {}
+    : name(node.name), node(node.clone()), scope(move(scope)) {}
 
 AstFunction::AstFunction(const manda::analysis::FnDeclExprCtx &node,
                          std::shared_ptr<SymbolTable> scope,
                          std::vector<Parameter> parameters)
-    : name(node.name), node(node), parameters(move(parameters)),
+    : name(node.name), node(node.clone()), parameters(move(parameters)),
       scope(move(scope)) {}
 
 const string &AstFunction::getName() const { return name; }
-
-const FnDeclExprCtx &AstFunction::getNode() { return node; }
 
 const vector<Parameter> &AstFunction::getParameters() const {
   return parameters;
@@ -32,6 +30,6 @@ AstFunction::invoke(Interpreter &interpreter, const Location &location,
   // TODO: Inject parameters into scope
   auto childScope = scope->createChild();
   ObjectResolver resolver(interpreter, childScope);
-  node.body->accept(resolver);
+  node->body->accept(resolver);
   return resolver.getLastObject();
 }
