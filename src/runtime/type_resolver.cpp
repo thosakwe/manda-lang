@@ -76,15 +76,25 @@ void TypeResolver::visitIdExpr(const IdExprCtx &ctx) {
 
   auto symbol = scope->resolve(ctx.name);
   if (!symbol) {
-    // TODO: Throw an error on unresolved symbols?
+    ostringstream oss;
+    oss << "The name \"" << ctx.name << "\" does not exist in this context.";
+    interpreter.reportError(ctx.location, oss.str());
     lastType = nullptr;
   } else if (holds_alternative<shared_ptr<Type>>(*symbol)) {
     // TODO: Reify types?
+    ostringstream oss;
+    oss << "The symbol \"" << ctx.name
+        << "\" resolves to a type, not an object.";
+    interpreter.reportError(ctx.location, oss.str());
     lastType = nullptr;
   } else if (holds_alternative<shared_ptr<Object>>(*symbol)) {
     lastType = get<shared_ptr<Object>>(*symbol)->getType(interpreter);
   } else {
     // TODO: Throw an error here, since it should never be reached?
+    ostringstream oss;
+    oss << "Compiler error on variable \"" << ctx.name
+        << "\". Please file a bug report.";
+    interpreter.reportError(ctx.location, oss.str());
     lastType = nullptr;
   }
 }

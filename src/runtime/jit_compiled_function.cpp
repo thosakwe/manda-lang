@@ -28,6 +28,7 @@ JitCompiledFunction::JitCompiledFunction(Interpreter &interpreter,
   coerceToAny.push(false);
   scopeStack.push(fn.getScope());
   jitValueScopeStack.push(make_shared<JitValueScope>());
+  typeScopeStack.push(make_shared<TypeScope>());
 }
 
 jit_type_t JitCompiledFunction::create_signature() {
