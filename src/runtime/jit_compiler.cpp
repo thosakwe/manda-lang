@@ -41,7 +41,12 @@ void JitCompiler::visitVoidLiteral(const VoidLiteralCtx &ctx) {}
 
 void JitCompiler::visitIdExpr(const IdExprCtx &ctx) {}
 
-void JitCompiler::visitNumberLiteral(const NumberLiteralCtx &ctx) {}
+void JitCompiler::visitNumberLiteral(const NumberLiteralCtx &ctx) {
+  // Manda Numbers are sys doubles.
+  auto jitNumberType = interpreter.getCoreLibrary().numberType->toJitType();
+  lastValue = jit_value_create_float64_constant(jitFunction->raw(),
+                                                jitNumberType, ctx.value);
+}
 
 void JitCompiler::visitStringLiteral(const StringLiteralCtx &ctx) {}
 
