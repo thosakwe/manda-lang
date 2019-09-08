@@ -7,6 +7,7 @@
 #include <memory>
 
 namespace manda::runtime {
+typedef GenericScope<std::shared_ptr<Type>> TypeScope;
 class TypeResolver : public manda::analysis::TypeVisitor,
                      public manda::analysis::ExprVisitor {
 public:
@@ -29,6 +30,7 @@ public:
 private:
   Interpreter &interpreter;
   std::shared_ptr<SymbolTable> scope;
+  std::stack<std::shared_ptr<TypeScope>> typeScopeStack;
   std::shared_ptr<Type> lastType;
 };
 } // namespace manda::runtime

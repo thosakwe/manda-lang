@@ -1,2 +1,4 @@
-var x = 32
-fn main -> print(x)
+fn main {
+  var x = 32
+  print(x)
+}

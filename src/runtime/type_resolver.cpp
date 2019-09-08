@@ -11,7 +11,9 @@ using namespace std;
 
 TypeResolver::TypeResolver(Interpreter &interpreter,
                            std::shared_ptr<SymbolTable> scope)
-    : interpreter(interpreter), scope(move(scope)) {}
+    : interpreter(interpreter), scope(move(scope)) {
+  typeScopeStack.push(make_shared<TypeScope>());
+}
 
 const shared_ptr<Type> &TypeResolver::getLastType() const { return lastType; }
 
@@ -37,7 +39,21 @@ void TypeResolver::visitTypeRef(const TypeRefCtx &ctx) {
   }
 }
 
-void TypeResolver::visitVarExpr(const VarExprCtx &ctx) {}
+void TypeResolver::visitVarExpr(const VarExprCtx &ctx) {
+  // Resolve the type of the expression, and then add to the scope.
+  // TODO: What about redefines?
+  ctx.value->accept(*this);
+  if (!lastType) {
+    ostringstream oss;
+    oss << "The name \"" << ctx.name << "\" does not exist in this context.";
+    interpreter.reportError(ctx.location, oss.str());
+  } else {
+    if (interpreter.getOptions().developerMode) {
+      cout << "TypeResolver found var " << ctx.name << ": " << lastType->getName() << endl;
+    }
+    typeScopeStack.top()->add(ctx.name, lastType);
+  }
+}
 
 void TypeResolver::visitFnDeclExpr(const FnDeclExprCtx &ctx) {}
 
@@ -46,6 +62,13 @@ void TypeResolver::visitVoidLiteral(const VoidLiteralCtx &ctx) {
 }
 
 void TypeResolver::visitIdExpr(const IdExprCtx &ctx) {
+  // TODO: Probably only use the type stack?
+  auto typeSymbol = typeScopeStack.top()->resolve(ctx.name);
+  if (typeSymbol) {
+    lastType = *typeSymbol;
+    return;
+  }
+
   auto symbol = scope->resolve(ctx.name);
   if (!symbol) {
     // TODO: Throw an error on unresolved symbols?
