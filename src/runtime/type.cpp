@@ -28,9 +28,10 @@ shared_ptr<Object> Type::applyJitFunction(std::vector<void *> &args,
   //  throw logic_error(oss.str());
 }
 
-std::shared_ptr<manda::runtime::Object> Type::deserialize(void *ptr) {
-  ostringstream oss;
-  oss << "deserialize not implemented for type ";
-  oss << getName();
-  throw logic_error(oss.str());
-}
+//
+//std::shared_ptr<manda::runtime::Object> Type::deserialize(void *ptr) {
+//  ostringstream oss;
+//  oss << "deserialize not implemented for type ";
+//  oss << getName();
+//  throw logic_error(oss.str());
+//}
