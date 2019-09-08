@@ -1,16 +1,15 @@
-#ifndef MANDA_JIT_COMPILER_HPP
-#define MANDA_JIT_COMPILER_HPP
+#ifndef MANDA_JIT_COMPILED_FUNCTION_HPP
+#define MANDA_JIT_COMPILED_FUNCTION_HPP
 #include "ast_function.hpp"
 #include "symbol_table.hpp"
 #include <optional>
 
 namespace manda::runtime {
 class Interpreter;
-class JitCompiler : public manda::analysis::ExprVisitor {
+class JitCompiledFunction : public jit_function,
+                            public manda::analysis::ExprVisitor {
 public:
-  explicit JitCompiler(Interpreter &interpreter, const AstFunction &fn);
-  jit_function getJitFunction();
-  bool compile();
+  explicit JitCompiledFunction(Interpreter &interpreter, const AstFunction &fn);
   void visitVarExpr(const analysis::VarExprCtx &ctx) override;
   void visitFnDeclExpr(const analysis::FnDeclExprCtx &ctx) override;
   void visitVoidLiteral(const analysis::VoidLiteralCtx &ctx) override;
@@ -24,10 +23,12 @@ public:
   void visitCallExpr(const analysis::CallExprCtx &ctx) override;
   void visitParenExpr(const analysis::ParenExprCtx &ctx) override;
 
+protected:
+  void build() override;
+
 private:
   Interpreter &interpreter;
   const AstFunction &astFunction;
-  std::optional<jit_function> jitFunction;
   std::optional<jit_value> lastValue;
 };
 } // namespace manda::runtime

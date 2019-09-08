@@ -1,9 +1,7 @@
 #include "ast_function.hpp"
-#include "jit_compiler.hpp"
+#include "jit_compiled_function.hpp"
 #include "object_resolver.hpp"
 #include "void.hpp"
-#include <iostream>
-#include <jit/jit-dump.h>
 
 using namespace manda::analysis;
 using namespace manda::runtime;
@@ -32,22 +30,8 @@ shared_ptr<Object>
 AstFunction::invoke(Interpreter &interpreter, const Location &location,
                     shared_ptr<Object> &thisObject,
                     const vector<shared_ptr<Object>> &args) const {
-  auto devMode = interpreter.getOptions().developerMode;
   // TODO: Use JIT here only
-  JitCompiler jitCompiler(interpreter, *this);
-  auto success = jitCompiler.compile();
-  if (devMode) {
-    auto jitFunction = jitCompiler.getJitFunction();
-    if (!success) {
-      // If compilation failed due to an analysis error,
-      // forcibly compile it here, so we can dump it.
-      interpreter.getJitContext().build_end();
-      jitFunction.compile();
-      interpreter.getJitContext().build_start();
-    }
-    jit_dump_function(stdout, jitFunction.raw(), name.c_str());
-    cout << "Note: Execution is not actually performed via JIT yet." << endl;
-  }
+  JitCompiledFunction jitFunction(interpreter, *this);
 
   // TODO: Invoke the JIT function.
   // TODO: Validate parameters
