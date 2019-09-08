@@ -15,6 +15,8 @@ struct DeclCtx {
   DeclCtx &operator=(DeclCtx &&) = default;
   virtual ~DeclCtx() = default;
   virtual void accept(DeclVisitor &visitor) const = 0;
+  virtual DeclCtx *clone() const = 0;
+  std::unique_ptr<DeclCtx> cloneToUniquePointer() const;
 };
 
 struct ExprDeclCtx : public DeclCtx {
@@ -22,6 +24,7 @@ struct ExprDeclCtx : public DeclCtx {
   ExprDeclCtx() = default;
   explicit ExprDeclCtx(ExprCtx *v);
   void accept(DeclVisitor &visitor) const override;
+  ExprDeclCtx *clone() const override;
 };
 
 struct TypeDeclCtx : public DeclCtx {
@@ -31,6 +34,7 @@ struct TypeDeclCtx : public DeclCtx {
   TypeDeclCtx() = default;
   TypeDeclCtx(std::string n, TypeCtx *v);
   void accept(DeclVisitor &visitor) const override;
+  TypeDeclCtx *clone() const override;
 };
 
 class DeclVisitor {
@@ -44,6 +48,8 @@ struct CompilationUnitCtx {
   Location location;
   std::vector<std::unique_ptr<DeclCtx>> declarations;
   void accept(CompilationUnitVisitor &visitor) const;
+  CompilationUnitCtx *clone() const;
+  std::unique_ptr<CompilationUnitCtx> cloneToUniquePointer() const;
 };
 
 class CompilationUnitVisitor {

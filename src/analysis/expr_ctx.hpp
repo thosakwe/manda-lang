@@ -21,6 +21,7 @@ public:
   virtual ~ExprCtx() = default;
   virtual void accept(ExprVisitor &visitor) const = 0;
   virtual ExprCtx *clone() const = 0;
+  virtual std::unique_ptr<ExprCtx> cloneToUniquePointer() const;
 };
 
 template <typename T> struct AstList {
@@ -89,6 +90,7 @@ struct ParamCtx {
   std::unique_ptr<TypeCtx> type;
   std::unique_ptr<ExprCtx> defaultValue;
   ParamCtx *clone() const;
+  std::unique_ptr<ParamCtx> cloneToUniquePointer() const;
 };
 
 struct FnDeclExprCtx : public TopLevelExprCtx {
@@ -138,6 +140,7 @@ public:
   StringPartCtx &operator=(StringPartCtx &&) = default;
   virtual ~StringPartCtx() = default;
   virtual StringPartCtx *clone() const = 0;
+  std::unique_ptr<StringPartCtx> cloneToUniquePointer() const;
 };
 
 class TextStringPartCtx : public StringPartCtx {
@@ -193,6 +196,7 @@ struct BoolLiteralCtx : public ExprCtx {
   BoolLiteralCtx() = default;
   explicit BoolLiteralCtx(bool v) : value(v) {}
   void accept(ExprVisitor &visitor) const override;
+  BoolLiteralCtx *clone() const override;
 };
 
 struct BlockExprCtx : public ExprCtx {

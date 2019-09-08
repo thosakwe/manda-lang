@@ -16,6 +16,8 @@ public:
   TypeCtx &operator=(TypeCtx &&) = default;
   virtual ~TypeCtx() = default;
   virtual void accept(TypeVisitor &visitor) const = 0;
+  virtual TypeCtx *clone() const = 0;
+  virtual std::unique_ptr<TypeCtx> cloneToUniquePointer() const;
 };
 
 struct TypeRefCtx : public TypeCtx {
@@ -23,6 +25,7 @@ struct TypeRefCtx : public TypeCtx {
   TypeRefCtx() = default;
   TypeRefCtx(const Location &l, std::string name);
   void accept(TypeVisitor &visitor) const override;
+  TypeRefCtx *clone() const override;
 };
 
 class TypeVisitor {
