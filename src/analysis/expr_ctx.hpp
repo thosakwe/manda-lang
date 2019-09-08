@@ -62,13 +62,13 @@ void toVector(AstList<T> *head, std::vector<std::unique_ptr<T>> &out) {
 
 class TopLevelExprCtx : public ExprCtx {
 public:
+  bool isPublic = false;
+  std::string name;
   TopLevelExprCtx() = default;
   TopLevelExprCtx(const TopLevelExprCtx &) = default;
   TopLevelExprCtx(TopLevelExprCtx &&) = default;
   TopLevelExprCtx &operator=(const TopLevelExprCtx &) = default;
   TopLevelExprCtx &operator=(TopLevelExprCtx &&) = default;
-  bool isPublic = false;
-  std::string name;
 };
 
 struct VarExprCtx : public TopLevelExprCtx {
@@ -80,6 +80,7 @@ struct VarExprCtx : public TopLevelExprCtx {
   VarExprCtx(bool f, std::string n, ExprCtx *v)
       : isFinal(f), name(std::move(n)), value(v) {}
   void accept(ExprVisitor &visitor) const override;
+  VarExprCtx *clone() const override;
 };
 
 struct ParamCtx {
@@ -87,6 +88,7 @@ struct ParamCtx {
   std::string name;
   std::unique_ptr<TypeCtx> type;
   std::unique_ptr<ExprCtx> defaultValue;
+  ParamCtx *clone() const;
 };
 
 struct FnDeclExprCtx : public TopLevelExprCtx {
@@ -94,11 +96,13 @@ struct FnDeclExprCtx : public TopLevelExprCtx {
   std::unique_ptr<TypeCtx> returnType;
   std::unique_ptr<ExprCtx> body;
   void accept(ExprVisitor &visitor) const override;
+  FnDeclExprCtx *clone() const override;
 };
 
 struct VoidLiteralCtx : public ExprCtx {
   // TODO: Set location
   void accept(ExprVisitor &visitor) const override;
+  VoidLiteralCtx *clone() const override;
 };
 
 struct IdExprCtx : public ExprCtx {
@@ -109,6 +113,7 @@ struct IdExprCtx : public ExprCtx {
     location = l;
   }
   void accept(ExprVisitor &visitor) const override;
+  IdExprCtx *clone() const override;
 };
 
 class NumberLiteralCtx : public ExprCtx {
@@ -118,6 +123,7 @@ public:
   NumberLiteralCtx() = default;
   NumberLiteralCtx(const Location &l, double v) : value(v) { location = l; }
   void accept(ExprVisitor &visitor) const override;
+  NumberLiteralCtx *clone() const override;
 };
 
 class StringPartCtx {
@@ -131,6 +137,7 @@ public:
   StringPartCtx &operator=(const StringPartCtx &) = default;
   StringPartCtx &operator=(StringPartCtx &&) = default;
   virtual ~StringPartCtx() = default;
+  virtual StringPartCtx *clone() const = 0;
 };
 
 class TextStringPartCtx : public StringPartCtx {
@@ -138,6 +145,7 @@ public:
   std::string text;
   [[nodiscard]] std::string convert(bool singleQuote) const override;
   TextStringPartCtx() = default;
+  TextStringPartCtx *clone() const override;
   TextStringPartCtx(const Location &l, std::string t) : text(std::move(t)) {
     location = l;
   }
@@ -148,6 +156,7 @@ public:
   std::string text;
   [[nodiscard]] std::string convert(bool singleQuote) const override;
   HexEscapeStringPartCtx() = default;
+  HexEscapeStringPartCtx *clone() const override;
   HexEscapeStringPartCtx(const Location &l, std::string t)
       : text(std::move(t)) {
     location = l;
@@ -158,6 +167,7 @@ class QuoteEscapeStringPartCtx : public StringPartCtx {
 public:
   [[nodiscard]] std::string convert(bool singleQuote) const override;
   QuoteEscapeStringPartCtx() = default;
+  QuoteEscapeStringPartCtx *clone() const override;
   explicit QuoteEscapeStringPartCtx(const Location &l) { location = l; }
 };
 
@@ -166,6 +176,7 @@ public:
   // TODO: Location
   StringLiteralCtx() = default;
   explicit StringLiteralCtx(bool sq) : singleQuote(sq) {}
+  StringLiteralCtx *clone() const override;
   void accept(ExprVisitor &visitor) const override;
   [[nodiscard]] std::string getValue() const;
   [[nodiscard]] bool isChar() const;
@@ -187,6 +198,7 @@ struct BoolLiteralCtx : public ExprCtx {
 struct BlockExprCtx : public ExprCtx {
   // TODO: Set location
   BlockExprCtx() = default;
+  BlockExprCtx *clone() const override;
   void accept(ExprVisitor &visitor) const override;
   std::vector<std::unique_ptr<ExprCtx>> body;
 };
@@ -194,12 +206,14 @@ struct BlockExprCtx : public ExprCtx {
 struct TupleExprCtx : public ExprCtx {
   // TODO: Set location
   TupleExprCtx() = default;
+  TupleExprCtx *clone() const override;
   void accept(ExprVisitor &visitor) const override;
   std::vector<std::unique_ptr<ExprCtx>> items;
 };
 
 struct CastExprCtx : public ExprCtx {
   CastExprCtx() = default;
+  CastExprCtx *clone() const override;
   void accept(ExprVisitor &visitor) const override;
   std::unique_ptr<ExprCtx> value;
   std::unique_ptr<TypeCtx> type;
@@ -207,6 +221,7 @@ struct CastExprCtx : public ExprCtx {
 
 struct CallExprCtx : public ExprCtx {
   CallExprCtx() = default;
+  CallExprCtx *clone() const override;
   explicit CallExprCtx(ExprCtx *tgt) : target(tgt) {
     location = target->location;
   }
@@ -220,6 +235,7 @@ struct ParenExprCtx : public ExprCtx {
   std::unique_ptr<ExprCtx> inner;
   ParenExprCtx() = default;
   explicit ParenExprCtx(ExprCtx *i) : inner(i) {}
+  ParenExprCtx *clone() const override;
   void accept(ExprVisitor &visitor) const override;
 };
 
