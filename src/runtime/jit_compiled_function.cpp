@@ -26,6 +26,7 @@ JitCompiledFunction::JitCompiledFunction(Interpreter &interpreter,
   create();
   set_recompilable();
   coerceToAny.push(false);
+  scope = make_shared<JitValueScope>();
 }
 
 jit_type_t JitCompiledFunction::create_signature() {
@@ -120,6 +121,51 @@ void JitCompiledFunction::visitFnDeclExpr(const FnDeclExprCtx &ctx) {}
 void JitCompiledFunction::visitVoidLiteral(const VoidLiteralCtx &ctx) {}
 
 void JitCompiledFunction::visitIdExpr(const IdExprCtx &ctx) {
+  // Search to see if we have already compiled the given symbol.
+  // If not, compile it, and add it to the current scope.
+  // TODO: Throw on redefines?
+  auto jitSymbol = scope->resolve(ctx.name);
+  if (jitSymbol) {
+    // Load the variable.
+    lastValue = insn_load(*jitSymbol);
+  } else {
+    // Look up the symbol.
+    auto rtSymbol = astFunction.getScope()->resolve(ctx.name);
+    if (!rtSymbol) {
+      ostringstream oss;
+      oss << "The name \"" << ctx.name << "\" does not exist in this context.";
+      interpreter.reportError(ctx.location, oss.str());
+      lastValue = nullopt;
+    } else if (holds_alternative<shared_ptr<Type>>(*rtSymbol)) {
+      // TODO: What if we are intending to resolve a type here?
+      ostringstream oss;
+      oss << "The value of \"" << ctx.name << "\" is a type, not an object.";
+      interpreter.reportError(ctx.location, oss.str());
+      lastValue = nullopt;
+    } else if (holds_alternative<shared_ptr<Object>>(*rtSymbol)) {
+      lastValue = nullopt;
+      // TODO: This is probably not that safe...
+      if (coerceToAny.top()) {
+        auto object = get<shared_ptr<Object>>(*rtSymbol);
+        auto jitPtr = new_constant((void *)object.get(), jit_type_void_ptr);
+        auto variable = new_value(jit_type_void_ptr);
+        jit_insn_store(raw(), variable.raw(), jitPtr.raw());
+        lastValue = insn_load(variable);
+      } else {
+        // TODO: Add serialize() to Type...
+        interpreter.reportError(ctx.location,
+                                "TODO: Add serialize() to Type...");
+        lastValue = nullopt;
+      }
+    } else {
+      // TODO: Better message here.
+      ostringstream oss;
+      oss << "The value of \"" << ctx.name
+          << "\" is unknown. This is a compiler error.";
+      interpreter.reportError(ctx.location, oss.str());
+      lastValue = nullopt;
+    }
+  }
 }
 
 void JitCompiledFunction::visitNumberLiteral(const NumberLiteralCtx &ctx) {

@@ -6,6 +6,7 @@
 #include <stack>
 
 namespace manda::runtime {
+typedef GenericScope<jit_value> JitValueScope;
 class Interpreter;
 class JitCompiledFunction : public jit_function,
                             public manda::analysis::ExprVisitor {
@@ -40,6 +41,7 @@ private:
   GarbageCollector &gc;
   const AstFunction &astFunction;
   std::optional<jit_value> lastValue;
+  std::shared_ptr<JitValueScope> scope;
   std::stack<bool> coerceToAny;
 };
 } // namespace manda::runtime
