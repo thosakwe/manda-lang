@@ -13,6 +13,8 @@ CoreLibrary::CoreLibrary() {
   anyType = make_shared<AnyType>();
   boolType = make_shared<BoolType>();
   charType = make_shared<CharType>();
+  numberType = make_shared<NumberType>();
+  stringType = make_shared<StringType>();
 }
 
 shared_ptr<Object>
@@ -34,6 +36,8 @@ void CoreLibrary::install(SymbolTable &scope) {
   scope.add("Any", anyType);
   scope.add("Bool", boolType);
   scope.add("Char", charType);
+  scope.add("Number", numberType);
+  scope.add("String", stringType);
   scope.add("print",
             shared_ptr<Object>(new BuiltinFunction("print", {}, printFn)));
 }

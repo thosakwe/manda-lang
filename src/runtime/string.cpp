@@ -1,5 +1,6 @@
 #include "string.hpp"
 #include "ansi_printer.hpp"
+#include "interpreter.hpp"
 #include <iostream>
 #include <sstream>
 
@@ -17,3 +18,9 @@ void String::print(ostream &out, bool ansiSupported) const {
     out << green(oss.str());
   }
 }
+
+shared_ptr<Type> String::getType(Interpreter &interpreter) const {
+  return interpreter.getCoreLibrary().stringType;
+}
+
+string StringType::getName() const { return "String"; }

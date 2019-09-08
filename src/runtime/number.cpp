@@ -1,5 +1,6 @@
 #include "number.hpp"
 #include "ansi_printer.hpp"
+#include "interpreter.hpp"
 #include <iomanip>
 #include <string>
 
@@ -20,4 +21,11 @@ void manda::runtime::Number::print(ostream &out, bool ansiSupported) const {
     out << yellow(str);
   }
   out << scientific;
+}
+
+string manda::runtime::NumberType::getName() const { return "Number"; }
+
+shared_ptr<manda::runtime::Type> manda::runtime::Number::getType(
+    manda::runtime::Interpreter &interpreter) const {
+  return interpreter.getCoreLibrary().numberType;
 }

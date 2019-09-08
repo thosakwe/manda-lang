@@ -8,9 +8,14 @@ public:
   explicit Number(double value);
   double getValue() const;
   void print(std::ostream &out, bool ansiSupported) const override;
+  std::shared_ptr<Type> getType(Interpreter &interpreter) const override;
 
 private:
   double value;
+};
+
+class NumberType : public Type {
+  std::string getName() const override;
 };
 } // namespace manda::runtime
 

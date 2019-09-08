@@ -9,9 +9,14 @@ public:
   // TODO: Location
   explicit String(std::string s);
   void print(std::ostream &out, bool ansiSupported) const override;
+  std::shared_ptr<Type> getType(Interpreter &interpreter) const override;
 
 private:
   std::string value;
+};
+
+class StringType : public Type {
+  std::string getName() const override;
 };
 } // namespace manda::runtime
 
