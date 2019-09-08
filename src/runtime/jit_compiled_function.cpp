@@ -82,12 +82,13 @@ void JitCompiledFunction::visitNumberLiteral(const NumberLiteralCtx &ctx) {
 void JitCompiledFunction::visitStringLiteral(const StringLiteralCtx &ctx) {
   if (!coerceToAny.top()) {
     if (ctx.isChar()) {
-      lastValue = new_constant((jit_ubyte)ctx.value[0], jit_type_sys_char);
+      auto jitCharType = interpreter.getCoreLibrary().charType->toJitType();
+      lastValue = new_constant((jit_ubyte)ctx.value[0], jitCharType);
     } else {
       // TODO: Delete the pointer
       auto *str = jit_strdup(ctx.getValue().c_str());
-      lastValue = new_constant((void *)str,
-                               jit_type_create_pointer(jit_type_sys_char, 0));
+      auto jitStrType = interpreter.getCoreLibrary().stringType->toJitType();
+      lastValue = new_constant((void *)str, jitStrType);
     }
   } else {
     // TODO: Delete the pointer...
@@ -101,7 +102,18 @@ void JitCompiledFunction::visitStringLiteral(const StringLiteralCtx &ctx) {
   }
 }
 
-void JitCompiledFunction::visitBoolLiteral(const BoolLiteralCtx &ctx) {}
+void JitCompiledFunction::visitBoolLiteral(const BoolLiteralCtx &ctx) {
+  jit_ubyte value = ctx.value ? 0x1 : 0x0;
+  if (!coerceToAny.top()) {
+    // Manda Booleans are either 0x0 or 0x1.
+    auto jitBoolType = interpreter.getCoreLibrary().boolType->toJitType();
+    lastValue = new_constant(value, jitBoolType);
+  } else {
+    // TODO: Delete the pointer...
+    auto *object = new Bool(ctx.value);
+    lastValue = new_constant((void *)object, jit_type_void_ptr);
+  }
+}
 
 void JitCompiledFunction::visitBlockExpr(const BlockExprCtx &ctx) {}
 
