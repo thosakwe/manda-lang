@@ -40,6 +40,6 @@ void CoreLibrary::install(SymbolTable &scope) {
   scope.add("Number", numberType);
   scope.add("String", stringType);
   scope.add("Void", voidType);
-  scope.add("print",
-            shared_ptr<Object>(new BuiltinFunction("print", {}, printFn)));
+  scope.add("print", shared_ptr<Object>(
+                         new BuiltinFunction("print", {}, voidType, printFn)));
 }
