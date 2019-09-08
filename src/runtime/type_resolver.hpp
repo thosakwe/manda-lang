@@ -7,11 +7,24 @@
 #include <memory>
 
 namespace manda::runtime {
-class TypeResolver : public manda::analysis::TypeVisitor {
+class TypeResolver : public manda::analysis::TypeVisitor,
+                     public manda::analysis::ExprVisitor {
 public:
   TypeResolver(Interpreter &interpreter, std::shared_ptr<SymbolTable> scope);
-  void visitTypeRef(const analysis::TypeRefCtx &ctx) override;
   [[nodiscard]] const std::shared_ptr<Type> &getLastType() const;
+  void visitTypeRef(const analysis::TypeRefCtx &ctx) override;
+  void visitVarExpr(const analysis::VarExprCtx &ctx) override;
+  void visitFnDeclExpr(const analysis::FnDeclExprCtx &ctx) override;
+  void visitVoidLiteral(const analysis::VoidLiteralCtx &ctx) override;
+  void visitIdExpr(const analysis::IdExprCtx &ctx) override;
+  void visitNumberLiteral(const analysis::NumberLiteralCtx &ctx) override;
+  void visitStringLiteral(const analysis::StringLiteralCtx &ctx) override;
+  void visitBoolLiteral(const analysis::BoolLiteralCtx &ctx) override;
+  void visitBlockExpr(const analysis::BlockExprCtx &ctx) override;
+  void visitTupleExpr(const analysis::TupleExprCtx &ctx) override;
+  void visitCastExpr(const analysis::CastExprCtx &ctx) override;
+  void visitCallExpr(const analysis::CallExprCtx &ctx) override;
+  void visitParenExpr(const analysis::ParenExprCtx &ctx) override;
 
 private:
   Interpreter &interpreter;

@@ -33,3 +33,41 @@ void TypeResolver::visitTypeRef(const TypeRefCtx &ctx) {
     lastType = nullptr;
   }
 }
+
+void TypeResolver::visitVarExpr(const VarExprCtx &ctx) {}
+
+void TypeResolver::visitFnDeclExpr(const FnDeclExprCtx &ctx) {}
+
+void TypeResolver::visitVoidLiteral(const VoidLiteralCtx &ctx) {
+  lastType = interpreter.getCoreLibrary().voidType;
+}
+
+void TypeResolver::visitIdExpr(const IdExprCtx &ctx) {}
+
+void TypeResolver::visitNumberLiteral(const NumberLiteralCtx &ctx) {
+  lastType = interpreter.getCoreLibrary().numberType;
+}
+
+void TypeResolver::visitStringLiteral(const StringLiteralCtx &ctx) {
+  if (ctx.isChar()) {
+    lastType = interpreter.getCoreLibrary().charType;
+  } else {
+    lastType = interpreter.getCoreLibrary().stringType;
+  }
+}
+
+void TypeResolver::visitBoolLiteral(const BoolLiteralCtx &ctx) {
+  lastType = interpreter.getCoreLibrary().boolType;
+}
+
+void TypeResolver::visitBlockExpr(const BlockExprCtx &ctx) {}
+
+void TypeResolver::visitTupleExpr(const TupleExprCtx &ctx) {}
+
+void TypeResolver::visitCastExpr(const CastExprCtx &ctx) {}
+
+void TypeResolver::visitCallExpr(const CallExprCtx &ctx) {}
+
+void TypeResolver::visitParenExpr(const ParenExprCtx &ctx) {
+  ctx.inner->accept(*this);
+}
