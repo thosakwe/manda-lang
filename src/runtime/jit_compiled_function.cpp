@@ -1,4 +1,5 @@
 #include "jit_compiled_function.hpp"
+#include "../analysis/ast_printer.hpp"
 #include "ast_function.hpp"
 #include "char.hpp"
 #include "manda_api_impl.hpp"
@@ -46,7 +47,13 @@ jit_value JitCompiledFunction::insn_malloc(jit_uint size) {
 void JitCompiledFunction::build() {
   // Compile the body, and return it.
   // TODO: Type checking...
+  AstPrinter printer(cout);
+  if (interpreter.getOptions().developerMode) {
+    cout << "Function body:" << endl;
+    astFunction.getNode()->body->accept(printer);
+  }
   astFunction.getNode()->body->accept(*this);
+
   if (!lastValue) {
     // The only way a function have no return is if it is
     // marked as returning void.
@@ -198,7 +205,7 @@ void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
       // Figure out the size.
       lastValue = nullopt;
       auto type = jit_type_get_field(jitResultType, 0);
-      ctx.items[offset]->accept(*this);
+      ctx.items[i]->accept(*this);
       if (!lastValue) {
         ostringstream oss;
         oss << "Failed to compile expression at index ";
@@ -263,6 +270,8 @@ void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
   coerceToAny.pop();
 }
 
-void JitCompiledFunction::visitParenExpr(const ParenExprCtx &ctx) {}
+void JitCompiledFunction::visitParenExpr(const ParenExprCtx &ctx) {
+  ctx.inner->accept(*this);
+}
 
 Interpreter &JitCompiledFunction::getInterpreter() const { return interpreter; }

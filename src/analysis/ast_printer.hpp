@@ -4,7 +4,9 @@
 #include <ostream>
 
 namespace manda::analysis {
-class AstPrinter : public CompilationUnitVisitor, DeclVisitor, ExprVisitor {
+class AstPrinter : public CompilationUnitVisitor,
+                   public DeclVisitor,
+                   public ExprVisitor {
 public:
   explicit AstPrinter(std::ostream &out);
   void indent();
