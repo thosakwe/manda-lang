@@ -45,6 +45,28 @@ jit_value JitCompiledFunction::insn_malloc(jit_uint size) {
   return insn_malloc(new_constant(size, jit_type_sys_uint));
 }
 
+jit_value JitCompiledFunction::insn_gc_ptr_callback(const std::string &name,
+                                                    const jit_value &ptr,
+                                                    void *func) {
+  // void some_gc_func(GC*, void* ptr);
+  jit_type_t params[2] = {jit_type_void_ptr, jit_type_void_ptr};
+  auto sig =
+      jit_type_create_signature(jit_abi_cdecl, jit_type_void_ptr, params, 2, 0);
+  jit_value_t args[2] = {new_constant((void *)&gc, jit_type_void_ptr).raw(),
+                         ptr.raw()};
+  return insn_call_native(name.c_str(), func, sig, args, 2, 0);
+}
+
+jit_value JitCompiledFunction::insn_gc_incref(const jit_value &ptr) {
+  return insn_gc_ptr_callback("gc_incref", ptr,
+                              (void *)&GarbageCollector::static_incref);
+}
+
+jit_value JitCompiledFunction::insn_gc_decref(const jit_value &ptr) {
+  return insn_gc_ptr_callback("gc_decref", ptr,
+                              (void *)&GarbageCollector::static_decref);
+}
+
 void JitCompiledFunction::build() {
   // Compile the body, and return it.
   // TODO: Type checking...

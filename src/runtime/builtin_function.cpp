@@ -22,7 +22,7 @@ const vector<Parameter> &BuiltinFunction::getParameters() const {
 
 void BuiltinFunction::addApiArgument(manda_context_t context,
                                      _manda_object value) {
-  context->arguments.push_back(value);
+  context->addArgument(value);
 }
 
 jit_value BuiltinFunction::acceptForJitCall(JitCompiledFunction &function,
@@ -58,10 +58,9 @@ jit_value BuiltinFunction::acceptForJitCall(JitCompiledFunction &function,
   }
 
   jit_value_t apiArgs[1] = {jitContextPtr.raw()};
-  // Invoke the function.
-  function.insn_call_native(name.c_str(), (void *)nativeFunction,
+  // Invoke the function. The Manda context will handle releasing pointers.
+  return function.insn_call_native(name.c_str(), (void *)nativeFunction,
                                    apiSignature, apiArgs, 1, JIT_CALL_TAIL);
-  // TODO: Release all referenced pointers.
 }
 
 shared_ptr<Object>
@@ -71,6 +70,7 @@ BuiltinFunction::invoke(Interpreter &interpreter, const Location &location,
   // Allow invoking built-in functions outside of JIT by simply
   // creating a C API context, and invoking the target.
   _manda_context context{interpreter};
+  context.managed = false;
   for (auto &arg : args) {
     context.arguments.push_back({arg.get()});
   }

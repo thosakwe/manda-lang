@@ -19,6 +19,10 @@ extern "C" struct _manda_context {
   manda::runtime::Interpreter &interpreter;
   std::vector<_manda_object> arguments;
   std::optional<_manda_object> returnValue;
+  bool managed = false; // If `true`, don't incref/decref
+  // TODO: Rule of five?
+  ~_manda_context();
+  void addArgument(const _manda_object& value);
 };
 
 #endif

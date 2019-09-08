@@ -5,6 +5,22 @@
 using namespace manda::runtime;
 using namespace std;
 
+_manda_context::~_manda_context() {
+  // Dereference all pointers.
+  if (!managed) {
+    for (auto &arg : arguments) {
+      interpreter.getGarbageCollector().decref(arg.object);
+    }
+  }
+}
+
+void _manda_context::addArgument(const _manda_object &value) {
+  if (!managed) {
+    interpreter.getGarbageCollector().incref(value.object);
+  }
+  arguments.push_back(value);
+}
+
 MANDA_EXTERN_C unsigned long manda_get_argument_count(manda_context_t context) {
   if (!context) {
     return 0;

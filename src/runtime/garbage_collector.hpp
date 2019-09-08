@@ -9,6 +9,8 @@ public:
   void *allocate(jit_uint size);
   void incref(void *ptr);
   void decref(void *ptr);
+  static void static_incref(GarbageCollector *gc, void *ptr);
+  static void static_decref(GarbageCollector *gc, void *ptr);
 
   template <typename T, class... Args> T *make(Args &&... args) {
     auto *out = new T(args...);

@@ -12,20 +12,34 @@ void *GarbageCollector::allocate(jit_uint size) {
 }
 
 void GarbageCollector::incref(void *ptr) {
+  if (ptr == nullptr)
+    return;
   auto it = refCounts.find(ptr);
   if (it != refCounts.end()) {
     it->second++;
   } else {
-    refCounts[ptr] = 1;
+    refCounts[ptr] = 0;
   }
 }
 
 void GarbageCollector::decref(void *ptr) {
+  if (ptr == nullptr)
+    return;
   auto it = refCounts.find(ptr);
   if (it != refCounts.end()) {
-    if ((--it->second) <= 0) {
+    if (it->second <= 0) {
       refCounts.erase(it);
       free(it->first);
+    } else {
+      it->second--;
     }
   }
+}
+
+void GarbageCollector::static_incref(GarbageCollector *gc, void *ptr) {
+  gc->incref(ptr);
+}
+
+void GarbageCollector::static_decref(GarbageCollector *gc, void *ptr) {
+  gc->decref(ptr);
 }
