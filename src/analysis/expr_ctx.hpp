@@ -20,6 +20,7 @@ public:
   ExprCtx &operator=(ExprCtx &&) = default;
   virtual ~ExprCtx() = default;
   virtual void accept(ExprVisitor &visitor) const = 0;
+  virtual ExprCtx *clone() const = 0;
 };
 
 template <typename T> struct AstList {
@@ -72,7 +73,7 @@ public:
 
 struct VarExprCtx : public TopLevelExprCtx {
   // TODO: Set location
-  bool isFinal;
+  bool isFinal = false;
   std::string name;
   std::unique_ptr<ExprCtx> value;
   VarExprCtx() = default;
@@ -113,7 +114,7 @@ struct IdExprCtx : public ExprCtx {
 class NumberLiteralCtx : public ExprCtx {
 public:
   // TODO: Set location
-  double value;
+  double value = 0.0;
   NumberLiteralCtx() = default;
   NumberLiteralCtx(const Location &l, double v) : value(v) { location = l; }
   void accept(ExprVisitor &visitor) const override;
@@ -170,14 +171,14 @@ public:
   [[nodiscard]] bool isChar() const;
 
 public:
-  bool singleQuote;
+  bool singleQuote = false;
   std::string value;
   std::vector<std::unique_ptr<StringPartCtx>> parts;
 };
 
 struct BoolLiteralCtx : public ExprCtx {
   // TODO: Set location
-  bool value;
+  bool value = false;
   BoolLiteralCtx() = default;
   explicit BoolLiteralCtx(bool v) : value(v) {}
   void accept(ExprVisitor &visitor) const override;
