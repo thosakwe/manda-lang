@@ -32,6 +32,8 @@ AstFunction::invoke(Interpreter &interpreter, const Location &location,
                     const vector<shared_ptr<Object>> &args) const {
   // TODO: Use JIT here only
   JitCompiledFunction jitFunction(interpreter, *this);
+  // TODO: Apply the function properly
+  jitFunction.apply(nullptr, nullptr);
 
   // TODO: Invoke the JIT function.
   // TODO: Validate parameters
