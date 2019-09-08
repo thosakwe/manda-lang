@@ -1,5 +1,6 @@
 #include "type_resolver.hpp"
 #include "function.hpp"
+#include "tuple.hpp"
 #include <iostream>
 #include <sstream>
 #include <utility>
@@ -78,7 +79,24 @@ void TypeResolver::visitBoolLiteral(const BoolLiteralCtx &ctx) {
 
 void TypeResolver::visitBlockExpr(const BlockExprCtx &ctx) {}
 
-void TypeResolver::visitTupleExpr(const TupleExprCtx &ctx) {}
+void TypeResolver::visitTupleExpr(const TupleExprCtx &ctx) {
+  vector<shared_ptr<Type>> items;
+  for (auto &item : ctx.items) {
+    lastType = nullptr;
+    item->accept(*this);
+    if (!lastType) {
+      // TODO: Allow passing as Any
+      // TODO: Should any errors be in the TypeResolver at all?
+      interpreter.reportError(
+          item->location, "Could not resolve the types of all items in tuple.");
+      return;
+    } else {
+      items.push_back(lastType);
+    }
+  }
+
+  lastType = make_shared<TupleType>();
+}
 
 void TypeResolver::visitCastExpr(const CastExprCtx &ctx) {}
 
