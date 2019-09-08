@@ -127,6 +127,9 @@ void JitCompiledFunction::visitIdExpr(const IdExprCtx &ctx) {
   auto jitSymbol = scope->resolve(ctx.name);
   if (jitSymbol) {
     // Load the variable.
+    if (interpreter.getOptions().developerMode) {
+      cout << "Emitting load of var \"" << ctx.name << "\"" << endl;
+    }
     lastValue = insn_load(*jitSymbol);
   } else {
     // Look up the symbol.
@@ -143,13 +146,17 @@ void JitCompiledFunction::visitIdExpr(const IdExprCtx &ctx) {
       interpreter.reportError(ctx.location, oss.str());
       lastValue = nullopt;
     } else if (holds_alternative<shared_ptr<Object>>(*rtSymbol)) {
-      lastValue = nullopt;
       // TODO: This is probably not that safe...
       if (coerceToAny.top()) {
         auto object = get<shared_ptr<Object>>(*rtSymbol);
         auto jitPtr = new_constant((void *)object.get(), jit_type_void_ptr);
         auto variable = new_value(jit_type_void_ptr);
         jit_insn_store(raw(), variable.raw(), jitPtr.raw());
+        if (interpreter.getOptions().developerMode) {
+          cout << "Emitting new var-as-any \"" << ctx.name << "\"" << endl;
+          cout << "Pointer="
+               << jit_value_get_constant(jitPtr.raw()).un.ptr_value << endl;
+        }
         lastValue = insn_load(variable);
       } else {
         // TODO: Add serialize() to Type...
@@ -213,7 +220,11 @@ void JitCompiledFunction::visitBoolLiteral(const BoolLiteralCtx &ctx) {
   }
 }
 
-void JitCompiledFunction::visitBlockExpr(const BlockExprCtx &ctx) {}
+void JitCompiledFunction::visitBlockExpr(const BlockExprCtx &ctx) {
+  // TODO: Create a new label, and introduce a new scope. Then, resolve
+  // all expressions.
+  // If there are no expressions, return void (a.k.a., do nothing here).
+}
 
 void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
   if (coerceToAny.top()) {

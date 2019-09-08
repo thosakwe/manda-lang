@@ -77,7 +77,15 @@ void TypeResolver::visitBoolLiteral(const BoolLiteralCtx &ctx) {
   lastType = interpreter.getCoreLibrary().boolType;
 }
 
-void TypeResolver::visitBlockExpr(const BlockExprCtx &ctx) {}
+void TypeResolver::visitBlockExpr(const BlockExprCtx &ctx) {
+  if (ctx.body.empty()) {
+    lastType = interpreter.getCoreLibrary().voidType;
+  } else {
+    // TODO: Should *all* nodes be visited, or just the last?
+    lastType = nullptr;
+    ctx.body[ctx.body.size() - 1]->accept(*this);
+  }
+}
 
 void TypeResolver::visitTupleExpr(const TupleExprCtx &ctx) {
   vector<shared_ptr<Type>> items;
