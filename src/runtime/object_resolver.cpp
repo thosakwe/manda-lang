@@ -65,9 +65,18 @@ void ObjectResolver::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
 
   // Determine the function's return type.
   // If none is given, default to `Any`.
+  //
+  // TODO: Compare the declared return type to the actual return type.
   shared_ptr<Type> returnType;
   if (!ctx.returnType) {
-    returnType = interpreter.getCoreLibrary().anyType;
+    TypeResolver typeResolver(interpreter, scope);
+    ctx.body->accept(typeResolver);
+    returnType = typeResolver.getLastType();
+
+    if (!returnType) {
+      // Default to returning Any.
+      returnType = interpreter.getCoreLibrary().anyType;
+    }
   } else {
     TypeResolver typeResolver(interpreter, scope);
     ctx.returnType->accept(typeResolver);
