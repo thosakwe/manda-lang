@@ -1,3 +1,4 @@
+find_path(JIT_INCLUDE_DIR NAMES "jit/jit-plus.h" "jit/jit.h")
 add_library(manda_runtime
     value.hpp value.cpp
     object.cpp object.hpp
@@ -22,4 +23,7 @@ add_library(manda_runtime
     bool.cpp bool.hpp
     string.cpp string.hpp
     char.cpp char.hpp
-    type_resolver.cpp type_resolver.hpp object_resolver.cpp object_resolver.hpp any_type.cpp any_type.hpp)
+    type_resolver.cpp type_resolver.hpp
+    object_resolver.cpp object_resolver.hpp
+    any_type.cpp any_type.hpp)
+target_include_directories(manda_runtime PUBLIC ${JIT_INCLUDE_DIR})
