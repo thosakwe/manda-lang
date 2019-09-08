@@ -5,6 +5,7 @@
 #include "number.hpp"
 #include "object_resolver.hpp"
 #include "string.hpp"
+#include "tuple.hpp"
 #include <iostream>
 #include <jit/jit-dump.h>
 #include <vector>
@@ -117,7 +118,34 @@ void JitCompiledFunction::visitBoolLiteral(const BoolLiteralCtx &ctx) {
 
 void JitCompiledFunction::visitBlockExpr(const BlockExprCtx &ctx) {}
 
-void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {}
+void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
+  if (coerceToAny.top()) {
+    // Create a new tuple instance, and return the pointer.
+    //    auto *object = new Bool(ctx.value);
+    //    lastValue = new_constant((void *)object, jit_type_void_ptr);
+    // TODO: Delete the pointer
+    ObjectResolver resolver(interpreter, astFunction.getScope());
+    auto *object = new Tuple();
+    for (auto &item : ctx.items) {
+      item->accept(resolver);
+      auto result = resolver.getLastObject();
+      if (!result) {
+        interpreter.reportError(item->location,
+                                "Could not resolve every item in this tuple.");
+        lastValue = nullopt;
+        return;
+      } else {
+        object->getItems().push_back(result);
+      }
+    }
+    lastValue = new_constant((void *)object, jit_type_void_ptr);
+  } else {
+    // Resolve this item to a tuple type.
+    // Then, create a temporary structure value.
+    // For each field, write into the current location.
+    // Increment by the size of the field.
+  }
+}
 
 void JitCompiledFunction::visitCastExpr(const CastExprCtx &ctx) {}
 
