@@ -57,4 +57,4 @@ shared_ptr<Type> AstFunction::getReturnType(Interpreter &interpreter) const {
 
 const unique_ptr<FnDeclExprCtx> &AstFunction::getNode() const { return node; }
 
-const shared_ptr<SymbolTable> &AstFunction::getScope() const { return scope; }
+const std::shared_ptr<SymbolTable> &AstFunction::getScope() const { return scope; }

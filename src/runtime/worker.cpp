@@ -25,14 +25,14 @@ void Worker::executeProgram(shared_ptr<CompilationUnitCtx> &ctx) {
   auto main = module->getSymbolTable()->resolve("main");
   Location startLocation = {module->getName(), 1, 1};
 
-  if (!holds_alternative<shared_ptr<Object>>(main)) {
+  if (!main || !holds_alternative<shared_ptr<Object>>(*main)) {
     // TODO: Throw error if no main function was found.
     interpreter.reportError(
         startLocation,
         "No function named \"main\" was defined in the top-level context.");
   } else {
     auto *mainMethod =
-        dynamic_cast<Function *>(get<shared_ptr<Object>>(main).get());
+        dynamic_cast<Function *>(get<shared_ptr<Object>>(*main).get());
     if (!mainMethod) {
       interpreter.reportError(startLocation,
                               "A symbol \"main\" was defined in the top-level "

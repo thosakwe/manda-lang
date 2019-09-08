@@ -17,7 +17,7 @@ using namespace manda::runtime;
 using namespace std;
 
 ObjectResolver::ObjectResolver(Interpreter &interpreter,
-                               shared_ptr<SymbolTable> scope)
+                               std::shared_ptr<SymbolTable> scope)
     : interpreter(interpreter), scope(move(scope)) {}
 
 const shared_ptr<Object> &ObjectResolver::getLastObject() const {
@@ -41,7 +41,7 @@ void ObjectResolver::visitVarExpr(const VarExprCtx &ctx) {
       // Resolve the value as an identifier in the top-level.
       interpreter.emitTopLevelExpression(
           make_unique<IdExprCtx>(ctx.location, ctx.name));
-      lastObject = get<shared_ptr<Object>>(symbol);
+      lastObject = get<shared_ptr<Object>>(symbol.value);
     }
   } else {
     lastObject = nullptr;
@@ -138,20 +138,20 @@ void ObjectResolver::visitVoidLiteral(const VoidLiteralCtx &ctx) {
 
 void ObjectResolver::visitIdExpr(const IdExprCtx &ctx) {
   auto symbol = scope->resolve(ctx.name);
-  if (holds_alternative<monostate>(symbol)) {
+  if (!symbol) {
     ostringstream oss;
     oss << "The name '";
     oss << ctx.name << "' does not exist in this context.";
     interpreter.reportError(ctx.location, oss.str());
     lastObject = nullptr;
-  } else if (holds_alternative<shared_ptr<Type>>(symbol)) {
+  } else if (holds_alternative<shared_ptr<Type>>(*symbol)) {
     ostringstream oss;
     oss << "The value of symbol '";
     oss << ctx.name << "' is a type, not a value.";
     interpreter.reportError(ctx.location, oss.str());
     lastObject = nullptr;
-  } else if (holds_alternative<shared_ptr<Object>>(symbol)) {
-    lastObject = get<shared_ptr<Object>>(symbol);
+  } else if (holds_alternative<shared_ptr<Object>>(*symbol)) {
+    lastObject = get<shared_ptr<Object>>(*symbol);
     if (!lastObject && interpreter.getOptions().developerMode) {
       cout << "Warning: The returned symbol is a null pointer." << endl;
     }
