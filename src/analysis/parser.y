@@ -183,12 +183,14 @@ expr:
   | LPAREN expr RPAREN { $$ = new ParenExprCtx($2); }
 ;
 
+semi: %empty | SEMI;
+
 expr_list:
   %empty { $$ = nullptr; }
   | expr { $$ = new ExprList($1); }
-  | expr_list expr
+  | expr_list semi expr
     {
-      auto *v = new ExprList($2);
+      auto *v = new ExprList($3);
       if ($1 == nullptr) {
         $$ = v;
       } else {
