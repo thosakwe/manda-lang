@@ -32,8 +32,22 @@ CoreLibrary::CoreLibrary() {
 //}
 
 void CoreLibrary::printFn(manda_context_t context) {
-  // TODO: Actually print the object.
-  cout << "Hello from the API!" << endl;
+  auto obj = manda_get_argument(context, 0);
+  if (!obj) {
+    // TODO: Throw error
+    return;
+  }
+
+  // Convert to a string, and then print.
+  const char *str;
+  auto result = manda_to_string(context, obj, &str);
+  if (result != MANDA_RESULT_OK) {
+    // TODO: Throw error
+    return;
+  }
+
+  // Actually print the object.
+  cout << str << endl;
 }
 
 void CoreLibrary::install(SymbolTable &scope) {
