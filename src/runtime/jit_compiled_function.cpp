@@ -138,13 +138,12 @@ void JitCompiledFunction::visitStringLiteral(const StringLiteralCtx &ctx) {
       auto jitCharType = interpreter.getCoreLibrary().charType->toJitType();
       lastValue = new_constant((jit_ubyte)ctx.value[0], jitCharType);
     } else {
-      // TODO: Delete the pointer
       auto *str = jit_strdup(ctx.getValue().c_str());
+      gc.incref(str);
       auto jitStrType = interpreter.getCoreLibrary().stringType->toJitType();
       lastValue = new_constant((void *)str, jitStrType);
     }
   } else {
-    // TODO: Delete the pointer...
     Object *object;
     if (ctx.isChar()) {
       object = gc.make<Char>(ctx.value[0]);
@@ -217,8 +216,9 @@ void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
     }
 
     // Allocate space for the tuple.
-    // TODO: Delete the pointer.
     auto jitTuplePointer = insn_malloc(jit_type_get_size(jitResultType));
+    // Mark the object in the garbage collector.
+    insn_gc_incref(jitTuplePointer);
     auto numFields = jit_type_num_fields(jitResultType);
     for (unsigned int i = 0; i < numFields; i++) {
       // Figure out the size.
