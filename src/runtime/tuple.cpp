@@ -53,3 +53,14 @@ jit_type_t TupleType::toJitType() const {
   }
   return jit_type_create_struct(fields.data(), items.size(), 0);
 }
+
+shared_ptr<manda::runtime::Object> TupleType::deserialize(void *ptr) {
+  // Deserialize each object, in turn.
+  auto *p = static_cast<char *>(ptr);
+  auto out = make_shared<Tuple>();
+  for (auto &item : items) {
+    out->getItems().push_back(item->deserialize((void *)p));
+    p += jit_type_get_size(item->toJitType());
+  }
+  return out;
+}
