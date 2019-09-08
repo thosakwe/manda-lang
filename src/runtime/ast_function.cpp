@@ -34,7 +34,7 @@ AstFunction::invoke(Interpreter &interpreter, const Location &location,
   JitCompiledFunction jitFunction(interpreter, *this);
   // TODO: Apply the function properly
   vector<void *> jitArgs;
-  return returnType->applyJitFunction(jitArgs, jitFunction);
+  return returnType->applyJitFunction(interpreter, jitArgs, jitFunction);
 
   // TODO: Invoke the JIT function.
   // TODO: Validate parameters

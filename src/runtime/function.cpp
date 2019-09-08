@@ -57,7 +57,8 @@ jit_type_t FunctionType::toJitType() const {
                                    jitParams.data(), jitParams.size(), 0);
 }
 
-shared_ptr<manda::runtime::Object> FunctionType::deserialize(void *ptr) {
+shared_ptr<manda::runtime::Object>
+FunctionType::deserialize(Interpreter &interpreter, void *ptr) {
   auto *object = (Function **)ptr;
   return shared_ptr<Function>(*object);
 }

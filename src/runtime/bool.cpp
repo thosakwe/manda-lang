@@ -26,7 +26,8 @@ string BoolType::getName() const { return "Bool"; }
 
 jit_type_t BoolType::toJitType() const { return jit_type_sys_bool; }
 
-shared_ptr<manda::runtime::Object> BoolType::deserialize(void *ptr) {
+shared_ptr<manda::runtime::Object>
+BoolType::deserialize(Interpreter &interpreter, void *ptr) {
   auto asUbyte = *((jit_ubyte *)ptr);
   return make_shared<Bool>(asUbyte == 0x1);
 }

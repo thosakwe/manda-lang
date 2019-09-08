@@ -5,6 +5,7 @@
 #include <vector>
 
 namespace manda::runtime {
+class Interpreter;
 class Object;
 class Type {
 public:
@@ -16,8 +17,10 @@ public:
   // TODO: Don't provide a default impl of this, instead let
   // types do the deserialization themselves.
   virtual std::shared_ptr<manda::runtime::Object>
-  applyJitFunction(std::vector<void *> &args, jit_function &func);
-  virtual std::shared_ptr<manda::runtime::Object> deserialize(void *ptr) = 0;
+  applyJitFunction(Interpreter &interpreter, std::vector<void *> &args,
+                   jit_function &func);
+  virtual std::shared_ptr<Object>
+  deserialize(manda::runtime::Interpreter &interpreter, void *ptr) = 0;
 };
 } // namespace manda::runtime
 

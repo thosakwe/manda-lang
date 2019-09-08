@@ -14,12 +14,13 @@ bool Type::isAssignableTo(const std::shared_ptr<Type> &other) {
   return isAssignableTo(*other);
 }
 
-shared_ptr<Object> Type::applyJitFunction(std::vector<void *> &args,
-                                          jit_function &func) {
+std::shared_ptr<manda::runtime::Object>
+Type::applyJitFunction(Interpreter &interpreter, std::vector<void *> &args,
+                       jit_function &func) {
   auto size = jit_type_get_size(toJitType());
   auto *ptr = malloc(size);
   func.apply(args.data(), ptr);
-  auto result = deserialize(ptr);
+  auto result = deserialize(interpreter, ptr);
   free(ptr);
   return result;
   //  ostringstream oss;

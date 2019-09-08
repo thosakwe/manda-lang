@@ -31,7 +31,8 @@ shared_ptr<Type> Char::getType(Interpreter &interpreter) const {
 
 jit_type_t CharType::toJitType() const { return jit_type_sys_char; }
 
-shared_ptr<manda::runtime::Object> CharType::deserialize(void *ptr) {
+shared_ptr<manda::runtime::Object>
+CharType::deserialize(Interpreter &interpreter, void *ptr) {
   auto *asUbyte = (jit_ubyte *)ptr;
   return make_shared<Char>((char)*asUbyte);
 }

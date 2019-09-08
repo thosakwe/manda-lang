@@ -20,7 +20,8 @@ jit_type_t AnyType::toJitType() const {
   return jit_type_create_struct(fields.data(), fields.size(), 0);
 }
 
-shared_ptr<Object> AnyType::deserialize(void *ptr) {
+shared_ptr<manda::runtime::Object>
+AnyType::deserialize(Interpreter &interpreter, void *ptr) {
   auto *obj = (Object **)ptr;
   return shared_ptr<Object>(*obj);
 }

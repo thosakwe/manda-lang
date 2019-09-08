@@ -3,12 +3,14 @@
 #include "type.hpp"
 
 namespace manda::runtime {
+class Interpreter;
 class AnyType : public Type {
   std::string getName() const override;
 
 public:
   jit_type_t toJitType() const override;
-  std::shared_ptr<manda::runtime::Object> deserialize(void *ptr) override;
+  std::shared_ptr<Object> deserialize(manda::runtime::Interpreter &interpreter,
+                                      void *ptr) override;
 };
 } // namespace manda::runtime
 

@@ -19,7 +19,8 @@ class TupleType : public Type {
 public:
   explicit TupleType(std::vector<std::shared_ptr<Type>> items);
   jit_type_t toJitType() const override;
-  std::shared_ptr<manda::runtime::Object> deserialize(void *ptr) override;
+  std::shared_ptr<Object> deserialize(Interpreter &interpreter,
+                                      void *ptr) override;
 
 private:
   std::string getName() const override;
