@@ -48,4 +48,11 @@ string FunctionType::getName() const {
 
 jit_type_t FunctionType::toJitType() const {
   // A Manda Function maps directly to a JIT function.
+  auto jitReturnType = returnType->toJitType();
+  vector<jit_type_t> jitParams;
+  for (auto &param : parameters) {
+    jitParams.push_back(param.type->toJitType());
+  }
+  return jit_type_create_signature(jit_abi_cdecl, jitReturnType,
+                                   jitParams.data(), jitParams.size(), 0);
 }
