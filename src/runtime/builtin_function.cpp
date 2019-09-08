@@ -26,7 +26,7 @@ void BuiltinFunction::addApiArgument(manda_context_t context,
 }
 
 jit_value BuiltinFunction::acceptForJitCall(JitCompiledFunction &function,
-                                       vector<jit_value> &arguments) {
+                                            vector<jit_value> &arguments) {
   // We were given a pointer to a C API function... Call it.
   // TODO: Support retrieving the value from a C API function.
 
@@ -45,7 +45,7 @@ jit_value BuiltinFunction::acceptForJitCall(JitCompiledFunction &function,
   // To pass arguments, we must coerce them to the Any type.
   // Call addApiArgument() on each one to have them visible to the consumer.
   for (auto &arg : arguments) {
-    // Note: at this point, these should all be `Any`, so no conversion is
+    // Note: at this point, these should all be `Any*`, so no conversion is
     // necessary. Besides, it would be nearly impossible otherwise.
     //
     // Create the signature for void addApiArgument(void* context, void* arg);
@@ -53,13 +53,13 @@ jit_value BuiltinFunction::acceptForJitCall(JitCompiledFunction &function,
     auto sig =
         jit_type_create_signature(jit_abi_cdecl, jit_type_void, params, 2, 0);
     jit_value_t args[2] = {jitContextPtr.raw(), arg.raw()};
-    function.insn_call_native(name.c_str(), (void *)addApiArgument, sig, args,
-                              2, 0);
+    function.insn_call_native("addApiArgument", (void *)addApiArgument, sig,
+                              args, 2, 0);
   }
 
   jit_value_t apiArgs[1] = {jitContextPtr.raw()};
-  return function.insn_call_native(name.c_str(), (void *)nativeFunction, apiSignature,
-                            apiArgs, 1, JIT_CALL_TAIL);
+  return function.insn_call_native(name.c_str(), (void *)nativeFunction,
+                                   apiSignature, apiArgs, 1, JIT_CALL_TAIL);
 }
 
 shared_ptr<Object>

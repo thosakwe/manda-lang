@@ -3,6 +3,7 @@
 #include "ast_function.hpp"
 #include "symbol_table.hpp"
 #include <optional>
+#include <stack>
 
 namespace manda::runtime {
 class Interpreter;
@@ -32,6 +33,7 @@ private:
   Interpreter &interpreter;
   const AstFunction &astFunction;
   std::optional<jit_value> lastValue;
+  std::stack<bool> coerceToAny;
 };
 } // namespace manda::runtime
 

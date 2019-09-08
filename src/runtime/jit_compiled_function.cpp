@@ -1,5 +1,6 @@
 #include "jit_compiled_function.hpp"
 #include "ast_function.hpp"
+#include "manda_api_impl.hpp"
 #include "object_resolver.hpp"
 #include <iostream>
 #include <jit/jit-dump.h>
@@ -16,6 +17,7 @@ JitCompiledFunction::JitCompiledFunction(Interpreter &interpreter,
   // Create the JIT function.
   create();
   set_recompilable();
+  coerceToAny.push(false);
 }
 
 jit_type_t JitCompiledFunction::create_signature() {
@@ -63,9 +65,15 @@ void JitCompiledFunction::visitVoidLiteral(const VoidLiteralCtx &ctx) {}
 void JitCompiledFunction::visitIdExpr(const IdExprCtx &ctx) {}
 
 void JitCompiledFunction::visitNumberLiteral(const NumberLiteralCtx &ctx) {
-  // Manda Numbers are sys doubles.
-  auto jitNumberType = interpreter.getCoreLibrary().numberType->toJitType();
-  lastValue = new_constant((jit_float64)ctx.value, jitNumberType);
+  if (!coerceToAny.top()) {
+    // Manda Numbers are sys doubles.
+    auto jitNumberType = interpreter.getCoreLibrary().numberType->toJitType();
+    lastValue = new_constant((jit_float64)ctx.value, jitNumberType);
+  } else {
+    // TODO: Delete the pointer...
+    auto *number = new Number(ctx.value);
+    lastValue = new_constant((void *)number, jit_type_void_ptr);
+  }
 }
 
 void JitCompiledFunction::visitStringLiteral(const StringLiteralCtx &ctx) {}
@@ -104,6 +112,7 @@ void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
 
   // TODO: Match arguments to parameters
   vector<jit_value> arguments;
+  coerceToAny.push(true);
   for (auto &arg : ctx.arguments) {
     lastValue = nullopt;
     arg->accept(*this);
@@ -112,6 +121,7 @@ void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
       interpreter.reportError(ctx.target->location,
                               "Could not resolve all arguments for this call.");
       fail();
+      coerceToAny.pop();
       return;
     }
     arguments.push_back(*lastValue);
@@ -119,6 +129,7 @@ void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
 
   // Compile the function call.
   lastValue = targetFunction->acceptForJitCall(*this, arguments);
+  coerceToAny.pop();
 }
 
 void JitCompiledFunction::visitParenExpr(const ParenExprCtx &ctx) {}

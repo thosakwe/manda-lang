@@ -30,7 +30,7 @@ MANDA_EXTERN_C manda_result_t manda_return_void(manda_context_t context);
 MANDA_EXTERN_C manda_result_t manda_to_string(manda_context_t context,
                                               manda_object_t value,
                                               const char **ptr) {
-  if (!context || !value || !(value->object)) {
+  if (!context || !value || (value->object == nullptr)) {
     return MANDA_RESULT_ERROR;
   } else {
     ostringstream oss;
