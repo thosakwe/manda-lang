@@ -11,7 +11,11 @@ Char::Char(char ch) : value(ch) {}
 
 void Char::print(ostream &out, bool ansiSupported) const {
   ostringstream oss;
-  oss << "'" << value << "'";
+  if (!ansiSupported) {
+    oss << value;
+  } else {
+    oss << "'" << value << "'";
+  }
   if (!ansiSupported) {
     out << oss.str();
   } else {
