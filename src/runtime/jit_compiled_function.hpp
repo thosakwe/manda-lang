@@ -15,7 +15,7 @@ public:
   Interpreter &getInterpreter() const;
   jit_value insn_malloc(const jit_value &size);
   jit_value insn_malloc(jit_uint size);
-  jit_value insn_gc_ptr_callback(const std::string &name, const jit_value &ptr,
+  jit_value insn_gc_ptr_callback(const char *name, const jit_value &ptr,
                                  void *func);
   jit_value insn_gc_incref(const jit_value &ptr);
   jit_value insn_gc_decref(const jit_value &ptr);

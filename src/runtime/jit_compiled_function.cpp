@@ -46,7 +46,7 @@ jit_value JitCompiledFunction::insn_malloc(jit_uint size) {
   return insn_malloc(new_constant(size, jit_type_sys_uint));
 }
 
-jit_value JitCompiledFunction::insn_gc_ptr_callback(const std::string &name,
+jit_value JitCompiledFunction::insn_gc_ptr_callback(const char *name,
                                                     const jit_value &ptr,
                                                     void *func) {
   // void some_gc_func(GC*, void* ptr);
@@ -55,7 +55,7 @@ jit_value JitCompiledFunction::insn_gc_ptr_callback(const std::string &name,
       jit_type_create_signature(jit_abi_cdecl, jit_type_void_ptr, params, 2, 0);
   jit_value_t args[2] = {new_constant((void *)&gc, jit_type_void_ptr).raw(),
                          ptr.raw()};
-  return insn_call_native(name.c_str(), func, sig, args, 2, 0);
+  return insn_call_native(name, func, sig, args, 2, 0);
 }
 
 jit_value JitCompiledFunction::insn_gc_incref(const jit_value &ptr) {
@@ -110,7 +110,8 @@ void JitCompiledFunction::build() {
 
   if (interpreter.getOptions().developerMode) {
     jit_dump_function(stdout, raw(), astFunction.getName().c_str());
-    cout << "Note: Execution is not actually performed via JIT yet." << endl;
+    //    cout << "Note: Execution is not actually performed via JIT yet." <<
+    //    endl;
   }
 }
 
