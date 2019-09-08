@@ -15,8 +15,8 @@ manda::runtime::Number::Number(double value) : value(value) {}
 double manda::runtime::Number::getValue() const { return value; }
 
 void manda::runtime::Number::print(ostream &out, bool ansiSupported) const {
-    out << value;
-    return;
+  out << value;
+  return;
   ostringstream oss;
   oss << fixed << value;
   auto str = oss.str();
@@ -50,37 +50,38 @@ manda::runtime::NumberType::deserialize(Interpreter &interpreter, void *ptr) {
   //  auto *first = asFloat64[0];
   //  cout << "HMM: " << (*first) << endl;
   //  return make_shared<Number>(*first);
-    auto *asFloat64 = (jit_float64 *)ptr;
-    //  throw logic_error("aaa");
-    return make_shared<Number>(*asFloat64);
+  auto *asFloat64 = (jit_float64 *)ptr;
+  //  throw logic_error("aaa");
+  return make_shared<Number>(*asFloat64);
 
-  // See the explanation in applyJitFunction for why we are using this hack.
-  auto &context = interpreter.getJitContext();
-  context.build_start();
-  auto sig =
-      jit_type_create_signature(jit_abi_cdecl, jit_type_float64, nullptr, 0, 0);
-  auto hack = jit_function_create(context.raw(), sig);
-  jit_constant_t constant = {jit_type_void_ptr, ptr};
-  auto jitPtr = jit_value_create_constant(hack, &constant);
-  auto returnValue = jit_insn_load_relative(hack, jitPtr, 0, jit_type_float64);
-  jit_insn_return(hack, returnValue);
-  jit_function_compile(hack);
-  context.build_end();
-
-  if (interpreter.getOptions().developerMode) {
-    jit_dump_function(stdout, hack, "number_deserialize_hack");
-  }
-
-  auto exec = (HackExec)jit_function_to_closure(hack);
-  auto hackResult = exec();
-  return make_shared<Number>(hackResult);
+  //  // See the explanation in applyJitFunction for why we are using this hack.
+  //  auto &context = interpreter.getJitContext();
+  //  context.build_start();
+  //  auto sig =
+  //      jit_type_create_signature(jit_abi_cdecl, jit_type_float64, nullptr, 0,
+  //      0);
+  //  auto hack = jit_function_create(context.raw(), sig);
+  //  jit_constant_t constant = {jit_type_void_ptr, ptr};
+  //  auto jitPtr = jit_value_create_constant(hack, &constant);
+  //  auto returnValue = jit_insn_load_relative(hack, jitPtr, 0,
+  //  jit_type_float64); jit_insn_return(hack, returnValue);
+  //  jit_function_compile(hack);
+  //  context.build_end();
+  //
+  //  if (interpreter.getOptions().developerMode) {
+  //    jit_dump_function(stdout, hack, "number_deserialize_hack");
+  //  }
+  //
+  //  auto exec = (HackExec)jit_function_to_closure(hack);
+  //  auto hackResult = exec();
+  //  return make_shared<Number>(hackResult);
 }
 
 shared_ptr<manda::runtime::Object> manda::runtime::NumberType::applyJitFunction(
     Interpreter &interpreter, std::vector<void *> &args, jit_function &func) {
   // This is an extreme hack, but for some reason, reading the
   // void* as a double simply does not work.
-  // However, jit_function_apply DOES.
+  // However, jit_function_to_closure DOES.
   // So what we'll do is create a JIT function that simply returns
   // the double...
   auto &context = interpreter.getJitContext();
