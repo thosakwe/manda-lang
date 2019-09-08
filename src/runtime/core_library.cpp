@@ -12,6 +12,7 @@ using namespace std;
 CoreLibrary::CoreLibrary() {
   anyType = make_shared<AnyType>();
   boolType = make_shared<BoolType>();
+  charType = make_shared<CharType>();
 }
 
 shared_ptr<Object>
@@ -32,6 +33,7 @@ void CoreLibrary::install(SymbolTable &scope) {
   // TODO: Add required parameters?
   scope.add("Any", anyType);
   scope.add("Bool", boolType);
+  scope.add("Char", charType);
   scope.add("print",
             shared_ptr<Object>(new BuiltinFunction("print", {}, printFn)));
 }

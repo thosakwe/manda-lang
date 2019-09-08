@@ -16,6 +16,7 @@ public:
 
   std::shared_ptr<AnyType> anyType;
   std::shared_ptr<BoolType> boolType;
+  std::shared_ptr<CharType> charType;
 
   void install(SymbolTable &scope);
 

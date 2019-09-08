@@ -1,5 +1,6 @@
 #include "char.hpp"
 #include "ansi_printer.hpp"
+#include "interpreter.hpp"
 #include <ostream>
 #include <sstream>
 
@@ -16,4 +17,10 @@ void Char::print(ostream &out, bool ansiSupported) const {
   } else {
     out << cyan(oss.str());
   }
+}
+
+string CharType::getName() const { return "Char"; }
+
+shared_ptr<Type> Char::getType(Interpreter &interpreter) const {
+  return interpreter.getCoreLibrary().charType;
 }
