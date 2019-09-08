@@ -115,7 +115,22 @@ void JitCompiledFunction::build() {
   }
 }
 
-void JitCompiledFunction::visitVarExpr(const VarExprCtx &ctx) {}
+void JitCompiledFunction::visitVarExpr(const VarExprCtx &ctx) {
+  // TODO: Throw on redefines?
+  ctx.value->accept(*this);
+  if (!lastValue) {
+    ostringstream oss;
+    oss << "Failed to resolve the value for variable \"" << ctx.name << "\".";
+    interpreter.reportError(ctx.location, oss.str());
+    lastValue = nullopt;
+  } else {
+    // Create a new variable, and inject it into scope.
+    auto variable = new_value(jit_value_get_type(lastValue->raw()));
+    scopeStack.top()->add(ctx.name, variable);
+    jit_insn_store(raw(), variable.raw(), lastValue->raw());
+    lastValue = insn_load(variable);
+  }
+}
 
 void JitCompiledFunction::visitFnDeclExpr(const FnDeclExprCtx &ctx) {}
 
@@ -237,6 +252,11 @@ void JitCompiledFunction::visitBlockExpr(const BlockExprCtx &ctx) {
       interpreter.reportError(
           node->location,
           "Compilation of some of the expressions in this block failed.");
+      if (interpreter.getOptions().developerMode) {
+        cout << "Here is the guilty expression: " << endl;
+        AstPrinter printer(cout);
+        node->accept(printer);
+      }
       return;
     }
   }
