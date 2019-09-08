@@ -58,8 +58,10 @@ jit_value BuiltinFunction::acceptForJitCall(JitCompiledFunction &function,
   }
 
   jit_value_t apiArgs[1] = {jitContextPtr.raw()};
-  return function.insn_call_native(name.c_str(), (void *)nativeFunction,
+  // Invoke the function.
+  function.insn_call_native(name.c_str(), (void *)nativeFunction,
                                    apiSignature, apiArgs, 1, JIT_CALL_TAIL);
+  // TODO: Release all referenced pointers.
 }
 
 shared_ptr<Object>

@@ -20,6 +20,7 @@ using namespace std;
 JitCompiledFunction::JitCompiledFunction(Interpreter &interpreter,
                                          const AstFunction &fn)
     : interpreter(interpreter), astFunction(fn),
+      gc(interpreter.getGarbageCollector()),
       jit_function(interpreter.getJitContext()) {
   // Create the JIT function.
   create();
@@ -104,8 +105,7 @@ void JitCompiledFunction::visitNumberLiteral(const NumberLiteralCtx &ctx) {
     auto jitNumberType = interpreter.getCoreLibrary().numberType->toJitType();
     lastValue = new_constant((jit_float64)ctx.value, jitNumberType);
   } else {
-    // TODO: Delete the pointer...
-    auto *object = new Number(ctx.value);
+    auto *object = gc.make<Number>(ctx.value);
     lastValue = new_constant((void *)object, jit_type_void_ptr);
   }
 }
@@ -125,9 +125,9 @@ void JitCompiledFunction::visitStringLiteral(const StringLiteralCtx &ctx) {
     // TODO: Delete the pointer...
     Object *object;
     if (ctx.isChar()) {
-      object = new Char(ctx.value[0]);
+      object = gc.make<Char>(ctx.value[0]);
     } else {
-      object = new String(ctx.getValue());
+      object = gc.make<String>(ctx.getValue());
     }
     lastValue = new_constant((void *)object, jit_type_void_ptr);
   }
@@ -140,8 +140,7 @@ void JitCompiledFunction::visitBoolLiteral(const BoolLiteralCtx &ctx) {
     auto jitBoolType = interpreter.getCoreLibrary().boolType->toJitType();
     lastValue = new_constant(value, jitBoolType);
   } else {
-    // TODO: Delete the pointer...
-    auto *object = new Bool(ctx.value);
+    auto *object = gc.make<Bool>(ctx.value);
     lastValue = new_constant((void *)object, jit_type_void_ptr);
   }
 }
@@ -153,9 +152,8 @@ void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
     // Create a new tuple instance, and return the pointer.
     //    auto *object = new Bool(ctx.value);
     //    lastValue = new_constant((void *)object, jit_type_void_ptr);
-    // TODO: Delete the pointer
     ObjectResolver resolver(interpreter, astFunction.getScope());
-    auto *object = new Tuple();
+    auto *object = gc.make<Tuple>();
     for (auto &item : ctx.items) {
       item->accept(resolver);
       auto result = resolver.getLastObject();
@@ -196,7 +194,7 @@ void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
       return;
     }
 
-    // Allocate space for the tuple on the stack.
+    // Allocate space for the tuple.
     // TODO: Delete the pointer.
     auto jitTuplePointer = insn_malloc(jit_type_get_size(jitResultType));
     auto numFields = jit_type_num_fields(jitResultType);

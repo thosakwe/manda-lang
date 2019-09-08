@@ -33,6 +33,7 @@ protected:
 
 private:
   Interpreter &interpreter;
+  GarbageCollector &gc;
   const AstFunction &astFunction;
   std::optional<jit_value> lastValue;
   std::stack<bool> coerceToAny;
