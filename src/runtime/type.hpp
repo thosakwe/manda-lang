@@ -2,6 +2,7 @@
 #define MANDA_TYPE_HPP
 #include <jit/jit-plus.h>
 #include <string>
+#include <vector>
 
 namespace manda::runtime {
 class Object;
@@ -14,7 +15,7 @@ public:
   // TODO: Don't provide a default impl of this, instead let
   // types do the deserialization themselves.
   virtual std::shared_ptr<manda::runtime::Object>
-  applyJitFunction(void **args, jit_function &func);
+  applyJitFunction(std::vector<void *> &args, jit_function &func);
 };
 } // namespace manda::runtime
 

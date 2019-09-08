@@ -9,7 +9,8 @@ bool Type::isExactly(const Type &other) { return &other == this; }
 
 bool Type::isAssignableTo(const Type &other) { return isExactly(other); }
 
-shared_ptr<Object> Type::applyJitFunction(void **args, jit_function &func) {
+shared_ptr<Object> Type::applyJitFunction(std::vector<void *> &args,
+                                          jit_function &func) {
   ostringstream oss;
   oss << "applyJitFunction not implemented for type ";
   oss << getName();

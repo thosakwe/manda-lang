@@ -18,7 +18,7 @@ class NumberType : public Type {
 public:
   std::string getName() const override;
   jit_type_t toJitType() const override;
-  std::shared_ptr<Object> applyJitFunction(void **args,
+  std::shared_ptr<Object> applyJitFunction(std::vector<void *> &args,
                                            jit_function &func) override;
 };
 } // namespace manda::runtime
