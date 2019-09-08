@@ -13,6 +13,7 @@ struct Parameter {
   std::shared_ptr<Type> type;
 };
 
+// TODO: Return types
 class Function : public Object {
 public:
   [[nodiscard]] virtual const std::string &getName() const = 0;
@@ -22,6 +23,18 @@ public:
          std::shared_ptr<Object> &thisObject,
          const std::vector<std::shared_ptr<Object>> &args) const = 0;
   void print(std::ostream &out, bool ansiSupported) const override;
+  std::shared_ptr<Type> getType(Interpreter &interpreter) const override;
+};
+
+class FunctionType : public Type {
+public:
+  FunctionType(std::vector<Parameter> parameters,
+               std::shared_ptr<Type> returnType = nullptr);
+  std::string getName() const override;
+
+private:
+  std::vector<Parameter> parameters;
+  std::shared_ptr<Type> returnType;
 };
 } // namespace manda::runtime
 

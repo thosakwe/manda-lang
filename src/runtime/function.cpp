@@ -32,3 +32,16 @@ void Function::print(ostream &out, bool ansiSupported) const {
     out << cyan(oss.str());
   }
 }
+
+shared_ptr<Type> Function::getType(Interpreter &interpreter) const {
+  return make_shared<FunctionType>(getParameters(), nullptr);
+}
+
+FunctionType::FunctionType(std::vector<Parameter> parameters,
+                           std::shared_ptr<Type> returnType)
+    : parameters(move(parameters)), returnType(move(returnType)) {}
+
+string FunctionType::getName() const {
+  // TODO: Return "Function(x, y) -> z"
+  return "Function";
+}
