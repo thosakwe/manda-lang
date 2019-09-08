@@ -2,6 +2,7 @@
 #define MANDA_INTERPRETER_HPP
 #include "../analysis/ast.hpp"
 #include "core_library.hpp"
+#include "garbage_collector.hpp"
 #include "module.hpp"
 #include "symbol_table.hpp"
 #include "vm_options.hpp"
@@ -18,6 +19,7 @@ public:
   [[nodiscard]] const VMOptions &getOptions() const;
   const CoreLibrary &getCoreLibrary() const;
   jit_context &getJitContext();
+  GarbageCollector &getGarbageCollector();
   bool ensureArgumentCount(const manda::analysis::Location &location,
                            const std::vector<std::shared_ptr<Object>> &args,
                            unsigned long size);
@@ -33,6 +35,7 @@ public:
 
 private:
   CoreLibrary coreLibrary;
+  GarbageCollector garbageCollector;
   jit_context jitContext;
   std::shared_ptr<Module> module;
   VMOptions options;
