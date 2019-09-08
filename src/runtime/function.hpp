@@ -24,6 +24,7 @@ public:
          const std::vector<std::shared_ptr<Object>> &args) const = 0;
   void print(std::ostream &out, bool ansiSupported) const override;
   std::shared_ptr<Type> getType(Interpreter &interpreter) const override;
+  virtual std::shared_ptr<Type> getReturnType(Interpreter &interpreter) const = 0;
 };
 
 class FunctionType : public Type {
@@ -31,6 +32,7 @@ public:
   FunctionType(std::vector<Parameter> parameters,
                std::shared_ptr<Type> returnType = nullptr);
   std::string getName() const override;
+  jit_type_t toJitType() const override;
 
 private:
   std::vector<Parameter> parameters;
