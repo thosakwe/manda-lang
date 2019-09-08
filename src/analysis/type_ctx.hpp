@@ -20,9 +20,8 @@ public:
 
 struct TypeRefCtx : public TypeCtx {
   std::string name;
-  TypeRefCtx(const Location &l, std::string name) : name(std::move(name)) {
-    location = l;
-  }
+  TypeRefCtx() = default;
+  TypeRefCtx(const Location &l, std::string name);
   void accept(TypeVisitor &visitor) const override;
 };
 
