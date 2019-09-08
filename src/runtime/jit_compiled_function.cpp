@@ -200,11 +200,11 @@ void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
     // TODO: Delete the pointer.
     auto jitTuplePointer = insn_malloc(jit_type_get_size(jitResultType));
     auto numFields = jit_type_num_fields(jitResultType);
-    jit_nint offset = 0;
     for (unsigned int i = 0; i < numFields; i++) {
       // Figure out the size.
       lastValue = nullopt;
-      auto type = jit_type_get_field(jitResultType, 0);
+      auto type = jit_type_get_field(jitResultType, i);
+      auto offset = jit_type_get_offset(jitResultType, i);
       ctx.items[i]->accept(*this);
       if (!lastValue) {
         ostringstream oss;
@@ -217,8 +217,8 @@ void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
       insn_store_relative(jitTuplePointer, offset, *lastValue);
     }
 
-    // Return the pointer.
-    lastValue = jitTuplePointer;
+    // Return *a read of the pointer*.
+    lastValue = insn_load_relative(jitTuplePointer, 0, jitResultType);
   }
 }
 
