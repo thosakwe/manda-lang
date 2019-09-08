@@ -3,7 +3,9 @@
 #include "type.hpp"
 
 namespace manda::runtime {
-class AnyType : public Type {};
+class AnyType : public Type {
+  std::string getName() const override;
+};
 } // namespace manda::runtime
 
 #endif
