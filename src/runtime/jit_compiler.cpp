@@ -5,23 +5,24 @@ using namespace manda::analysis;
 using namespace manda::runtime;
 using namespace std;
 
-JitCompiler::JitCompiler(Interpreter &interpreter, shared_ptr<AstFunction> fn)
-    : interpreter(interpreter), astFunction(move(fn)) {
+JitCompiler::JitCompiler(Interpreter &interpreter, const AstFunction &fn)
+    : interpreter(interpreter), astFunction(fn) {
   // Create the JIT function.
-  auto signature = astFunction->getType(interpreter)->toJitType();
+  auto signature = astFunction.getType(interpreter)->toJitType();
   jitFunction = jit_function(interpreter.getJitContext(), signature);
 }
 
 jit_function JitCompiler::getJitFunction() { return *jitFunction; }
 
-void JitCompiler::compile() {
+bool JitCompiler::compile() {
   // Compile the body, and return it.
   // TODO: Type checking...
-  astFunction->getNode()->body->accept(*this);
+  astFunction.getNode()->body->accept(*this);
   if (!lastValue) {
     // TODO: Come up with a better error message.
-    interpreter.reportError(astFunction->getNode()->location,
+    interpreter.reportError(astFunction.getNode()->location,
                             "JIT compilation failed.");
+    return false;
   } else {
     // Return the value.
     jitFunction->insn_return(*lastValue);
@@ -29,6 +30,7 @@ void JitCompiler::compile() {
   // Always emit a default_return().
   // TODO: Prevent this if the function does not return Void or Any.
   jitFunction->insn_default_return();
+  return true;
 }
 
 void JitCompiler::visitVarExpr(const VarExprCtx &ctx) {}

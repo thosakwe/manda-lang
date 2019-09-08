@@ -8,10 +8,9 @@ namespace manda::runtime {
 class Interpreter;
 class JitCompiler : public manda::analysis::ExprVisitor {
 public:
-  explicit JitCompiler(Interpreter &interpreter,
-                       std::shared_ptr<AstFunction> fn);
+  explicit JitCompiler(Interpreter &interpreter, const AstFunction &fn);
   jit_function getJitFunction();
-  void compile();
+  bool compile();
   void visitVarExpr(const analysis::VarExprCtx &ctx) override;
   void visitFnDeclExpr(const analysis::FnDeclExprCtx &ctx) override;
   void visitVoidLiteral(const analysis::VoidLiteralCtx &ctx) override;
@@ -27,7 +26,7 @@ public:
 
 private:
   Interpreter &interpreter;
-  std::shared_ptr<AstFunction> astFunction;
+  const AstFunction &astFunction;
   std::optional<jit_function> jitFunction;
   std::optional<jit_value> lastValue;
 };
