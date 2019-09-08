@@ -43,3 +43,13 @@ string TupleType::getName() const {
   oss << ")";
   return oss.str();
 }
+
+jit_type_t TupleType::toJitType() const {
+  // A Manda tuple can be compiled to a simple struct,
+  // where each field corresponds to a child's type.
+  vector<jit_type_t> fields;
+  for (auto &item : items) {
+    fields.push_back(item->toJitType());
+  }
+  return jit_type_create_struct(fields.data(), items.size(), 0);
+}

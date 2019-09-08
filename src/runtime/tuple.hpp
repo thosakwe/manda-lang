@@ -18,6 +18,7 @@ private:
 class TupleType : public Type {
 public:
   explicit TupleType(std::vector<std::shared_ptr<Type>> items);
+  jit_type_t toJitType() const override;
 
 private:
   std::string getName() const override;
