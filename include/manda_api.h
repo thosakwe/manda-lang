@@ -15,6 +15,11 @@ typedef enum { MANDA_RESULT_OK, MANDA_RESULT_ERROR } manda_result_t;
 
 typedef void (*MandaNativeFunction)(manda_context_t);
 
+MANDA_EXTERN_C unsigned long manda_get_argument_count(manda_context_t context);
+
+MANDA_EXTERN_C manda_object_t manda_get_argument(manda_context_t,
+                                                 unsigned long index);
+
 MANDA_EXTERN_C manda_result_t manda_return(manda_context_t context,
                                            manda_object_t value);
 
