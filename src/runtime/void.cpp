@@ -20,3 +20,9 @@ shared_ptr<Type> Void::getType(Interpreter &interpreter) const {
 string VoidType::getName() const { return "Void"; }
 
 jit_type_t VoidType::toJitType() const { return jit_type_void; }
+
+shared_ptr<manda::runtime::Object>
+VoidType::applyJitFunction(std::vector<void *> &args, jit_function &func) {
+  func.apply(args.data(), nullptr);
+  return make_shared<Void>();
+}

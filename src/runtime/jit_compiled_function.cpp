@@ -25,11 +25,18 @@ void JitCompiledFunction::build() {
   // TODO: Type checking...
   astFunction.getNode()->body->accept(*this);
   if (!lastValue) {
-    // TODO: Come up with a better error message.
-    interpreter.reportError(astFunction.getNode()->location,
-                            "JIT compilation failed.");
-    fail();
-    return;
+    // The only way a function have no return is if it is
+    // marked as returning void.
+    // TODO: Should `Any` also be able to return void? I doubt it.
+    auto returnType = astFunction.getReturnType(interpreter);
+    auto voidType = interpreter.getCoreLibrary().voidType;
+    if (!(returnType->isAssignableTo(voidType))) {
+      // TODO: Come up with a better error message.
+      interpreter.reportError(astFunction.getNode()->location,
+                              "JIT compilation failed.");
+      fail();
+      return;
+    }
   } else {
     // Return the value.
     // TODO: Ensure that the return type matches.
