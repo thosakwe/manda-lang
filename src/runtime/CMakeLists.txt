@@ -1,6 +1,5 @@
 find_path(JIT_INCLUDE_DIR NAMES "jit/jit-plus.h" "jit/jit.h")
 add_library(manda_runtime
-    value.hpp value.cpp
     object.cpp object.hpp
     worker.cpp worker.hpp
     task.cpp task.hpp
