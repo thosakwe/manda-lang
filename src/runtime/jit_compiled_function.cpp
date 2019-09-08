@@ -6,8 +6,10 @@
 #include "object_resolver.hpp"
 #include "string.hpp"
 #include "tuple.hpp"
+#include "type_resolver.hpp"
 #include <iostream>
 #include <jit/jit-dump.h>
+#include <sstream>
 #include <vector>
 
 using namespace manda::analysis;
@@ -26,6 +28,19 @@ JitCompiledFunction::JitCompiledFunction(Interpreter &interpreter,
 
 jit_type_t JitCompiledFunction::create_signature() {
   return astFunction.getType(interpreter)->toJitType();
+}
+
+jit_value JitCompiledFunction::insn_malloc(const jit_value &size) {
+  // void* jit_malloc(unsigned int size)
+  jit_type_t params[1] = {jit_type_sys_uint};
+  auto sig =
+      jit_type_create_signature(jit_abi_cdecl, jit_type_void_ptr, params, 1, 0);
+  jit_value_t args[1] = {size.raw()};
+  return insn_call_native("jit_malloc", (void *)&jit_malloc, sig, args, 1, 0);
+}
+
+jit_value JitCompiledFunction::insn_malloc(jit_uint size) {
+  return insn_malloc(new_constant(size, jit_type_sys_uint));
 }
 
 void JitCompiledFunction::build() {
@@ -144,6 +159,51 @@ void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
     // Then, create a temporary structure value.
     // For each field, write into the current location.
     // Increment by the size of the field.
+    TypeResolver resolver(interpreter, astFunction.getScope());
+    ctx.accept(resolver);
+    auto resultType = resolver.getLastType();
+    if (!resultType) {
+      // TODO: This should never happen, so there probably needs to be
+      // a good error message here in the case that it does.
+      interpreter.reportError(ctx.location,
+                              "Could not resolve the type of this tuple.");
+      lastValue = nullopt;
+      return;
+    }
+
+    auto jitResultType = resultType->toJitType();
+    if (!jit_type_is_struct(jitResultType)) {
+      // TODO: Since this is an actual compiler error, there should probably
+      // be a better dump/diagnostic here.
+      interpreter.reportError(ctx.location,
+                              "This tuple did not produce a structure type.");
+      lastValue = nullopt;
+      return;
+    }
+
+    // Allocate space for the tuple on the stack.
+    // TODO: Delete the pointer.
+    auto jitTuplePointer = insn_malloc(jit_type_get_size(jitResultType));
+    auto numFields = jit_type_num_fields(jitResultType);
+    jit_nint offset = 0;
+    for (unsigned int i = 0; i < numFields; i++) {
+      // Figure out the size.
+      lastValue = nullopt;
+      auto type = jit_type_get_field(jitResultType, 0);
+      ctx.items[offset]->accept(*this);
+      if (!lastValue) {
+        ostringstream oss;
+        oss << "Failed to compile expression at index ";
+        oss << i << " in tuple.";
+        interpreter.reportError(ctx.location, oss.str());
+        lastValue = nullopt;
+        return;
+      }
+      insn_store_relative(jitTuplePointer, offset, *lastValue);
+    }
+
+    // Return the pointer.
+    lastValue = jitTuplePointer;
   }
 }
 

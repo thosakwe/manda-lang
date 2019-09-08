@@ -12,6 +12,8 @@ class JitCompiledFunction : public jit_function,
 public:
   explicit JitCompiledFunction(Interpreter &interpreter, const AstFunction &fn);
   Interpreter &getInterpreter() const;
+  jit_value insn_malloc(const jit_value &size);
+  jit_value insn_malloc(jit_uint size);
   void visitVarExpr(const analysis::VarExprCtx &ctx) override;
   void visitFnDeclExpr(const analysis::FnDeclExprCtx &ctx) override;
   void visitVoidLiteral(const analysis::VoidLiteralCtx &ctx) override;
