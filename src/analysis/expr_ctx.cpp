@@ -122,6 +122,7 @@ CastExprCtx *CastExprCtx::clone() const {
   out->location = location;
   out->value = value->cloneToUniquePointer();
   out->type = type->cloneToUniquePointer();
+  return out;
 }
 
 NumberLiteralCtx *NumberLiteralCtx::clone() const {
