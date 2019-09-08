@@ -117,6 +117,9 @@ void ObjectResolver::visitIdExpr(const IdExprCtx &ctx) {
     lastObject = nullptr;
   } else if (holds_alternative<shared_ptr<Object>>(symbol)) {
     lastObject = get<shared_ptr<Object>>(symbol);
+    if (!lastObject && interpreter.getOptions().developerMode) {
+      cout << "Warning: The returned symbol is a null pointer." << endl;
+    }
   }
 }
 

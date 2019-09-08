@@ -36,9 +36,8 @@ void ModuleCompiler::visitExprDecl(const ExprDeclCtx &ctx) {
   if (!topLevel) {
     if (interpreter.getOptions().isREPL()) {
       // TODO: Evaluate top-level expressions
-      // IMPORTANT: The value is MOVED.
-      // TODO: Use a clone here
-//      module->getTopLevelExpressions().push_back(move(ctx.value));
+      module->getTopLevelExpressions().push_back(
+          ctx.value->cloneToUniquePointer());
     } else {
       // TODO: Disallow top-level evaluations in regular mode.
     }
