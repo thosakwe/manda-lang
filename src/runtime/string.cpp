@@ -29,3 +29,9 @@ jit_type_t StringType::toJitType() const {
   // Manda basic strings are just 8-bit lists, so char*
   return jit_type_create_pointer(jit_type_sys_char, 0);
 }
+
+shared_ptr<manda::runtime::Object> StringType::deserialize(void *ptr) {
+  // TODO: Delete the c string?
+  auto cStr = *(const char**)ptr;
+  return make_shared<String>(cStr);
+}
