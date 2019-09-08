@@ -17,6 +17,7 @@ public:
   // types do the deserialization themselves.
   virtual std::shared_ptr<manda::runtime::Object>
   applyJitFunction(std::vector<void *> &args, jit_function &func);
+  virtual std::shared_ptr<manda::runtime::Object> deserialize(void *ptr);
 };
 } // namespace manda::runtime
 
