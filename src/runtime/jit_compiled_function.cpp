@@ -1,7 +1,10 @@
 #include "jit_compiled_function.hpp"
 #include "ast_function.hpp"
+#include "char.hpp"
 #include "manda_api_impl.hpp"
+#include "number.hpp"
 #include "object_resolver.hpp"
+#include "string.hpp"
 #include <iostream>
 #include <jit/jit-dump.h>
 #include <vector>
@@ -71,12 +74,32 @@ void JitCompiledFunction::visitNumberLiteral(const NumberLiteralCtx &ctx) {
     lastValue = new_constant((jit_float64)ctx.value, jitNumberType);
   } else {
     // TODO: Delete the pointer...
-    auto *number = new Number(ctx.value);
-    lastValue = new_constant((void *)number, jit_type_void_ptr);
+    auto *object = new Number(ctx.value);
+    lastValue = new_constant((void *)object, jit_type_void_ptr);
   }
 }
 
-void JitCompiledFunction::visitStringLiteral(const StringLiteralCtx &ctx) {}
+void JitCompiledFunction::visitStringLiteral(const StringLiteralCtx &ctx) {
+  if (!coerceToAny.top()) {
+    if (ctx.isChar()) {
+      lastValue = new_constant((jit_ubyte)ctx.value[0], jit_type_sys_char);
+    } else {
+      // TODO: Delete the pointer
+      auto *str = jit_strdup(ctx.getValue().c_str());
+      lastValue = new_constant((void *)str,
+                               jit_type_create_pointer(jit_type_sys_char, 0));
+    }
+  } else {
+    // TODO: Delete the pointer...
+    Object *object;
+    if (ctx.isChar()) {
+      object = new Char(ctx.value[0]);
+    } else {
+      object = new String(ctx.getValue());
+    }
+    lastValue = new_constant((void *)object, jit_type_void_ptr);
+  }
+}
 
 void JitCompiledFunction::visitBoolLiteral(const BoolLiteralCtx &ctx) {}
 
