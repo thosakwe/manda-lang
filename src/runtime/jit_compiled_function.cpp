@@ -20,8 +20,6 @@ jit_type_t JitCompiledFunction::create_signature() {
   return astFunction.getType(interpreter)->toJitType();
 }
 
-void JitCompiledFunction::publicBuild() { build(); }
-
 void JitCompiledFunction::build() {
   // Compile the body, and return it.
   // TODO: Type checking...
@@ -34,6 +32,7 @@ void JitCompiledFunction::build() {
     return;
   } else {
     // Return the value.
+    // TODO: Ensure that the return type matches.
     insn_return(*lastValue);
   }
   // Always emit a default_return().

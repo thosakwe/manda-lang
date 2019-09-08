@@ -22,7 +22,6 @@ public:
   void visitCastExpr(const analysis::CastExprCtx &ctx) override;
   void visitCallExpr(const analysis::CallExprCtx &ctx) override;
   void visitParenExpr(const analysis::ParenExprCtx &ctx) override;
-  void publicBuild();
 
 protected:
   void build() override;
