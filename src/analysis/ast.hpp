@@ -19,7 +19,8 @@ struct DeclCtx {
 
 struct ExprDeclCtx : public DeclCtx {
   std::unique_ptr<ExprCtx> value;
-  explicit ExprDeclCtx(ExprCtx *v) : value(v) { location = value->location; }
+  ExprDeclCtx() = default;
+  explicit ExprDeclCtx(ExprCtx *v);
   void accept(DeclVisitor &visitor) const override;
 };
 
@@ -27,10 +28,8 @@ struct TypeDeclCtx : public DeclCtx {
   std::string name;
   std::vector<std::string> typeParameters;
   std::unique_ptr<TypeCtx> type;
-  explicit TypeDeclCtx(std::string n, TypeCtx *v)
-      : name(std::move(n)), type(v) {
-    location = type->location;
-  }
+  TypeDeclCtx() = default;
+  TypeDeclCtx(std::string n, TypeCtx *v);
   void accept(DeclVisitor &visitor) const override;
 };
 
