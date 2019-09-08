@@ -8,6 +8,8 @@ class Type {
 public:
   virtual std::string getName() const = 0;
   virtual jit_type_t toJitType() const = 0;
+  virtual bool isExactly(const Type &other);
+  virtual bool isAssignableTo(const Type &other);
 };
 } // namespace manda::runtime
 
