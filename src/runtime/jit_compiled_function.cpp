@@ -109,3 +109,5 @@ void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
 }
 
 void JitCompiledFunction::visitParenExpr(const ParenExprCtx &ctx) {}
+
+Interpreter &JitCompiledFunction::getInterpreter() const { return interpreter; }

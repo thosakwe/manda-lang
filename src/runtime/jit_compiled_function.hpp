@@ -10,6 +10,7 @@ class JitCompiledFunction : public jit_function,
                             public manda::analysis::ExprVisitor {
 public:
   explicit JitCompiledFunction(Interpreter &interpreter, const AstFunction &fn);
+  Interpreter &getInterpreter() const;
   void visitVarExpr(const analysis::VarExprCtx &ctx) override;
   void visitFnDeclExpr(const analysis::FnDeclExprCtx &ctx) override;
   void visitVoidLiteral(const analysis::VoidLiteralCtx &ctx) override;
