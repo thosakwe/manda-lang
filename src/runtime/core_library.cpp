@@ -18,17 +18,22 @@ CoreLibrary::CoreLibrary() {
   voidType = make_shared<VoidType>();
 }
 
-shared_ptr<Object>
-CoreLibrary::printFn(Interpreter &i, const Location &l, shared_ptr<Object> &,
-                     const vector<shared_ptr<Object>> &args) {
-  if (i.ensureArgumentCount(l, args, 1)) {
-    args[0]->print(cout, false);
-    cout << endl;
-    return make_shared<Void>();
-  } else {
-    // Return a nullptr here to signify failure.
-    return nullptr;
-  }
+// shared_ptr<Object>
+// CoreLibrary::printFn(Interpreter &i, const Location &l, shared_ptr<Object> &,
+//                     const vector<shared_ptr<Object>> &args) {
+//  if (i.ensureArgumentCount(l, args, 1)) {
+//    args[0]->print(cout, false);
+//    cout << endl;
+//    return make_shared<Void>();
+//  } else {
+//    // Return a nullptr here to signify failure.
+//    return nullptr;
+//  }
+//}
+
+void CoreLibrary::printFn(manda_context_t context) {
+  // TODO: Actually print the object.
+  cout << "Hello from the API!" << endl;
 }
 
 void CoreLibrary::install(SymbolTable &scope) {

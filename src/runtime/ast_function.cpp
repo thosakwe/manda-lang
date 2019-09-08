@@ -47,7 +47,7 @@ AstFunction::invoke(Interpreter &interpreter, const Location &location,
 
 void AstFunction::acceptForJitCall(JitCompiledFunction &fn,
                                    std::vector<jit_value> &arguments) {
-
+  // TODO: Allow calling on-demand here
 }
 
 shared_ptr<Type> AstFunction::getReturnType(Interpreter &interpreter) const {

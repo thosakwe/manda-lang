@@ -8,6 +8,7 @@
 #include "string.hpp"
 #include "symbol_table.hpp"
 #include "void.hpp"
+#include <manda_api.h>
 
 namespace manda::runtime {
 class Interpreter;
@@ -24,10 +25,12 @@ public:
 
   void install(SymbolTable &scope);
 
-  static std::shared_ptr<Object>
-  printFn(manda::runtime::Interpreter &, const manda::analysis::Location &,
-          std::shared_ptr<Object> &,
-          const std::vector<std::shared_ptr<Object>> &);
+  static void printFn(manda_context_t context);
+
+  //  static std::shared_ptr<Object>
+  //  printFn(manda::runtime::Interpreter &, const manda::analysis::Location &,
+  //          std::shared_ptr<Object> &,
+  //          const std::vector<std::shared_ptr<Object>> &);
 };
 } // namespace manda::runtime
 
