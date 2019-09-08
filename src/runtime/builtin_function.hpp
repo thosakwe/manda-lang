@@ -1,6 +1,7 @@
 #ifndef MANDA_BUILTIN_FUNCTION_HPP
 #define MANDA_BUILTIN_FUNCTION_HPP
 #include "function.hpp"
+#include "manda_api_impl.hpp"
 #include <functional>
 #include <manda_api.h>
 
@@ -26,8 +27,10 @@ struct BuiltinFunction : public Function {
          std::shared_ptr<Object> &thisObject,
          const std::vector<std::shared_ptr<Object>> &args) const override;
 
-  void acceptForJitCall(JitCompiledFunction &function,
+  jit_value acceptForJitCall(JitCompiledFunction &function,
                         std::vector<jit_value> &arguments) override;
+
+  static void addApiArgument(manda_context_t context, _manda_object value);
 };
 } // namespace manda::runtime
 

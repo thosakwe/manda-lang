@@ -33,7 +33,7 @@ public:
          std::shared_ptr<Object> &thisObject,
          const std::vector<std::shared_ptr<Object>> &args) const override;
 
-  void acceptForJitCall(JitCompiledFunction &fn,
+  jit_value acceptForJitCall(JitCompiledFunction &fn,
                         std::vector<jit_value> &arguments) override;
 
 private:

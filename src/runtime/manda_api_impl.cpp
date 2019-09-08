@@ -9,13 +9,13 @@ MANDA_EXTERN_C unsigned long manda_get_argument_count(manda_context_t context) {
   if (!context) {
     return 0;
   } else {
-    return context->argumentCount;
+    return context->arguments.size();
   }
 }
 
 MANDA_EXTERN_C manda_object_t manda_get_argument(manda_context_t context,
                                                  unsigned long index) {
-  if (!context || (index >= context->argumentCount)) {
+  if (!context || (index >= context->arguments.size())) {
     return nullptr;
   } else {
     return &context->arguments[index];

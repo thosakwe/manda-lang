@@ -26,8 +26,8 @@ public:
   std::shared_ptr<Type> getType(Interpreter &interpreter) const override;
   virtual std::shared_ptr<Type>
   getReturnType(Interpreter &interpreter) const = 0;
-  virtual void acceptForJitCall(JitCompiledFunction &fn,
-                                std::vector<jit_value> &arguments) = 0;
+  virtual jit_value acceptForJitCall(JitCompiledFunction &fn,
+                                     std::vector<jit_value> &arguments) = 0;
 };
 
 class FunctionType : public Type {

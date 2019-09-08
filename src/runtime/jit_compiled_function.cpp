@@ -104,9 +104,21 @@ void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
 
   // TODO: Match arguments to parameters
   vector<jit_value> arguments;
+  for (auto &arg : ctx.arguments) {
+    lastValue = nullopt;
+    arg->accept(*this);
+    if (!lastValue) {
+      // TODO: Better error message here?
+      interpreter.reportError(ctx.target->location,
+                              "Could not resolve all arguments for this call.");
+      fail();
+      return;
+    }
+    arguments.push_back(*lastValue);
+  }
 
   // Compile the function call.
-  targetFunction->acceptForJitCall(*this, arguments);
+  lastValue = targetFunction->acceptForJitCall(*this, arguments);
 }
 
 void JitCompiledFunction::visitParenExpr(const ParenExprCtx &ctx) {}

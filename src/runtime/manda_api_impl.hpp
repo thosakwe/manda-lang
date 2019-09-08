@@ -2,6 +2,7 @@
 #define MANDA_MANDA_API_IMPL_HPP
 #include "interpreter.hpp"
 #include <manda_api.h>
+#include <optional>
 #include <vector>
 
 // struct manda_jit_any {
@@ -16,9 +17,8 @@ extern "C" struct _manda_object {
 
 extern "C" struct _manda_context {
   manda::runtime::Interpreter &interpreter;
-  unsigned long argumentCount;
-  _manda_object *arguments;
-  _manda_object returnValue;
+  std::vector<_manda_object> arguments;
+  std::optional<_manda_object> returnValue;
 };
 
 #endif
