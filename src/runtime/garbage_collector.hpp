@@ -1,6 +1,7 @@
 #ifndef MANDA_GARBAGE_COLLECTOR_HPP
 #define MANDA_GARBAGE_COLLECTOR_HPP
 #include <jit/jit.h>
+#include <set>
 #include <unordered_map>
 
 namespace manda::runtime {
@@ -10,6 +11,7 @@ public:
   void *allocate(jit_uint size);
   void incref(void *ptr);
   void decref(void *ptr);
+  void sweep();
   unsigned long refCount(void *ptr) const;
   static void static_incref(GarbageCollector *gc, void *ptr);
   static void static_decref(GarbageCollector *gc, void *ptr);
@@ -21,7 +23,10 @@ public:
   }
 
 private:
-  std::unordered_map<void *, unsigned long> refCounts;
+//  std::set<void *> marked;
+    std::unordered_map<void *, bool> marked;
+  unsigned long maxAllocationsBeforeSweep = 1;
+  //  std::unordered_map<void *, unsigned long> refCounts;
 };
 
 template <typename T> class GCPointer {
