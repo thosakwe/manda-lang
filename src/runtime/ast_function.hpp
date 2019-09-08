@@ -24,6 +24,8 @@ public:
 
   std::shared_ptr<Type> getReturnType(Interpreter &interpreter) const override;
 
+  const std::unique_ptr<manda::analysis::FnDeclExprCtx> &getNode() const;
+
   std::shared_ptr<Object>
   invoke(Interpreter &interpreter, const manda::analysis::Location &location,
          std::shared_ptr<Object> &thisObject,

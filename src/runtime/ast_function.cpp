@@ -40,3 +40,5 @@ AstFunction::invoke(Interpreter &interpreter, const Location &location,
 shared_ptr<Type> AstFunction::getReturnType(Interpreter &interpreter) const {
   return returnType;
 }
+
+const unique_ptr<FnDeclExprCtx> &AstFunction::getNode() const { return node; }
