@@ -75,6 +75,7 @@ struct VarExprCtx : public TopLevelExprCtx {
   bool isFinal;
   std::string name;
   std::unique_ptr<ExprCtx> value;
+  VarExprCtx() = default;
   VarExprCtx(bool f, std::string n, ExprCtx *v)
       : isFinal(f), name(std::move(n)), value(v) {}
   void accept(ExprVisitor &visitor) const override;
@@ -102,6 +103,7 @@ struct VoidLiteralCtx : public ExprCtx {
 struct IdExprCtx : public ExprCtx {
   std::string name;
   // TODO: Set location
+  IdExprCtx() = default;
   IdExprCtx(const Location &l, std::string n) : name(std::move(n)) {
     location = l;
   }
@@ -112,6 +114,7 @@ class NumberLiteralCtx : public ExprCtx {
 public:
   // TODO: Set location
   double value;
+  NumberLiteralCtx() = default;
   NumberLiteralCtx(const Location &l, double v) : value(v) { location = l; }
   void accept(ExprVisitor &visitor) const override;
 };
@@ -133,7 +136,7 @@ class TextStringPartCtx : public StringPartCtx {
 public:
   std::string text;
   [[nodiscard]] std::string convert(bool singleQuote) const override;
-
+  TextStringPartCtx() = default;
   TextStringPartCtx(const Location &l, std::string t) : text(std::move(t)) {
     location = l;
   }
@@ -143,7 +146,7 @@ class HexEscapeStringPartCtx : public StringPartCtx {
 public:
   std::string text;
   [[nodiscard]] std::string convert(bool singleQuote) const override;
-
+  HexEscapeStringPartCtx() = default;
   HexEscapeStringPartCtx(const Location &l, std::string t)
       : text(std::move(t)) {
     location = l;
@@ -153,12 +156,14 @@ public:
 class QuoteEscapeStringPartCtx : public StringPartCtx {
 public:
   [[nodiscard]] std::string convert(bool singleQuote) const override;
+  QuoteEscapeStringPartCtx() = default;
   explicit QuoteEscapeStringPartCtx(const Location &l) { location = l; }
 };
 
 class StringLiteralCtx : public ExprCtx {
 public:
   // TODO: Location
+  StringLiteralCtx() = default;
   explicit StringLiteralCtx(bool sq) : singleQuote(sq) {}
   void accept(ExprVisitor &visitor) const override;
   [[nodiscard]] std::string getValue() const;
@@ -173,29 +178,34 @@ public:
 struct BoolLiteralCtx : public ExprCtx {
   // TODO: Set location
   bool value;
+  BoolLiteralCtx() = default;
   explicit BoolLiteralCtx(bool v) : value(v) {}
   void accept(ExprVisitor &visitor) const override;
 };
 
 struct BlockExprCtx : public ExprCtx {
   // TODO: Set location
+  BlockExprCtx() = default;
   void accept(ExprVisitor &visitor) const override;
   std::vector<std::unique_ptr<ExprCtx>> body;
 };
 
 struct TupleExprCtx : public ExprCtx {
   // TODO: Set location
+  TupleExprCtx() = default;
   void accept(ExprVisitor &visitor) const override;
   std::vector<std::unique_ptr<ExprCtx>> items;
 };
 
 struct CastExprCtx : public ExprCtx {
+  CastExprCtx() = default;
   void accept(ExprVisitor &visitor) const override;
   std::unique_ptr<ExprCtx> value;
   std::unique_ptr<TypeCtx> type;
 };
 
 struct CallExprCtx : public ExprCtx {
+  CallExprCtx() = default;
   explicit CallExprCtx(ExprCtx *tgt) : target(tgt) {
     location = target->location;
   }
@@ -207,6 +217,7 @@ struct CallExprCtx : public ExprCtx {
 struct ParenExprCtx : public ExprCtx {
   // TODO: Location
   std::unique_ptr<ExprCtx> inner;
+  ParenExprCtx() = default;
   explicit ParenExprCtx(ExprCtx *i) : inner(i) {}
   void accept(ExprVisitor &visitor) const override;
 };
