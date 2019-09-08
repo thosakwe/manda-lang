@@ -35,15 +35,17 @@ void ModuleCompiler::visitExprDecl(const ExprDeclCtx &ctx) {
   auto *topLevel = dynamic_cast<TopLevelExprCtx *>(ctx.value.get());
   if (!topLevel) {
     if (interpreter.getOptions().isREPL()) {
-      // TODO: Evaluate top-level expressions
+      // The REPL will evaluate any top-level expressions.
       module->getTopLevelExpressions().push_back(
           ctx.value->cloneToUniquePointer());
     } else {
-      // TODO: Disallow top-level evaluations in regular mode.
+      // Disallow top-level evaluations in regular mode.
+      interpreter.reportError(
+          ctx.location,
+          "This expression is not allowed at in the top-level context.");
     }
   } else {
-    // TODO: Visit top-level
-    //    topLevel->accept(*this);
+    // Visit top-level
     ObjectResolver resolver(interpreter, module->getSymbolTable());
     topLevel->accept(resolver);
   }
