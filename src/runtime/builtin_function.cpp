@@ -66,8 +66,20 @@ shared_ptr<Object>
 BuiltinFunction::invoke(Interpreter &interpreter, const Location &location,
                         shared_ptr<Object> &thisObject,
                         const vector<shared_ptr<Object>> &args) const {
-  // TODO: Allow invoking built-in functions outside of JIT???
-  return nullptr;
+  // Allow invoking built-in functions outside of JIT by simply
+  // creating a C API context, and invoking the target.
+  _manda_context context{interpreter};
+  for (auto &arg : args) {
+    context.arguments.push_back({arg.get()});
+  }
+  nativeFunction(&context);
+  if (!context.returnValue) {
+    // TODO: What should be returned if the function doesn't return?
+    return make_shared<Void>();
+  } else {
+    // TODO: Will this be auto-deleted?
+    return shared_ptr<Object>(context.returnValue->object);
+  }
 }
 
 shared_ptr<Type>

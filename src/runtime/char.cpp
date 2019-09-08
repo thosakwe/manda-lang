@@ -30,3 +30,10 @@ shared_ptr<Type> Char::getType(Interpreter &interpreter) const {
 }
 
 jit_type_t CharType::toJitType() const { return jit_type_sys_char; }
+
+shared_ptr<manda::runtime::Object>
+CharType::applyJitFunction(std::vector<void *> &args, jit_function &func) {
+  char result;
+  func.apply(args.data(), &result);
+  return make_shared<Char>(result);
+}

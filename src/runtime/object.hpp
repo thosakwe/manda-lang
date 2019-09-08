@@ -7,6 +7,8 @@ namespace manda::runtime {
 class Interpreter;
 class Object {
 public:
+  // TODO: Rule of five...
+  virtual ~Object() = default;
   virtual void print(std::ostream &out, bool ansiSupported) const = 0;
   virtual std::shared_ptr<Type> getType(Interpreter &interpreter) const = 0;
 };
