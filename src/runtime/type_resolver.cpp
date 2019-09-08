@@ -82,8 +82,16 @@ void TypeResolver::visitBlockExpr(const BlockExprCtx &ctx) {
     lastType = interpreter.getCoreLibrary().voidType;
   } else {
     // TODO: Should *all* nodes be visited, or just the last?
-    lastType = nullptr;
-    ctx.body[ctx.body.size() - 1]->accept(*this);
+    for (auto &node : ctx.body) {
+      lastType = nullptr;
+      node->accept(*this);
+      if (!lastType) {
+        interpreter.reportError(
+            node->location,
+            "Could not resolve the types of all items in this block.");
+        return;
+      }
+    }
   }
 }
 
@@ -96,7 +104,8 @@ void TypeResolver::visitTupleExpr(const TupleExprCtx &ctx) {
       // TODO: Allow passing as Any
       // TODO: Should any errors be in the TypeResolver at all?
       interpreter.reportError(
-          item->location, "Could not resolve the types of all items in tuple.");
+          item->location,
+          "Could not resolve the types of all items in this tuple.");
       return;
     } else {
       items.push_back(lastType);
