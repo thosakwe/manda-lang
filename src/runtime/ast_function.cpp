@@ -7,14 +7,17 @@ using namespace manda::runtime;
 using namespace std;
 
 AstFunction::AstFunction(const FnDeclExprCtx &node,
-                         std::shared_ptr<SymbolTable> scope)
-    : name(node.name), node(node.clone()), scope(move(scope)) {}
+                         std::shared_ptr<SymbolTable> scope,
+                         shared_ptr<Type> returnType)
+    : name(node.name), node(node.clone()), returnType(move(returnType)),
+      scope(move(scope)) {}
 
 AstFunction::AstFunction(const manda::analysis::FnDeclExprCtx &node,
                          std::shared_ptr<SymbolTable> scope,
-                         std::vector<Parameter> parameters)
+                         std::vector<Parameter> parameters,
+                         shared_ptr<Type> returnType)
     : name(node.name), node(node.clone()), parameters(move(parameters)),
-      scope(move(scope)) {}
+      returnType(move(returnType)), scope(move(scope)) {}
 
 const string &AstFunction::getName() const { return name; }
 
@@ -32,4 +35,8 @@ AstFunction::invoke(Interpreter &interpreter, const Location &location,
   ObjectResolver resolver(interpreter, childScope);
   node->body->accept(resolver);
   return resolver.getLastObject();
+}
+
+shared_ptr<Type> AstFunction::getReturnType(Interpreter &interpreter) const {
+  return returnType;
 }

@@ -112,7 +112,7 @@ void ObjectResolver::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
     }
   }
 
-  auto value = make_shared<AstFunction>(ctx, scope, params);
+  auto value = make_shared<AstFunction>(ctx, scope, params, returnType);
   lastObject = value;
   if (!ctx.name.empty()) {
     // TODO: Handle redefined names
