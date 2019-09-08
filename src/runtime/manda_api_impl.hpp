@@ -4,24 +4,21 @@
 #include <manda_api.h>
 #include <vector>
 
-namespace manda::runtime {
-
 // struct manda_jit_any {
 //    void *data;
 //    unsigned long long type_id;
 // };
 
-struct MandaAny {
-  Object *object;
+extern "C" struct _manda_object {
+  manda::runtime::Object *object;
   unsigned long long typeId;
-};
+}; // namespace manda::runtime
 
 extern "C" struct _manda_context {
-  Interpreter &interpreter;
+  manda::runtime::Interpreter &interpreter;
   unsigned long argumentCount;
-  MandaAny *arguments;
-  MandaAny returnValue;
+  _manda_object *arguments;
+  _manda_object returnValue;
 };
-} // namespace manda::runtime
 
 #endif

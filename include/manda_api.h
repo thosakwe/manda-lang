@@ -17,7 +17,7 @@ typedef void (*MandaNativeFunction)(manda_context_t);
 
 MANDA_EXTERN_C unsigned long manda_get_argument_count(manda_context_t context);
 
-MANDA_EXTERN_C manda_object_t manda_get_argument(manda_context_t,
+MANDA_EXTERN_C manda_object_t manda_get_argument(manda_context_t context,
                                                  unsigned long index);
 
 MANDA_EXTERN_C manda_result_t manda_return(manda_context_t context,

@@ -1,4 +1,5 @@
 #include "jit_compiled_function.hpp"
+#include "ast_function.hpp"
 #include "object_resolver.hpp"
 #include <iostream>
 #include <jit/jit-dump.h>
