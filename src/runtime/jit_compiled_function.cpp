@@ -128,7 +128,7 @@ void JitCompiledFunction::visitVarExpr(const VarExprCtx &ctx) {
     auto variable = new_value(jit_value_get_type(lastValue->raw()));
     scopeStack.top()->add(ctx.name, variable);
     jit_insn_store(raw(), variable.raw(), lastValue->raw());
-    lastValue = insn_load(variable);
+    lastValue = variable;
   }
 }
 
@@ -147,7 +147,7 @@ void JitCompiledFunction::visitIdExpr(const IdExprCtx &ctx) {
     if (interpreter.getOptions().developerMode) {
       cout << "Emitting load of var \"" << ctx.name << "\"" << endl;
     }
-    lastValue = insn_load(*jitSymbol);
+    lastValue = *jitSymbol;
   } else {
     // Look up the symbol.
     auto rtSymbol = astFunction.getScope()->resolve(ctx.name);
@@ -175,7 +175,7 @@ void JitCompiledFunction::visitIdExpr(const IdExprCtx &ctx) {
           cout << "Pointer="
                << jit_value_get_constant(jitPtr.raw()).un.ptr_value << endl;
         }
-        lastValue = insn_load(variable);
+        lastValue = variable;
       } else {
         // TODO: Add serialize() to Type...
         interpreter.reportError(ctx.location,
