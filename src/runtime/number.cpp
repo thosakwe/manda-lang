@@ -23,6 +23,11 @@ void manda::runtime::Number::print(ostream &out, bool ansiSupported) const {
   out << scientific;
 }
 
+shared_ptr<manda::runtime::Type> manda::runtime::Number::getType(
+    manda::runtime::Interpreter &interpreter) const {
+  return interpreter.getCoreLibrary().numberType;
+}
+
 string manda::runtime::NumberType::getName() const { return "Number"; }
 
 jit_type_t manda::runtime::NumberType::toJitType() const {
@@ -31,7 +36,10 @@ jit_type_t manda::runtime::NumberType::toJitType() const {
   return jit_type_sys_double;
 }
 
-shared_ptr<manda::runtime::Type> manda::runtime::Number::getType(
-    manda::runtime::Interpreter &interpreter) const {
-  return interpreter.getCoreLibrary().numberType;
+shared_ptr<manda::runtime::Object>
+manda::runtime::NumberType::applyJitFunction(void **args, jit_function &func) {
+  // TODO: Process result of jit_function_apply
+  jit_float64 result;
+  func.apply(args, &result);
+  return make_shared<Number>(result);
 }
