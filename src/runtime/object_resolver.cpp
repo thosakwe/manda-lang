@@ -60,6 +60,32 @@ void ObjectResolver::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
     // TODO: Print param types
     cout << "Total params: " << ctx.params.size() << endl;
   }
+  // TODO: Introduce a visitor that can determine the return type
+  // Such a visitor will be called on functions that are returned repeatedly???
+
+  // Determine the function's return type.
+  // If none is given, default to `Any`.
+  shared_ptr<Type> returnType;
+  if (!ctx.returnType) {
+    returnType = interpreter.getCoreLibrary().anyType;
+  } else {
+    TypeResolver typeResolver(interpreter, scope);
+    ctx.returnType->accept(typeResolver);
+    returnType = typeResolver.getLastType();
+    if (!returnType) {
+      ostringstream oss;
+      oss << "Failed to resolve the return type";
+      if (!ctx.name.empty()) {
+        oss << " of function \"";
+        oss << ctx.name << "\"";
+      }
+      oss << ".";
+      interpreter.reportError(ctx.location, oss.str());
+      lastObject = nullptr;
+      return;
+    }
+  }
+
   for (auto &node : ctx.params) {
     shared_ptr<Type> type;
     if (!node->type) {
