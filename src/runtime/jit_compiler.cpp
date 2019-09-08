@@ -26,6 +26,9 @@ void JitCompiler::compile() {
     // Return the value.
     jitFunction->insn_return(*lastValue);
   }
+  // Always emit a default_return().
+  // TODO: Prevent this if the function does not return Void or Any.
+  jitFunction->insn_default_return();
 }
 
 void JitCompiler::visitVarExpr(const VarExprCtx &ctx) {}
