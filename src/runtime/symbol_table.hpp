@@ -11,6 +11,7 @@ namespace manda::runtime {
 typedef std::variant<std::shared_ptr<Object>, std::shared_ptr<Type>> Symbol;
 // using SymbolTable = GenericScope<Symbol>;
 typedef GenericScope<Symbol> SymbolTable;
+typedef GenericScope<std::shared_ptr<Type>> TypeScope;
 
 // class SymbolTable : public std::enable_shared_from_this<SymbolTable> {
 // public:

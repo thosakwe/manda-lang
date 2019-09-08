@@ -7,11 +7,11 @@
 #include <memory>
 
 namespace manda::runtime {
-typedef GenericScope<std::shared_ptr<Type>> TypeScope;
 class TypeResolver : public manda::analysis::TypeVisitor,
                      public manda::analysis::ExprVisitor {
 public:
   TypeResolver(Interpreter &interpreter, std::shared_ptr<SymbolTable> scope);
+  void pushTypeScope(const std::shared_ptr<TypeScope>& scope);
   [[nodiscard]] const std::shared_ptr<Type> &getLastType() const;
   void visitTypeRef(const analysis::TypeRefCtx &ctx) override;
   void visitVarExpr(const analysis::VarExprCtx &ctx) override;

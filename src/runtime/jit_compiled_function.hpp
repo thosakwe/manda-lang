@@ -20,6 +20,8 @@ public:
                                  void *func);
   jit_value insn_gc_incref(const jit_value &ptr);
   jit_value insn_gc_decref(const jit_value &ptr);
+  void pushScope();
+  void popScope();
   void visitVarExpr(const analysis::VarExprCtx &ctx) override;
   void visitFnDeclExpr(const analysis::FnDeclExprCtx &ctx) override;
   void visitVoidLiteral(const analysis::VoidLiteralCtx &ctx) override;
@@ -43,6 +45,7 @@ private:
   const AstFunction &astFunction;
   std::optional<jit_value> lastValue;
   std::stack<std::shared_ptr<JitValueScope>> jitValueScopeStack;
+  std::stack<std::shared_ptr<TypeScope>> typeScopeStack;
   std::stack<std::shared_ptr<SymbolTable>> scopeStack;
   std::stack<bool> coerceToAny;
 };

@@ -69,6 +69,18 @@ jit_value JitCompiledFunction::insn_gc_decref(const jit_value &ptr) {
                               (void *)&GarbageCollector::static_decref);
 }
 
+void JitCompiledFunction::pushScope() {
+  scopeStack.push(scopeStack.top()->createChild());
+  jitValueScopeStack.push(jitValueScopeStack.top()->createChild());
+  typeScopeStack.push(typeScopeStack.top()->createChild());
+}
+
+void JitCompiledFunction::popScope() {
+  scopeStack.pop();
+  jitValueScopeStack.pop();
+  typeScopeStack.pop();
+}
+
 void JitCompiledFunction::build() {
   // Compile the body, and return it.
   // TODO: Type checking...
@@ -126,6 +138,18 @@ void JitCompiledFunction::visitVarExpr(const VarExprCtx &ctx) {
     lastValue = nullopt;
   } else {
     // Create a new variable, and inject it into scope.
+    // Also, determine its type.
+    TypeResolver typeResolver(interpreter, scopeStack.top());
+    typeResolver.pushTypeScope(typeScopeStack.top());
+    ctx.value->accept(typeResolver);
+    auto resolvedType = typeResolver.getLastType();
+    if (!resolvedType) {
+      ostringstream oss;
+      oss << "Failed to resolve the type for variable \"" << ctx.name << "\".";
+      interpreter.reportError(ctx.location, oss.str());
+      lastValue = nullopt;
+    }
+    typeScopeStack.top()->add(ctx.name, resolvedType);
     auto variable = new_value(jit_value_get_type(lastValue->raw()));
     jitValueScopeStack.top()->add(ctx.name, variable);
     jit_insn_store(raw(), variable.raw(), lastValue->raw());
@@ -244,8 +268,7 @@ void JitCompiledFunction::visitBlockExpr(const BlockExprCtx &ctx) {
   // all expressions.
   // If there are no expressions, return void (a.k.a., do nothing here).
   new_label();
-  scopeStack.push(scopeStack.top()->createChild());
-  jitValueScopeStack.push(jitValueScopeStack.top()->createChild());
+  pushScope();
 
   for (auto &node : ctx.body) {
     lastValue = nullopt;
@@ -264,8 +287,7 @@ void JitCompiledFunction::visitBlockExpr(const BlockExprCtx &ctx) {
   }
 
   // At this point, whatever is here will be returned.
-  jitValueScopeStack.pop();
-  scopeStack.pop();
+  popScope();
 }
 
 void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
@@ -391,6 +413,7 @@ void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
       // Create a one-off TypeResolver to figure out which type needs to perform
       // boxing.
       TypeResolver typeResolver(interpreter, scopeStack.top());
+      typeResolver.pushTypeScope(typeScopeStack.top());
       arg->accept(typeResolver);
       auto resultType = typeResolver.getLastType();
       if (!resultType) {
@@ -399,6 +422,11 @@ void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
         interpreter.reportError(
             arg->location, "Could not box a value for this function call.");
         coerceToAny.pop();
+        if (interpreter.getOptions().developerMode) {
+          cout << "Here is the guilty argument:" << endl;
+          AstPrinter printer(cout);
+          arg->accept(printer);
+        }
         return;
       } else {
         // Box the value.

@@ -15,6 +15,10 @@ TypeResolver::TypeResolver(Interpreter &interpreter,
   typeScopeStack.push(make_shared<TypeScope>());
 }
 
+void TypeResolver::pushTypeScope(const std::shared_ptr<TypeScope> &scope) {
+  typeScopeStack.push(scope);
+}
+
 const shared_ptr<Type> &TypeResolver::getLastType() const { return lastType; }
 
 void TypeResolver::visitTypeRef(const TypeRefCtx &ctx) {
@@ -49,7 +53,8 @@ void TypeResolver::visitVarExpr(const VarExprCtx &ctx) {
     interpreter.reportError(ctx.location, oss.str());
   } else {
     if (interpreter.getOptions().developerMode) {
-      cout << "TypeResolver found var " << ctx.name << ": " << lastType->getName() << endl;
+      cout << "TypeResolver found var " << ctx.name << ": "
+           << lastType->getName() << endl;
     }
     typeScopeStack.top()->add(ctx.name, lastType);
   }
