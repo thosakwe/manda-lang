@@ -25,6 +25,12 @@ void manda::runtime::Number::print(ostream &out, bool ansiSupported) const {
 
 string manda::runtime::NumberType::getName() const { return "Number"; }
 
+jit_type_t manda::runtime::NumberType::toJitType() const {
+  // Manda numbers are system doubles.
+  // TODO: Should these be long doubles?
+  return jit_type_sys_double;
+}
+
 shared_ptr<manda::runtime::Type> manda::runtime::Number::getType(
     manda::runtime::Interpreter &interpreter) const {
   return interpreter.getCoreLibrary().numberType;
