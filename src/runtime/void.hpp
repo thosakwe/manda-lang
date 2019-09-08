@@ -6,6 +6,7 @@ namespace manda::runtime {
 class Void : public Object {
 public:
   void print(std::ostream &out, bool ansiSupported) const override;
+  std::shared_ptr<Type> getType(Interpreter &interpreter) const override;
 };
 
 class VoidType : public Type {

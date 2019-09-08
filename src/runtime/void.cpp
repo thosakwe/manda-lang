@@ -13,4 +13,8 @@ void Void::print(ostream &out, bool ansiSupported) const {
   }
 }
 
+shared_ptr<Type> Void::getType(Interpreter &interpreter) const {
+  return interpreter.getCoreLibrary().voidType;
+}
+
 string VoidType::getName() const { return "Void"; }
