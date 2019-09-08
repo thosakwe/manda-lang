@@ -1,4 +1,5 @@
 #include "any_type.hpp"
+#include "object.hpp"
 #include <vector>
 
 using namespace manda::runtime;
