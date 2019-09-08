@@ -18,3 +18,8 @@ jit_type_t AnyType::toJitType() const {
   fields.push_back(jit_type_sys_ulonglong);
   return jit_type_create_struct(fields.data(), fields.size(), 0);
 }
+
+shared_ptr<Object> AnyType::deserialize(void *ptr) {
+  auto *obj = (Object **)ptr;
+  return shared_ptr<Object>(*obj);
+}
