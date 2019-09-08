@@ -10,7 +10,7 @@ public:
   void *allocate(jit_uint size);
   void incref(void *ptr);
   void decref(void *ptr);
-  unsigned long refCount(void *ptr);
+  unsigned long refCount(void *ptr) const;
   static void static_incref(GarbageCollector *gc, void *ptr);
   static void static_decref(GarbageCollector *gc, void *ptr);
 
@@ -56,6 +56,12 @@ private:
   GarbageCollector &gc;
   T *ptr;
 };
+
+template <typename T, class... Args>
+GCPointer<T> *make_gc(GarbageCollector &gc, Args &&... args) {
+  auto *ptr = new T(args...);
+  return GCPointer<T>(gc, ptr);
+}
 } // namespace manda::runtime
 
 #endif

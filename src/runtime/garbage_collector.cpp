@@ -43,3 +43,12 @@ void GarbageCollector::static_incref(GarbageCollector *gc, void *ptr) {
 void GarbageCollector::static_decref(GarbageCollector *gc, void *ptr) {
   gc->decref(ptr);
 }
+
+unsigned long GarbageCollector::refCount(void *ptr) const {
+  auto it = refCounts.find(ptr);
+  if (it == refCounts.find(ptr)) {
+    return 0;
+  } else {
+    return it->second;
+  }
+}
