@@ -8,7 +8,7 @@ public:
   explicit Bool(bool value);
   [[nodiscard]] bool getValue() const;
   void print(std::ostream &out, bool ansiSupported) const override;
-  const std::shared_ptr<Type> &getType(Interpreter &interpreter) const override;
+  std::shared_ptr<Type> getType(Interpreter &interpreter) const override;
 
 private:
   bool value;

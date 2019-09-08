@@ -18,7 +18,7 @@ void Bool::print(ostream &out, bool ansiSupported) const {
   }
 }
 
-const shared_ptr<Type> &Bool::getType(Interpreter &interpreter) const {
+std::shared_ptr<Type> Bool::getType(Interpreter &interpreter) const {
   return interpreter.getCoreLibrary().boolType;
 }
 
