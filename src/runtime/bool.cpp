@@ -19,7 +19,7 @@ void Bool::print(ostream &out, bool ansiSupported) const {
 }
 
 const shared_ptr<Type> &Bool::getType(Interpreter &interpreter) const {
-  return <#initializer #>;
+  return interpreter.getCoreLibrary().boolType;
 }
 
 string BoolType::getName() const { return "Bool"; }
