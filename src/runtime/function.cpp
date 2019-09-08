@@ -56,3 +56,11 @@ jit_type_t FunctionType::toJitType() const {
   return jit_type_create_signature(jit_abi_cdecl, jitReturnType,
                                    jitParams.data(), jitParams.size(), 0);
 }
+
+const vector<Parameter> &FunctionType::getParameters() const {
+  return parameters;
+}
+
+const shared_ptr<Type> &FunctionType::getReturnType() const {
+  return returnType;
+}

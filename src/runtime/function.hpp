@@ -33,6 +33,8 @@ public:
   FunctionType(std::vector<Parameter> parameters,
                std::shared_ptr<Type> returnType);
   std::string getName() const override;
+  const std::vector<Parameter> &getParameters() const;
+  const std::shared_ptr<Type> &getReturnType() const;
   jit_type_t toJitType() const override;
 
 private:
