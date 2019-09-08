@@ -19,3 +19,27 @@ void Tuple::print(ostream &out, bool ansiSupported) const {
   oss << ")";
   out << oss.str();
 }
+
+shared_ptr<Type> Tuple::getType(Interpreter &interpreter) const {
+  vector<shared_ptr<Type>> itemTypes;
+  for (auto &item : items) {
+    itemTypes.push_back(item->getType(interpreter));
+  }
+  return make_shared<TupleType>(itemTypes);
+}
+
+TupleType::TupleType(std::vector<std::shared_ptr<Type>> items)
+    : items(move(items)) {}
+
+string TupleType::getName() const {
+  ostringstream oss;
+  oss << "(";
+  for (unsigned long i = 0; i < items.size(); i++) {
+    if (i > 0) {
+      oss << ", ";
+    }
+    oss << items[i]->getName();
+  }
+  oss << ")";
+  return oss.str();
+}
