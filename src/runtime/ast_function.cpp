@@ -35,10 +35,16 @@ AstFunction::invoke(Interpreter &interpreter, const Location &location,
   auto devMode = interpreter.getOptions().developerMode;
   // TODO: Use JIT here only
   JitCompiler jitCompiler(interpreter, *this);
-  jitCompiler.compile();
+  auto success = jitCompiler.compile();
   if (devMode) {
     auto jitFunction = jitCompiler.getJitFunction();
-    jitFunction.compile(); // TODO: Eventually remove this call?
+    if (!success) {
+      // If compilation failed due to an analysis error,
+      // forcibly compile it here, so we can dump it.
+      interpreter.getJitContext().build_end();
+      jitFunction.compile();
+      interpreter.getJitContext().build_start();
+    }
     jit_dump_function(stdout, jitFunction.raw(), name.c_str());
     cout << "Note: Execution is not actually performed via JIT yet." << endl;
   }

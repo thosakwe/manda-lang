@@ -30,6 +30,10 @@ bool JitCompiler::compile() {
   // Always emit a default_return().
   // TODO: Prevent this if the function does not return Void or Any.
   jitFunction->insn_default_return();
+  // Compile the function.
+  interpreter.getJitContext().build_end();
+  jitFunction->compile();
+  interpreter.getJitContext().build_start();
   return true;
 }
 
