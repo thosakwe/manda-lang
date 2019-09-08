@@ -60,9 +60,9 @@ bool Interpreter::ensureArguments(const Location &location,
   return false;
 }
 
-void Interpreter::visitExprDecl(ExprDeclCtx &ctx) {}
+void Interpreter::visitExprDecl(const ExprDeclCtx &ctx) {}
 
-void Interpreter::visitTypeDecl(TypeDeclCtx &ctx) {
+void Interpreter::visitTypeDecl(const TypeDeclCtx &ctx) {
   // TODO: Plain mode implementation (lazy?, etc.?)
   TypeResolver resolver(*this, scopeStack.top());
   ctx.type->accept(resolver);
@@ -80,6 +80,6 @@ void Interpreter::visitTypeDecl(TypeDeclCtx &ctx) {
   }
 }
 
-void Interpreter::visitCompilationUnit(CompilationUnitCtx &ctx) {}
+void Interpreter::visitCompilationUnit(const CompilationUnitCtx &ctx) {}
 
 const CoreLibrary &Interpreter::getCoreLibrary() const { return coreLibrary; }

@@ -10,7 +10,7 @@ namespace manda::runtime {
 class TypeResolver : public manda::analysis::TypeVisitor {
 public:
   TypeResolver(Interpreter &interpreter, std::shared_ptr<SymbolTable> scope);
-  void visitTypeRef(analysis::TypeRefCtx &ctx) override;
+  void visitTypeRef(const analysis::TypeRefCtx &ctx) override;
   [[nodiscard]] const std::shared_ptr<Type> &getLastType() const;
 
 private:

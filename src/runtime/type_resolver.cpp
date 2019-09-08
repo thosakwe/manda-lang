@@ -12,7 +12,7 @@ TypeResolver::TypeResolver(Interpreter &interpreter,
 
 const shared_ptr<Type> &TypeResolver::getLastType() const { return lastType; }
 
-void TypeResolver::visitTypeRef(TypeRefCtx &ctx) {
+void TypeResolver::visitTypeRef(const TypeRefCtx &ctx) {
   auto symbol = scope->resolve(ctx.name);
   if (holds_alternative<monostate>(symbol)) {
     ostringstream oss;

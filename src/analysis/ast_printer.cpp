@@ -20,7 +20,7 @@ ostream &AstPrinter::print() {
   return out;
 }
 
-void AstPrinter::visitCompilationUnit(CompilationUnitCtx &ctx) {
+void AstPrinter::visitCompilationUnit(const CompilationUnitCtx &ctx) {
   print() << "CompilationUnit" << endl;
   indent();
   for (auto &node : ctx.declarations) {
@@ -29,14 +29,14 @@ void AstPrinter::visitCompilationUnit(CompilationUnitCtx &ctx) {
   outdent();
 }
 
-void AstPrinter::visitExprDecl(ExprDeclCtx &ctx) {
+void AstPrinter::visitExprDecl(const ExprDeclCtx &ctx) {
   print() << "ExprDecl" << endl;
   indent();
   ctx.value->accept(*this);
   outdent();
 }
 
-void AstPrinter::visitTypeDecl(TypeDeclCtx &ctx) {
+void AstPrinter::visitTypeDecl(const TypeDeclCtx &ctx) {
   // TODO: Print
 }
 

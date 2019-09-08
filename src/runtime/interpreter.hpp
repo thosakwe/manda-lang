@@ -25,9 +25,9 @@ public:
   void reportError(const manda::analysis::Location &location,
                    const std::string &message);
   void emitTopLevelExpression(std::unique_ptr<manda::analysis::ExprCtx> ctx);
-  void visitExprDecl(analysis::ExprDeclCtx &ctx) override;
-  void visitTypeDecl(analysis::TypeDeclCtx &ctx) override;
-  void visitCompilationUnit(analysis::CompilationUnitCtx &ctx) override;
+  void visitExprDecl(const analysis::ExprDeclCtx &ctx) override;
+  void visitTypeDecl(const analysis::TypeDeclCtx &ctx) override;
+  void visitCompilationUnit(const analysis::CompilationUnitCtx &ctx) override;
 
 private:
   CoreLibrary coreLibrary;

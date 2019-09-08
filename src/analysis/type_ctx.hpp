@@ -15,7 +15,7 @@ public:
   TypeCtx &operator=(const TypeCtx &) = default;
   TypeCtx &operator=(TypeCtx &&) = default;
   virtual ~TypeCtx() = default;
-  virtual void accept(TypeVisitor &visitor) = 0;
+  virtual void accept(TypeVisitor &visitor) const = 0;
 };
 
 struct TypeRefCtx : public TypeCtx {
@@ -23,12 +23,12 @@ struct TypeRefCtx : public TypeCtx {
   TypeRefCtx(const Location &l, std::string name) : name(std::move(name)) {
     location = l;
   }
-  void accept(TypeVisitor &visitor) override;
+  void accept(TypeVisitor &visitor) const override;
 };
 
 class TypeVisitor {
 public:
-  virtual void visitTypeRef(TypeRefCtx &ctx) = 0;
+  virtual void visitTypeRef(const TypeRefCtx &ctx) = 0;
 };
 } // namespace manda::analysis
 

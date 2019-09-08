@@ -9,10 +9,9 @@ public:
   explicit AstPrinter(std::ostream &out);
   void indent();
   void outdent();
-  void visitCompilationUnit(CompilationUnitCtx &ctx) override;
-private:
-  void visitExprDecl(ExprDeclCtx &ctx) override;
-  void visitTypeDecl(TypeDeclCtx &ctx) override;
+  void visitCompilationUnit(const CompilationUnitCtx &ctx) override;
+  void visitExprDecl(const ExprDeclCtx &ctx) override;
+  void visitTypeDecl(const TypeDeclCtx &ctx) override;
   void visitVarExpr(const VarExprCtx &ctx) override;
   void visitFnDeclExpr(const FnDeclExprCtx &ctx) override;
   void visitVoidLiteral(const VoidLiteralCtx &ctx) override;

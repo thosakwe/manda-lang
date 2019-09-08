@@ -24,20 +24,21 @@ ModuleCompiler::ModuleCompiler(Interpreter &interpreter,
 
 shared_ptr<Module> &ModuleCompiler::getModule() { return module; }
 
-void ModuleCompiler::visitCompilationUnit(CompilationUnitCtx &ctx) {
+void ModuleCompiler::visitCompilationUnit(const CompilationUnitCtx &ctx) {
   for (auto &node : ctx.declarations) {
     node->accept(*this);
   }
 }
 
-void ModuleCompiler::visitExprDecl(ExprDeclCtx &ctx) {
+void ModuleCompiler::visitExprDecl(const ExprDeclCtx &ctx) {
   using namespace manda::analysis;
   auto *topLevel = dynamic_cast<TopLevelExprCtx *>(ctx.value.get());
   if (!topLevel) {
     if (interpreter.getOptions().isREPL()) {
       // TODO: Evaluate top-level expressions
       // IMPORTANT: The value is MOVED.
-      module->getTopLevelExpressions().push_back(move(ctx.value));
+      // TODO: Use a clone here
+//      module->getTopLevelExpressions().push_back(move(ctx.value));
     } else {
       // TODO: Disallow top-level evaluations in regular mode.
     }
@@ -49,4 +50,4 @@ void ModuleCompiler::visitExprDecl(ExprDeclCtx &ctx) {
   }
 }
 
-void ModuleCompiler::visitTypeDecl(TypeDeclCtx &ctx) {}
+void ModuleCompiler::visitTypeDecl(const TypeDeclCtx &ctx) {}

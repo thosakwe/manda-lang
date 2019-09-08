@@ -15,9 +15,9 @@ public:
   explicit ModuleCompiler(Interpreter &interpreter);
   ModuleCompiler(Interpreter &interpreter, std::shared_ptr<Module> &module);
   std::shared_ptr<Module> &getModule();
-  void visitCompilationUnit(analysis::CompilationUnitCtx &ctx) override;
-  void visitExprDecl(analysis::ExprDeclCtx &ctx) override;
-  void visitTypeDecl(analysis::TypeDeclCtx &ctx) override;
+  void visitCompilationUnit(const analysis::CompilationUnitCtx &ctx) override;
+  void visitExprDecl(const analysis::ExprDeclCtx &ctx) override;
+  void visitTypeDecl(const analysis::TypeDeclCtx &ctx) override;
 
 private:
   Interpreter &interpreter;
