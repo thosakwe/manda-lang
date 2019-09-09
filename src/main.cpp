@@ -101,8 +101,7 @@ int runFile(const VMOptions &options) {
     Worker mainWorker(options);
     mainWorker.executeProgram(compilationUnit);
     // TODO: Proper error handling, etc.
-    return mainWorker.getExitCode();
-    //    return vm.run();
+    return vm.run();
   }
 }
 

@@ -1,4 +1,7 @@
 #include "vm.hpp"
+#include "number.hpp"
+#include <iostream>
+#include <vector>
 
 using namespace manda::runtime;
 using namespace std;
@@ -6,10 +9,54 @@ using namespace std;
 VM::VM(VMOptions options) : options(std::move(options)) {}
 
 void VM::addWorker(const shared_ptr<Worker> &worker) {
-  // TODO: Implement this
+  workers.push_back(worker);
+  if (started) {
+    startWorker(worker);
+  }
+}
+
+void VM::startWorker(const std::shared_ptr<Worker> &worker) {
+  thread workerThread(Worker::runWorker, worker);
+  workerThreads.push_back(workerThread);
+  workerThread.detach();
 }
 
 int VM::run() {
-  // TODO: Implement this
+  started = true;
+  // Start all workers.
+  for (auto &worker : workers) {
+    startWorker(worker);
+  }
+  // Loop while all workers are alive.
+  std::shared_ptr<Object> result;
+  while (!workers.empty()) {
+    auto it = workers.begin();
+    while (it != workers.end()) {
+      auto &worker = *it;
+      if (worker->isAlive()) {
+        it++;
+      } else {
+        // TODO: Only allow the result to be set once.
+        result = worker->getResult();
+        workers.erase(it++);
+      }
+    }
+  }
+
+  // Next, return an exit code, potentially.
+  // Set the exit code, if result was a number.
+  if (options.developerMode) {
+    if (result) {
+      cout << "Result: ";
+      result->print(cout, true);
+      cout << endl;
+    } else {
+      cout << "Result produced null pointer." << endl;
+    }
+  }
+  auto *resultAsNumber = dynamic_cast<Number *>(result.get());
+  if (resultAsNumber) {
+    return (int)resultAsNumber->getValue();
+  }
   return 0;
 }
