@@ -29,5 +29,7 @@ add_library(manda_runtime
     jit_compiled_function.cpp jit_compiled_function.hpp
     manda_api_impl.hpp manda_api_impl.cpp
     garbage_collector.cpp garbage_collector.hpp
-    generic_scope.hpp)
+    generic_scope.hpp
+    base_resolver.cpp base_resolver.hpp
+    )
 target_include_directories(manda_runtime PUBLIC ${JIT_INCLUDE_DIR})

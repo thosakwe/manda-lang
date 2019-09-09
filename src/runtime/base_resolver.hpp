@@ -11,6 +11,9 @@ public:
 protected:
   std::stack<UnifiedScope> scopeStack;
   UnifiedScope &getCurrentScope();
+  std::shared_ptr<GenericScope<std::shared_ptr<Type>>> &getTypeScope();
+  std::shared_ptr<GenericScope<Symbol>> &getRuntimeScope();
+  std::shared_ptr<GenericScope<jit_value>> &getJitScope();
   void pushScope();
   void popScope();
 };
