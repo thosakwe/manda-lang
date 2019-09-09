@@ -21,6 +21,10 @@ public:
   jit_type_t toJitType() const override;
   std::shared_ptr<Object> deserialize(Interpreter &interpreter,
                                       void *ptr) override;
+  jit_value boxRawValue(JitCompiledFunction &fn,
+                        const jit_value &rawValue) override;
+
+  static Tuple *box(Object **items, unsigned long size);
 
 private:
   std::string getName() const override;
