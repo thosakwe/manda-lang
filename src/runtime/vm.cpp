@@ -16,9 +16,9 @@ void VM::addWorker(const shared_ptr<Worker> &worker) {
 }
 
 void VM::startWorker(const std::shared_ptr<Worker> &worker) {
-  thread workerThread(Worker::runWorker, worker);
-  workerThreads.push_back(workerThread);
+  thread workerThread(Worker::runWorker, worker, options);
   workerThread.detach();
+  workerThreads.push_back(move(workerThread));
 }
 
 int VM::run() {

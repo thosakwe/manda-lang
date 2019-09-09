@@ -13,7 +13,8 @@ class Task {
 public:
   Task(Worker &worker,
        std::shared_ptr<manda::analysis::CompilationUnitCtx> compilationUnit,
-       Interpreter &interpreter, manda::analysis::Location startLocation,
+       std::shared_ptr<Interpreter> interpreter,
+       manda::analysis::Location startLocation,
        std::shared_ptr<Object> entryPoint, std::shared_ptr<Object> thisObject,
        std::vector<std::shared_ptr<Object>> args);
   [[nodiscard]] bool isAlive() const;
@@ -25,7 +26,7 @@ private:
   Worker &worker;
   std::shared_ptr<manda::analysis::CompilationUnitCtx> compilationUnit;
   std::shared_ptr<Object> result;
-  Interpreter interpreter;
+  std::shared_ptr<Interpreter> interpreter;
   manda::analysis::Location startLocation;
   std::shared_ptr<Object> entryPoint;
   std::shared_ptr<Object> thisObject;

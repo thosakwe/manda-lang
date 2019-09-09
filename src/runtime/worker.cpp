@@ -17,8 +17,8 @@ int Worker::getExitCode() const { return exitCode; }
 void Worker::executeProgram(shared_ptr<analysis::CompilationUnitCtx> &ctx) {
   // Validate that there is a main...
   auto module = make_shared<Module>(options.inputFile);
-  Interpreter interpreter(options, module);
-  ModuleCompiler compiler(interpreter, module);
+  auto interpreter = make_shared<Interpreter>(options, module);
+  ModuleCompiler compiler(*interpreter, module);
   ctx->accept(compiler);
 
   auto main = module->getSymbolTable()->resolve("main");
@@ -26,7 +26,7 @@ void Worker::executeProgram(shared_ptr<analysis::CompilationUnitCtx> &ctx) {
 
   if (!main || !holds_alternative<shared_ptr<Object>>(*main)) {
     // TODO: Throw error if no main function was found.
-    interpreter.reportError(
+    interpreter->reportError(
         startLocation,
         "No function named \"main\" was defined in the top-level context.");
     dead = true;
@@ -36,9 +36,9 @@ void Worker::executeProgram(shared_ptr<analysis::CompilationUnitCtx> &ctx) {
     auto *mainMethod =
         dynamic_cast<Function *>(get<shared_ptr<Object>>(*main).get());
     if (!mainMethod) {
-      interpreter.reportError(startLocation,
-                              "A symbol \"main\" was defined in the top-level "
-                              "context, but it was not a function.");
+      interpreter->reportError(startLocation,
+                               "A symbol \"main\" was defined in the top-level "
+                               "context, but it was not a function.");
       dead = true;
       exitCode = 1;
       return;
@@ -53,9 +53,10 @@ void Worker::executeProgram(shared_ptr<analysis::CompilationUnitCtx> &ctx) {
       //      }
 
       // Create a new task, that will eventually be started.
-      auto task = make_unique<Task>(*this, ctx, interpreter, startLocation,
-                                    mainMethod, thisObject, args);
-      tasks.push_back(task);
+      auto task =
+          make_unique<Task>(*this, ctx, interpreter, startLocation,
+                            get<shared_ptr<Object>>(*main), thisObject, args);
+      tasks.push_back(move(task));
     }
   }
 }
