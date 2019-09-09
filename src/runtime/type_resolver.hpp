@@ -1,6 +1,7 @@
 #ifndef MANDA_TYPE_RESOLVER_HPP
 #define MANDA_TYPE_RESOLVER_HPP
 #include "../analysis/type_ctx.hpp"
+#include "base_resolver.hpp"
 #include "interpreter.hpp"
 #include "symbol_table.hpp"
 #include "type.hpp"
@@ -8,10 +9,10 @@
 
 namespace manda::runtime {
 class TypeResolver : public manda::analysis::TypeVisitor,
-                     public manda::analysis::ExprVisitor {
+                     public manda::analysis::ExprVisitor,
+                     public BaseResolver {
 public:
-  TypeResolver(Interpreter &interpreter, std::shared_ptr<SymbolTable> scope);
-  void pushTypeScope(const std::shared_ptr<TypeScope>& scope);
+  TypeResolver(Interpreter &interpreter, const UnifiedScope &scope);
   [[nodiscard]] const std::shared_ptr<Type> &getLastType() const;
   void visitTypeRef(const analysis::TypeRefCtx &ctx) override;
   void visitVarExpr(const analysis::VarExprCtx &ctx) override;
@@ -29,8 +30,8 @@ public:
 
 private:
   Interpreter &interpreter;
-  std::shared_ptr<SymbolTable> scope;
-  std::stack<std::shared_ptr<TypeScope>> typeScopeStack;
+  //  std::shared_ptr<RuntimeScope> scope;
+  //  std::stack<std::shared_ptr<TypeScope>> typeScopeStack;
   std::shared_ptr<Type> lastType;
 };
 } // namespace manda::runtime

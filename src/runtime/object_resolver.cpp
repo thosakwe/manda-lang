@@ -17,8 +17,8 @@ using namespace manda::runtime;
 using namespace std;
 
 ObjectResolver::ObjectResolver(Interpreter &interpreter,
-                               std::shared_ptr<SymbolTable> scope)
-    : interpreter(interpreter), scope(move(scope)) {}
+                               const UnifiedScope &scope)
+    : interpreter(interpreter), BaseResolver(scope) {}
 
 const shared_ptr<Object> &ObjectResolver::getLastObject() const {
   return lastObject;
@@ -37,7 +37,7 @@ void ObjectResolver::visitVarExpr(const VarExprCtx &ctx) {
       lastObject = nullptr;
     } else {
       // Add the symbol to the current scope.
-      auto symbol = scope->add(ctx.name, lastObject, true);
+      auto symbol = getRuntimeScope()->add(ctx.name, lastObject, true);
       // Resolve the value as an identifier in the top-level.
       interpreter.emitTopLevelExpression(
           make_unique<IdExprCtx>(ctx.location, ctx.name));
@@ -69,7 +69,7 @@ void ObjectResolver::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
   // TODO: Compare the declared return type to the actual return type.
   shared_ptr<Type> returnType;
   if (!ctx.returnType) {
-    TypeResolver typeResolver(interpreter, scope);
+    TypeResolver typeResolver(interpreter, getCurrentScope());
     ctx.body->accept(typeResolver);
     returnType = typeResolver.getLastType();
 
@@ -78,7 +78,7 @@ void ObjectResolver::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
       returnType = interpreter.getCoreLibrary().anyType;
     }
   } else {
-    TypeResolver typeResolver(interpreter, scope);
+    TypeResolver typeResolver(interpreter, getCurrentScope());
     ctx.returnType->accept(typeResolver);
     returnType = typeResolver.getLastType();
     if (!returnType) {
@@ -100,7 +100,7 @@ void ObjectResolver::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
     if (!node->type) {
       type = interpreter.getCoreLibrary().anyType;
     } else {
-      TypeResolver typeResolver(interpreter, scope);
+      TypeResolver typeResolver(interpreter, getCurrentScope());
       node->type->accept(typeResolver);
       type = typeResolver.getLastType();
     }
@@ -121,14 +121,15 @@ void ObjectResolver::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
     }
   }
 
-  auto value = make_shared<AstFunction>(ctx, scope, params, returnType);
+  auto value =
+      make_shared<AstFunction>(ctx, getCurrentScope(), params, returnType);
   lastObject = value;
   if (!ctx.name.empty()) {
     // TODO: Handle redefined names
     if (interpreter.getOptions().developerMode) {
       cout << "Defining " << ctx.name << " in current scope." << endl;
     }
-    scope->add(ctx.name, value, interpreter.getOptions().isREPL());
+    getRuntimeScope()->add(ctx.name, value, interpreter.getOptions().isREPL());
   }
 }
 
@@ -137,7 +138,7 @@ void ObjectResolver::visitVoidLiteral(const VoidLiteralCtx &ctx) {
 }
 
 void ObjectResolver::visitIdExpr(const IdExprCtx &ctx) {
-  auto symbol = scope->resolve(ctx.name);
+  auto symbol = getRuntimeScope()->resolve(ctx.name);
   if (!symbol) {
     ostringstream oss;
     oss << "The name '";
@@ -177,7 +178,7 @@ void ObjectResolver::visitBoolLiteral(const BoolLiteralCtx &ctx) {
 
 void ObjectResolver::visitBlockExpr(const BlockExprCtx &ctx) {
   // TODO: Location
-  ObjectResolver child(interpreter, scope->createChild());
+  ObjectResolver child(interpreter, getCurrentScope().createChild());
   for (unsigned long i = 0; i < ctx.body.size(); i++) {
     auto &ptr = ctx.body[i];
     lastObject = nullptr;

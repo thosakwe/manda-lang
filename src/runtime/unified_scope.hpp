@@ -8,15 +8,17 @@
 
 namespace manda::runtime {
 struct UnifiedScope {
-  std::shared_ptr<GenericScope<Symbol>> runtimeScope;
-  std::shared_ptr<GenericScope<jit_value>> jitScope;
-  std::shared_ptr<GenericScope<std::shared_ptr<Type>>> typeScope;
+  std::shared_ptr<RuntimeScope> runtimeScope;
+  std::shared_ptr<JitScope> jitScope;
+  std::shared_ptr<TypeScope> typeScope;
 
   UnifiedScope();
-  UnifiedScope(std::shared_ptr<GenericScope<Symbol>> runtimeScope,
-               std::shared_ptr<GenericScope<jit_value>> jitScope,
-               std::shared_ptr<GenericScope<std::shared_ptr<Type>>> typeScope);
-  UnifiedScope createChild() const;
+  UnifiedScope(std::shared_ptr<RuntimeScope> runtimeScope,
+               std::shared_ptr<JitScope> jitScope,
+               std::shared_ptr<TypeScope> typeScope);
+  [[nodiscard]] UnifiedScope createChild() const;
+  void addType(const std::string &name, const std::shared_ptr<Type> &type,
+               bool allowRedefine = false);
 };
 } // namespace manda::runtime
 

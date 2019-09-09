@@ -9,20 +9,13 @@ using namespace manda::analysis;
 using namespace manda::runtime;
 using namespace std;
 
-TypeResolver::TypeResolver(Interpreter &interpreter,
-                           std::shared_ptr<SymbolTable> scope)
-    : interpreter(interpreter), scope(move(scope)) {
-  typeScopeStack.push(make_shared<TypeScope>());
-}
-
-void TypeResolver::pushTypeScope(const std::shared_ptr<TypeScope> &scope) {
-  typeScopeStack.push(scope);
-}
+TypeResolver::TypeResolver(Interpreter &interpreter, const UnifiedScope &scope)
+    : interpreter(interpreter), BaseResolver(scope) {}
 
 const shared_ptr<Type> &TypeResolver::getLastType() const { return lastType; }
 
 void TypeResolver::visitTypeRef(const TypeRefCtx &ctx) {
-  auto symbol = scope->resolve(ctx.name);
+  auto symbol = getRuntimeScope()->resolve(ctx.name);
   if (!symbol) {
     ostringstream oss;
     oss << "The name '";
@@ -56,7 +49,7 @@ void TypeResolver::visitVarExpr(const VarExprCtx &ctx) {
       cout << "TypeResolver found var " << ctx.name << ": "
            << lastType->getName() << endl;
     }
-    typeScopeStack.top()->add(ctx.name, lastType);
+    getCurrentScope().addType(ctx.name, lastType);
   }
 }
 
@@ -68,13 +61,13 @@ void TypeResolver::visitVoidLiteral(const VoidLiteralCtx &ctx) {
 
 void TypeResolver::visitIdExpr(const IdExprCtx &ctx) {
   // TODO: Probably only use the type stack?
-  auto typeSymbol = typeScopeStack.top()->resolve(ctx.name);
+  auto typeSymbol = getTypeScope()->resolve(ctx.name);
   if (typeSymbol) {
     lastType = *typeSymbol;
     return;
   }
 
-  auto symbol = scope->resolve(ctx.name);
+  auto symbol = getRuntimeScope()->resolve(ctx.name);
   if (!symbol) {
     ostringstream oss;
     oss << "The name \"" << ctx.name << "\" does not exist in this context.";
@@ -157,7 +150,7 @@ void TypeResolver::visitCastExpr(const CastExprCtx &ctx) {}
 
 void TypeResolver::visitCallExpr(const CallExprCtx &ctx) {
   // TODO: Is there a need to resolve parameter types?
-  TypeResolver functionTypeResolver(interpreter, scope);
+  TypeResolver functionTypeResolver(interpreter, getCurrentScope());
   ctx.target->accept(functionTypeResolver);
   auto targetType = functionTypeResolver.getLastType();
   if (!targetType) {

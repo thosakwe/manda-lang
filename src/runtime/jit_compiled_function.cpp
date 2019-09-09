@@ -21,14 +21,11 @@ JitCompiledFunction::JitCompiledFunction(Interpreter &interpreter,
                                          const AstFunction &fn)
     : interpreter(interpreter), astFunction(fn),
       gc(interpreter.getGarbageCollector()),
-      jit_function(interpreter.getJitContext()) {
+      jit_function(interpreter.getJitContext()), BaseResolver(fn.getScope()) {
   // Create the JIT function.
   create();
   set_recompilable();
   coerceToAny.push(false);
-  scopeStack.push(fn.getScope());
-  jitValueScopeStack.push(make_shared<JitValueScope>());
-  typeScopeStack.push(make_shared<TypeScope>());
 }
 
 jit_type_t JitCompiledFunction::create_signature() {
@@ -68,18 +65,6 @@ jit_value JitCompiledFunction::insn_gc_incref(const jit_value &ptr) {
 jit_value JitCompiledFunction::insn_gc_decref(const jit_value &ptr) {
   return insn_gc_ptr_callback("gc_decref", ptr,
                               (void *)&GarbageCollector::static_decref);
-}
-
-void JitCompiledFunction::pushScope() {
-  scopeStack.push(scopeStack.top()->createChild());
-  jitValueScopeStack.push(jitValueScopeStack.top()->createChild());
-  typeScopeStack.push(typeScopeStack.top()->createChild());
-}
-
-void JitCompiledFunction::popScope() {
-  scopeStack.pop();
-  jitValueScopeStack.pop();
-  typeScopeStack.pop();
 }
 
 void JitCompiledFunction::build() {
@@ -140,8 +125,7 @@ void JitCompiledFunction::visitVarExpr(const VarExprCtx &ctx) {
   } else {
     // Create a new variable, and inject it into scope.
     // Also, determine its type.
-    TypeResolver typeResolver(interpreter, scopeStack.top());
-    typeResolver.pushTypeScope(typeScopeStack.top());
+    TypeResolver typeResolver(interpreter, getCurrentScope());
     ctx.value->accept(typeResolver);
     auto resolvedType = typeResolver.getLastType();
     if (!resolvedType) {
@@ -150,9 +134,9 @@ void JitCompiledFunction::visitVarExpr(const VarExprCtx &ctx) {
       interpreter.reportError(ctx.location, oss.str());
       lastValue = nullopt;
     }
-    typeScopeStack.top()->add(ctx.name, resolvedType);
     auto variable = new_value(jit_value_get_type(lastValue->raw()));
-    jitValueScopeStack.top()->add(ctx.name, variable);
+    getCurrentScope().addType(ctx.name, resolvedType);
+    getJitScope()->add(ctx.name, variable);
     jit_insn_store(raw(), variable.raw(), lastValue->raw());
     lastValue = variable;
   }
@@ -166,8 +150,7 @@ void JitCompiledFunction::visitIdExpr(const IdExprCtx &ctx) {
   // Search to see if we have already compiled the given symbol.
   // If not, compile it, and add it to the current scope.
   // TODO: Throw on redefines?
-  auto scope = jitValueScopeStack.top();
-  auto jitSymbol = scope->resolve(ctx.name);
+  auto jitSymbol = getJitScope()->resolve(ctx.name);
   if (jitSymbol) {
     // Load the variable.
     if (interpreter.getOptions().developerMode) {
@@ -176,7 +159,7 @@ void JitCompiledFunction::visitIdExpr(const IdExprCtx &ctx) {
     lastValue = *jitSymbol;
   } else {
     // Look up the symbol.
-    auto rtSymbol = scopeStack.top()->resolve(ctx.name);
+    auto rtSymbol = getRuntimeScope()->resolve(ctx.name);
     if (!rtSymbol) {
       ostringstream oss;
       oss << "The name \"" << ctx.name << "\" does not exist in this context.";
@@ -194,7 +177,7 @@ void JitCompiledFunction::visitIdExpr(const IdExprCtx &ctx) {
         auto object = get<shared_ptr<Object>>(*rtSymbol);
         auto jitPtr = new_constant((void *)object.get(), jit_type_void_ptr);
         auto variable = new_value(jit_type_void_ptr);
-        scope->add(ctx.name, variable); // TODO: Handle redefines
+        getJitScope()->add(ctx.name, variable); // TODO: Handle redefines
         jit_insn_store(raw(), variable.raw(), jitPtr.raw());
         if (interpreter.getOptions().developerMode) {
           cout << "Emitting new var-as-any \"" << ctx.name << "\"" << endl;
@@ -296,7 +279,7 @@ void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
     // Create a new tuple instance, and return the pointer.
     //    auto *object = new Bool(ctx.value);
     //    lastValue = new_constant((void *)object, jit_type_void_ptr);
-    ObjectResolver resolver(interpreter, scopeStack.top());
+    ObjectResolver resolver(interpreter, getCurrentScope());
     auto *object = gc.make<Tuple>();
     for (auto &item : ctx.items) {
       item->accept(resolver);
@@ -316,7 +299,7 @@ void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
     // Then, create a temporary structure value.
     // For each field, write into the current location.
     // Increment by the size of the field.
-    TypeResolver resolver(interpreter, scopeStack.top());
+    TypeResolver resolver(interpreter, getCurrentScope());
     ctx.accept(resolver);
     auto resultType = resolver.getLastType();
     if (!resultType) {
@@ -369,7 +352,7 @@ void JitCompiledFunction::visitCastExpr(const CastExprCtx &ctx) {}
 
 void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
   // Resolve the target first.
-  ObjectResolver resolver(interpreter, scopeStack.top());
+  ObjectResolver resolver(interpreter, getCurrentScope());
   ctx.target->accept(resolver);
   auto target = resolver.getLastObject();
   if (!target) {
@@ -413,8 +396,7 @@ void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
     if (!isVoid && coerceToAny.top()) {
       // Create a one-off TypeResolver to figure out which type needs to perform
       // boxing.
-      TypeResolver typeResolver(interpreter, scopeStack.top());
-      typeResolver.pushTypeScope(typeScopeStack.top());
+      TypeResolver typeResolver(interpreter, getCurrentScope());
       arg->accept(typeResolver);
       auto resultType = typeResolver.getLastType();
       if (!resultType) {

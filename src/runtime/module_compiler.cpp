@@ -46,7 +46,9 @@ void ModuleCompiler::visitExprDecl(const ExprDeclCtx &ctx) {
     }
   } else {
     // Visit top-level
-    ObjectResolver resolver(interpreter, module->getSymbolTable());
+    UnifiedScope scope;
+    scope.runtimeScope = module->getSymbolTable();
+    ObjectResolver resolver(interpreter, scope);
     topLevel->accept(resolver);
   }
 }

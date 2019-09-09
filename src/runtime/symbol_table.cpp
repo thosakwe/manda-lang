@@ -3,11 +3,11 @@
 //using namespace manda::runtime;
 //using namespace std;
 //
-//const unordered_map<string, Symbol> &SymbolTable::getSymbols() {
+//const unordered_map<string, ObjectOrType> &RuntimeScope::getSymbols() {
 //  return symbols;
 //}
 //
-//const Symbol SymbolTable::resolve(const string name) const {
+//const ObjectOrType RuntimeScope::resolve(const string name) const {
 //  auto it = symbols.find(name);
 //  if (it != symbols.end()) {
 //    return it->second;
@@ -18,7 +18,7 @@
 //  }
 //}
 //
-//Symbol SymbolTable::add(const string &name, const Symbol &value, bool allowRedefine) {
+//ObjectOrType RuntimeScope::add(const string &name, const ObjectOrType &value, bool allowRedefine) {
 //  auto it = symbols.find(name);
 //  if ((it != symbols.end() && !allowRedefine) ||
 //      holds_alternative<monostate>(value)) {
@@ -29,10 +29,10 @@
 //  }
 //}
 //
-//std::shared_ptr<SymbolTable> SymbolTable::createChild() const {
+//std::shared_ptr<RuntimeScope> RuntimeScope::createChild() const {
 //  auto child = shared_from_this();
-//  return make_shared<SymbolTable>(child);
+//  return make_shared<RuntimeScope>(child);
 //}
 //
-//SymbolTable::SymbolTable(shared_ptr<const SymbolTable> &parent)
+//RuntimeScope::RuntimeScope(shared_ptr<const RuntimeScope> &parent)
 //    : parent(parent) {}

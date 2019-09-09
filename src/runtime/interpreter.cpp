@@ -17,9 +17,8 @@ using namespace manda::runtime;
 using namespace std;
 
 Interpreter::Interpreter(VMOptions options, shared_ptr<Module> &module)
-    : options(move(options)), module(module) {
+    : options(move(options)), module(module), BaseResolver() {
   coreLibrary.install(*(module->getSymbolTable()));
-  scopeStack.push(module->getSymbolTable());
 }
 
 optional<shared_ptr<Object>> &Interpreter::getLastObject() {
@@ -64,7 +63,7 @@ void Interpreter::visitExprDecl(const ExprDeclCtx &ctx) {}
 
 void Interpreter::visitTypeDecl(const TypeDeclCtx &ctx) {
   // TODO: Plain mode implementation (lazy?, etc.?)
-  TypeResolver resolver(*this, scopeStack.top());
+  TypeResolver resolver(*this, getCurrentScope());
   ctx.type->accept(resolver);
   auto result = resolver.getLastType();
   if (!result) {
@@ -76,7 +75,7 @@ void Interpreter::visitTypeDecl(const TypeDeclCtx &ctx) {
   } else {
     // TODO: Handle type parameters for generic types
     // TODO: Handle redefined symbols in non-REPL mode
-    scopeStack.top()->add(ctx.name, result, options.isREPL());
+    getCurrentScope().addType(ctx.name, result, options.isREPL());
   }
 }
 

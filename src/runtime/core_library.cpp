@@ -50,7 +50,7 @@ void CoreLibrary::printFn(manda_context_t context) {
   cout << str << endl;
 }
 
-void CoreLibrary::install(SymbolTable &scope) {
+void CoreLibrary::install(RuntimeScope &scope) {
   // TODO: Why does make_shared not work here???
   // TODO: Add required parameters?
   scope.add("Any", anyType);

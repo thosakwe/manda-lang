@@ -31,5 +31,6 @@ add_library(manda_runtime
     garbage_collector.cpp garbage_collector.hpp
     generic_scope.hpp
     base_resolver.cpp base_resolver.hpp
+    unified_scope.cpp unified_scope.hpp
     )
 target_include_directories(manda_runtime PUBLIC ${JIT_INCLUDE_DIR})

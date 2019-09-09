@@ -1,6 +1,7 @@
 #ifndef MANDA_INTERPRETER_HPP
 #define MANDA_INTERPRETER_HPP
 #include "../analysis/ast.hpp"
+#include "base_resolver.hpp"
 #include "core_library.hpp"
 #include "garbage_collector.hpp"
 #include "module.hpp"
@@ -12,12 +13,13 @@
 
 namespace manda::runtime {
 class Interpreter : public manda::analysis::CompilationUnitVisitor,
-                    public manda::analysis::DeclVisitor {
+                    public manda::analysis::DeclVisitor,
+                    public BaseResolver {
 public:
   Interpreter(VMOptions options, std::shared_ptr<Module> &module);
   std::optional<std::shared_ptr<Object>> &getLastObject();
   [[nodiscard]] const VMOptions &getOptions() const;
-  const CoreLibrary &getCoreLibrary() const;
+  [[nodiscard]] const CoreLibrary &getCoreLibrary() const;
   jit_context &getJitContext();
   GarbageCollector &getGarbageCollector();
   bool ensureArgumentCount(const manda::analysis::Location &location,
@@ -40,7 +42,6 @@ private:
   std::shared_ptr<Module> module;
   VMOptions options;
   std::optional<std::shared_ptr<Object>> lastObject;
-  std::stack<std::shared_ptr<SymbolTable>> scopeStack;
 };
 } // namespace manda::runtime
 

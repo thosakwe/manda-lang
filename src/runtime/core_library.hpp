@@ -23,7 +23,7 @@ public:
   std::shared_ptr<StringType> stringType;
   std::shared_ptr<VoidType> voidType;
 
-  void install(SymbolTable &scope);
+  void install(RuntimeScope &scope);
 
   static void printFn(manda_context_t context);
 

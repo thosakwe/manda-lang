@@ -7,14 +7,14 @@ using namespace manda::runtime;
 using namespace std;
 
 Module::Module(string name) : name(move(name)) {
-  symbolTable = make_shared<SymbolTable>();
+  symbolTable = make_shared<RuntimeScope>();
 }
 
 // const string &Module::getName() const { return name; }
 
 // void Module::setName(string value) { name = std::move(value); }
 
-shared_ptr<SymbolTable> Module::getSymbolTable() { return symbolTable; }
+shared_ptr<RuntimeScope> Module::getSymbolTable() { return symbolTable; }
 
 vector<unique_ptr<ExprCtx>> &Module::getTopLevelExpressions() {
   return topLevelExpressions;
@@ -22,6 +22,6 @@ vector<unique_ptr<ExprCtx>> &Module::getTopLevelExpressions() {
 
 const string &Module::getName() const { return name; }
 
-// shared_ptr<const SymbolTable> Module::getSymbolTable() const {
+// shared_ptr<const RuntimeScope> Module::getSymbolTable() const {
 //  return symbolTable;
 //}

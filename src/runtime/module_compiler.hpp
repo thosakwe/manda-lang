@@ -23,7 +23,7 @@ private:
   Interpreter &interpreter;
   std::shared_ptr<Module> module;
   std::optional<std::shared_ptr<Object>> lastObject;
-  std::stack<std::shared_ptr<SymbolTable>> scopeStack;
+  std::stack<std::shared_ptr<RuntimeScope>> scopeStack;
 };
 } // namespace manda::runtime
 

@@ -4,17 +4,16 @@
 #include "function.hpp"
 #include "object.hpp"
 #include "symbol_table.hpp"
+#include "unified_scope.hpp"
 #include <memory>
 
 namespace manda::runtime {
 class AstFunction : public Function {
 public:
   // Copy the original node...
-  AstFunction(const manda::analysis::FnDeclExprCtx &node,
-              std::shared_ptr<SymbolTable> scope,
+  AstFunction(const manda::analysis::FnDeclExprCtx &node, UnifiedScope scope,
               std::shared_ptr<Type> returnType);
-  AstFunction(const manda::analysis::FnDeclExprCtx &node,
-              std::shared_ptr<SymbolTable> scope,
+  AstFunction(const manda::analysis::FnDeclExprCtx &node, UnifiedScope scope,
               std::vector<Parameter> parameters,
               std::shared_ptr<Type> returnType);
 
@@ -24,7 +23,7 @@ public:
 
   std::shared_ptr<Type> getReturnType(Interpreter &interpreter) const override;
 
-  const std::shared_ptr<SymbolTable> &getScope() const;
+  const UnifiedScope &getScope() const;
 
   const std::unique_ptr<manda::analysis::FnDeclExprCtx> &getNode() const;
 
@@ -34,7 +33,7 @@ public:
          const std::vector<std::shared_ptr<Object>> &args) const override;
 
   jit_value acceptForJitCall(JitCompiledFunction &fn,
-                        std::vector<jit_value> &arguments) override;
+                             std::vector<jit_value> &arguments) override;
 
 private:
   std::string name;
@@ -42,7 +41,7 @@ private:
   // TODO: Get parameters from actual node
   std::vector<Parameter> parameters;
   std::shared_ptr<Type> returnType;
-  std::shared_ptr<SymbolTable> scope;
+  UnifiedScope scope;
 };
 } // namespace manda::runtime
 

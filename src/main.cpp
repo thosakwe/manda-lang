@@ -156,7 +156,9 @@ int runREPL(const VMOptions &options) {
       }
 
       for (auto &node : module->getTopLevelExpressions()) {
-        ObjectResolver resolver(interpreter, module->getSymbolTable());
+        UnifiedScope scope;
+        scope.runtimeScope = module->getSymbolTable();
+        ObjectResolver resolver(interpreter, scope);
         node->accept(resolver);
         auto result = resolver.getLastObject();
         if (result) {

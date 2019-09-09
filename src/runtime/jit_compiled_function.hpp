@@ -1,6 +1,7 @@
 #ifndef MANDA_JIT_COMPILED_FUNCTION_HPP
 #define MANDA_JIT_COMPILED_FUNCTION_HPP
 #include "ast_function.hpp"
+#include "base_resolver.hpp"
 #include "symbol_table.hpp"
 #include <optional>
 #include <stack>
@@ -9,7 +10,8 @@ namespace manda::runtime {
 typedef GenericScope<jit_value> JitValueScope;
 class Interpreter;
 class JitCompiledFunction : public jit_function,
-                            public manda::analysis::ExprVisitor {
+                            public manda::analysis::ExprVisitor,
+                            public BaseResolver {
 public:
   explicit JitCompiledFunction(Interpreter &interpreter, const AstFunction &fn);
   Interpreter &getInterpreter() const;
@@ -20,8 +22,6 @@ public:
                                  void *func);
   jit_value insn_gc_incref(const jit_value &ptr);
   jit_value insn_gc_decref(const jit_value &ptr);
-  void pushScope();
-  void popScope();
   void visitVarExpr(const analysis::VarExprCtx &ctx) override;
   void visitFnDeclExpr(const analysis::FnDeclExprCtx &ctx) override;
   void visitVoidLiteral(const analysis::VoidLiteralCtx &ctx) override;
@@ -44,9 +44,6 @@ private:
   GarbageCollector &gc;
   const AstFunction &astFunction;
   std::optional<jit_value> lastValue;
-  std::stack<std::shared_ptr<JitValueScope>> jitValueScopeStack;
-  std::stack<std::shared_ptr<TypeScope>> typeScopeStack;
-  std::stack<std::shared_ptr<SymbolTable>> scopeStack;
   std::stack<bool> coerceToAny;
 };
 } // namespace manda::runtime
