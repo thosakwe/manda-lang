@@ -25,3 +25,9 @@ AnyType::deserialize(Interpreter &interpreter, void *ptr) {
   auto *obj = (Object **)ptr;
   return shared_ptr<Object>(*obj);
 }
+
+jit_value AnyType::boxRawValue(JitCompiledFunction &fn,
+                               const jit_value &rawValue) {
+  // Any objects are already in their final state.
+  return rawValue;
+}

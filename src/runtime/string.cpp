@@ -33,6 +33,14 @@ jit_type_t StringType::toJitType() const {
 shared_ptr<manda::runtime::Object>
 StringType::deserialize(Interpreter &interpreter, void *ptr) {
   // TODO: Delete the c string?
-  auto cStr = *(const char**)ptr;
+  auto cStr = *(const char **)ptr;
   return make_shared<String>(cStr);
 }
+
+jit_value StringType::boxRawValue(JitCompiledFunction &fn,
+                                  const jit_value &rawValue) {
+  return invokeStaticBoxFunction("manda_box_string", (void *)&box,
+                                 jit_type_float64, fn, rawValue);
+}
+
+String *StringType::box(const char *value) { return new String(value); }

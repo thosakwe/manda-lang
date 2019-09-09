@@ -44,11 +44,8 @@ jit_type_t NumberType::toJitType() const {
 jit_value NumberType::boxRawValue(JitCompiledFunction &fn,
                                   const jit_value &rawValue) {
   // void* box(f64)
-  jit_type_t params[1] = {jit_type_float64};
-  auto sig =
-      jit_type_create_signature(jit_abi_cdecl, jit_type_void_ptr, params, 1, 0);
-  jit_value_t args[1] = {rawValue.raw()};
-  return fn.insn_call_native("manda_box_number", (void *)&box, sig, args, 1, 0);
+  return invokeStaticBoxFunction("manda_box_number", (void *)&box,
+                                 jit_type_float64, fn, rawValue);
 }
 
 Number *NumberType::box(jit_float64 value) { return new Number(value); }

@@ -37,6 +37,15 @@ CharType::deserialize(Interpreter &interpreter, void *ptr) {
   return make_shared<Char>((char)*asUbyte);
 }
 
+jit_value CharType::boxRawValue(JitCompiledFunction &fn,
+                                const jit_value &rawValue) {
+
+  return invokeStaticBoxFunction("manda_box_char", (void *)&box,
+                                 jit_type_sys_char, fn, rawValue);
+}
+
+Char *CharType::box(char value) { return new Char(value); }
+
 // shared_ptr<manda::runtime::Object>
 // CharType::applyJitFunction(std::vector<void *> &args, jit_function &func) {
 //  char result;

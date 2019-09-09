@@ -25,7 +25,12 @@ public:
   deserialize(manda::runtime::Interpreter &interpreter, void *ptr) = 0;
 
   virtual jit_value boxRawValue(JitCompiledFunction &fn,
-                                const jit_value &rawValue);
+                                const jit_value &rawValue) = 0;
+
+  jit_value invokeStaticBoxFunction(const char *name, void *funcPtr,
+                                    const jit_type_t &inType,
+                                    JitCompiledFunction &fn,
+                                    const jit_value &rawValue);
 };
 } // namespace manda::runtime
 

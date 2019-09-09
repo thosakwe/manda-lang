@@ -11,6 +11,8 @@ public:
   jit_type_t toJitType() const override;
   std::shared_ptr<Object> deserialize(manda::runtime::Interpreter &interpreter,
                                       void *ptr) override;
+  jit_value boxRawValue(JitCompiledFunction &fn,
+                        const jit_value &rawValue) override;
 };
 } // namespace manda::runtime
 

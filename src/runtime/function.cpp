@@ -70,3 +70,9 @@ const vector<Parameter> &FunctionType::getParameters() const {
 const shared_ptr<Type> &FunctionType::getReturnType() const {
   return returnType;
 }
+
+jit_value FunctionType::boxRawValue(JitCompiledFunction &fn,
+                                    const jit_value &rawValue) {
+  // We are receiving, and sending out, a function pointer.
+  return rawValue;
+}

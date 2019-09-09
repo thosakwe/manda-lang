@@ -31,3 +31,12 @@ BoolType::deserialize(Interpreter &interpreter, void *ptr) {
   auto asUbyte = *((jit_ubyte *)ptr);
   return make_shared<Bool>(asUbyte == 0x1);
 }
+
+jit_value BoolType::boxRawValue(JitCompiledFunction &fn,
+                                const jit_value &rawValue) {
+
+  return invokeStaticBoxFunction("manda_box_bool", (void *)&box,
+                                 jit_type_sys_bool, fn, rawValue);
+}
+
+Bool *BoolType::box(bool value) { return new Bool(value); }
