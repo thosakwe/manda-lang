@@ -25,3 +25,9 @@ shared_ptr<manda::runtime::Object>
 VoidType::deserialize(Interpreter &interpreter, void *ptr) {
   return make_shared<Void>();
 }
+
+jit_value VoidType::boxRawValue(JitCompiledFunction &fn,
+                                const jit_value &rawValue) {
+  // TODO: This should logically never happen.
+  return rawValue;
+}

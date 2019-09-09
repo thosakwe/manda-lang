@@ -43,4 +43,8 @@ jit_value StringType::boxRawValue(JitCompiledFunction &fn,
                                  jit_type_float64, fn, rawValue);
 }
 
-String *StringType::box(const char *value) { return new String(value); }
+String *StringType::box(const char *value) {
+  // TODO: These pointers are getting destroyed...
+//  cout << "Box: <" << value << ">" << endl;
+  return new String(value);
+}

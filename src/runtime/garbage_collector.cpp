@@ -41,6 +41,8 @@ void GarbageCollector::decref(void *ptr) {
 }
 
 void GarbageCollector::sweep() {
+  // TODO: Fix sweeping
+  return;
   if (marked.size() > maxAllocationsBeforeSweep) {
     maxAllocationsBeforeSweep *= 2;
   }
