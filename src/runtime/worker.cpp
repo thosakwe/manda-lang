@@ -82,6 +82,8 @@ void Worker::runWorker(const std::shared_ptr<Worker> &worker,
       }
     }
   }
+  // Kill the worker after all tasks are done.
+  worker->dead = true;
 }
 
 //

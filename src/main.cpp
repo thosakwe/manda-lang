@@ -98,9 +98,11 @@ int runFile(const VMOptions &options) {
       AstPrinter printer(cout);
       compilationUnit->accept(printer);
     }
-    Worker mainWorker(options);
-    mainWorker.executeProgram(compilationUnit);
+
     // TODO: Proper error handling, etc.
+    auto mainWorker = make_shared<Worker>(options);
+    mainWorker->executeProgram(compilationUnit);
+    vm.addWorker(mainWorker);
     return vm.run();
   }
 }

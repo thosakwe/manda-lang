@@ -27,6 +27,7 @@ void manda::runtime::Task::begin(const manda::runtime::VMOptions &options) {
   // TODO: Handle yields...
   auto *entryFn = dynamic_cast<Function *>(entryPoint.get());
   result = entryFn->invoke(*interpreter, startLocation, thisObject, args);
+  dead = true; // We reached the end, terminate.
 }
 
 void manda::runtime::Task::resume(const manda::runtime::VMOptions &options) {

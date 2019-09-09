@@ -24,6 +24,10 @@ void VM::startWorker(const std::shared_ptr<Worker> &worker) {
 int VM::run() {
   started = true;
   // Start all workers.
+  if (options.developerMode) {
+    cout << "Workers: " << workers.size() << endl;
+  }
+
   for (auto &worker : workers) {
     startWorker(worker);
   }
