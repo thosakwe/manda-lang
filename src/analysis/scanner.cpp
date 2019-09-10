@@ -25,12 +25,11 @@ void Scanner::emit(Token::TokenType type) {
   std::string text = mandaget_text(flexContext);
   Token token = {type, location, text};
   tokens.push_back(token);
-//  cout << token << endl;
+  //  cout << token << endl;
   location.column += text.length();
 }
 
 void Scanner::scan() {
-  // TODO: Is this even necessary when using Bison?
   while (mandalex(flexContext) != 0)
     ;
 }
