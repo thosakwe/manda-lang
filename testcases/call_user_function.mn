@@ -1,0 +1,5 @@
+fn two -> 2
+
+fn main {
+  print(two())
+}
