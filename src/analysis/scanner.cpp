@@ -33,3 +33,4 @@ void Scanner::scan() {
   while (mandalex(flexContext) != 0)
     ;
 }
+const string &Scanner::getFilename() const { return filename; }

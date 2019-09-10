@@ -20,6 +20,7 @@ public:
   [[nodiscard]] const std::vector<Token>& getTokens() const;
   void scan();
   int mandalex(void *yyscanner);
+  const std::string &getFilename() const;
 
 private:
   std::string filename, contents;

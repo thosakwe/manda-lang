@@ -8,7 +8,8 @@ using namespace std;
 int yyparse(Parser *parser);
 
 Parser::Parser(const Scanner &scanner)
-    : tokens(scanner.getTokens()), it(scanner.getTokens().begin()) {}
+    : tokens(scanner.getTokens()), it(scanner.getTokens().begin()),
+      filename(scanner.getFilename()) {}
 
 int manda::analysis::yylex(YYSTYPE *lvalp, Location *location, Parser *parser) {
   return parser->yylex(lvalp, location);

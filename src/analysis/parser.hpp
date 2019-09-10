@@ -9,7 +9,7 @@ typedef union YYSTYPE YYSTYPE;
 namespace manda::analysis {
 class Parser {
 public:
-  explicit Parser(const Scanner &tokens);
+  explicit Parser(const Scanner &scanner);
   std::shared_ptr<CompilationUnitCtx> parseCompilationUnit();
   int yylex(YYSTYPE *, Location *location);
   void yyerror(const std::string &message, Location *location);
@@ -17,6 +17,7 @@ public:
   friend void yyerror(Location *, Parser *, const char *);
   Token lastToken;
   std::shared_ptr<CompilationUnitCtx> result;
+  std::string filename;
 
 private:
   std::vector<Token>::const_iterator it;

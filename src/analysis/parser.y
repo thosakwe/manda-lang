@@ -35,6 +35,11 @@
   ParamList* plistval;
 }
 
+%initial-action
+{
+  @$.filename = parser->filename;
+};
+
 %code requires {
   #include <ast.hpp>
   /* #include <parser.hpp> */
