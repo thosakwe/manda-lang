@@ -17,7 +17,7 @@ public:
   Scanner(Scanner &&) = delete;
   Scanner &operator=(Scanner &&) = delete;
   ~Scanner();
-  const std::vector<Token>& getTokens() const;
+  [[nodiscard]] const std::vector<Token>& getTokens() const;
   void scan();
   int mandalex(void *yyscanner);
 

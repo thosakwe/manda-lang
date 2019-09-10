@@ -9,7 +9,7 @@ Scanner::Scanner(const string &filename, const string &contents)
     : filename(filename), contents(contents) {
   mandalex_init(&flexContext);
   manda_scan_string(this->contents.c_str(), flexContext);
-  location = {filename, 1, 1};
+//  location = {filename, 1, 1};
 }
 
 const vector<Token> &Scanner::getTokens() const { return tokens; }
@@ -26,7 +26,7 @@ void Scanner::emit(Token::TokenType type) {
   Token token = {type, location, text};
   tokens.push_back(token);
   //  cout << token << endl;
-  location.column += text.length();
+//  location.column += text.length();
 }
 
 void Scanner::scan() {

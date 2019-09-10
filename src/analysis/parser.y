@@ -14,6 +14,9 @@
 %token HEX_ESCAPE UNICODE_ESCAPE QUOTE_ESCAPE
 %token ARROW
 
+%defines
+%locations
+%define api.location.type {manda::analysis::Location}
 %define api.pure full
 %param {manda::analysis::Parser* parser}
 
@@ -38,8 +41,8 @@
   typedef union YYSTYPE YYSTYPE;
   namespace manda::analysis {
     class Parser;
-    int yylex(YYSTYPE*, Parser*);
-    void yyerror(Parser*, const char*);
+    int yylex(YYSTYPE*, Location*, Parser*);
+    void yyerror(Parser*, Location*, const char*);
   }
   using namespace manda::analysis;
   using DeclList = AstList<DeclCtx>;

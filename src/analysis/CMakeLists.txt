@@ -1,12 +1,14 @@
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
-message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 bison_target(MandaParser parser.y
-  ${CMAKE_CURRENT_BINARY_DIR}/manda_flex_parser.cpp
-  DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/manda_flex_parser.hpp)
+  ${CMAKE_CURRENT_BINARY_DIR}/manda_bison_parser.cpp
+  DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/manda_bison_parser.hpp)
 flex_target(MandaScanner scanner.l
   ${CMAKE_CURRENT_BINARY_DIR}/manda_flex_scanner.cpp
   DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/manda_flex_scanner.hpp)
+add_flex_bison_dependency(MandaScanner MandaParser)
+include_directories(
+    ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_LIST_DIR})
 add_library(manda_analysis
   ${BISON_MandaParser_OUTPUTS}
   ${FLEX_MandaScanner_OUTPUTS}
@@ -18,6 +20,5 @@ add_library(manda_analysis
   token.cpp token.hpp
   parser.cpp parser.hpp
   scanner.cpp scanner.hpp
-    ast_printer.cpp ast_printer.hpp)
-include_directories(
-  ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_LIST_DIR})
+  ast_printer.cpp ast_printer.hpp)
+target_include_directories(manda_analysis PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")

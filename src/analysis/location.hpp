@@ -4,14 +4,20 @@
 #include <string>
 
 namespace manda::analysis {
-struct Position {
-  unsigned long offset, line, column;
-  friend std::ostream &operator<<(std::ostream &out, const Position &a);
-};
+// struct Position {
+//  unsigned long offset, line, column;
+//  friend std::ostream &operator<<(std::ostream &out, const Position &a);
+//};
+//
+// struct Location {
+//  std::string filename;
+//  Position begin, end;
+//  friend std::ostream &operator<<(std::ostream &out, const Location &a);
+//};
 
 struct Location {
   std::string filename;
-  Position begin, end;
+  unsigned long first_line, first_column, last_line, last_column;
   friend std::ostream &operator<<(std::ostream &out, const Location &a);
 };
 } // namespace manda::analysis
