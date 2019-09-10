@@ -55,7 +55,6 @@
   using StringPartList = AstList<StringPartCtx>;
   using ParamList = AstList<ParamCtx>;
   #define tok parser->lastToken
-  #define l tok.location
   #define txt tok.text
 }
 
@@ -89,6 +88,7 @@
 compilation_unit:
   decl_list
     {
+      @$ = @1;
       $$ = new CompilationUnitCtx;
       toVector($1, $$->declarations);
       parser->result = shared_ptr<CompilationUnitCtx>($$);
@@ -96,40 +96,43 @@ compilation_unit:
 ;
 
 decl:
-  expr { $$ = new ExprDeclCtx($1); }
+  expr { $$ = new ExprDeclCtx($1); @$ = @1; }
   /* TODO: Type parameters, location */
-  | TYPE id EQUALS type { $$ = new TypeDeclCtx($2->name, $4); delete $2; }
+  | TYPE id EQUALS type { @$ = @2; $$ = new TypeDeclCtx($2->name, $4); delete $2; }
 ;
 
 decl_list:
   %empty { $$ = nullptr; }
-  | decl { $$ = new DeclList($1); }
+  | decl { $$ = new DeclList($1); @$ = @1; }
   | decl_list decl
     {
       auto *v = new DeclList($2);
       if ($1 == nullptr) {
         $$ = v;
+         @$ = @2;
       } else {
-        $$ = $$->add(v);
+        $$ = $1->add(v);
+         @$ = @1;
       }
     }
 
-id: ID { $$ = new IdExprCtx{l, txt}; };
+id: ID { $$ = new IdExprCtx{@1, txt}; @$ = @1; };
 id_opt:
   %empty { $$ = nullptr; }
-  | id { $$ = $1; }
+  | id { $$ = $1; @$ = @1; }
 
 type:
-  ID { $$ = new TypeRefCtx{l, txt}; }
+  ID { $$ = new TypeRefCtx{@1, txt}; @$ = @1; }
 
 expr:
-  ID { $$ = new IdExprCtx{l, txt}; }
-  | NUMBER { $$ = new NumberLiteralCtx{l, stod(txt)}; }
-  | TRUE { $$ = new BoolLiteralCtx(true); }
-  | VOID { $$ = new VoidLiteralCtx; }
-  | FALSE { $$ = new BoolLiteralCtx(false); }
+  ID { $$ = new IdExprCtx{@1, txt}; @$ = @1; }
+  | NUMBER { $$ = new NumberLiteralCtx{@1, stod(txt)}; @$ = @1; }
+  | TRUE { $$ = new BoolLiteralCtx(true); @$ = @1; }
+  | VOID { $$ = new VoidLiteralCtx; @$ = @1; }
+  | FALSE { $$ = new BoolLiteralCtx(false); @$ = @1; }
   | SINGLE_QUOTE str_part SINGLE_QUOTE
     {
+      @$ = @1;
       auto *ctx = new StringLiteralCtx(true);
       ctx->location = $2->location;
       ctx->value = $2->convert(true);
@@ -138,30 +141,35 @@ expr:
     }
   | DOUBLE_QUOTE str_part_list DOUBLE_QUOTE
     {
+      @$ = @1;
       auto *ctx = new StringLiteralCtx(false);
       toVector($2, ctx->parts);
       $$ = ctx;
     }
   | LCURLY expr_list RCURLY
     {
+      @$ = @1;
       auto *ctx = new BlockExprCtx;
       toVector($2, ctx->body);
       $$ = ctx;
     }
-  | tuple_expr_list { $$ = $1; }
+  | tuple_expr_list { $$ = $1; @$ = @1; }
   | expr LPAREN arg_list RPAREN
     {
+      @$ = @1;
       auto *ctx = new CallExprCtx($1);
       toVector($3, ctx->arguments);
       $$ = ctx;
     }
   | FINAL id EQUALS expr
     {
+      @$ = @2;
       $$ = new VarExprCtx(true, $2->name, $4);
       delete $2;
     }
   | VAR id EQUALS expr
     {
+      @$ = @2;
       $$ = new VarExprCtx(false, $2->name, $4);
       delete $2;
     }
@@ -169,6 +177,7 @@ expr:
     {
       // TODO: Locations
       // TODO: Delete unused stuff
+      @$ = @2;
       auto *v = new FnDeclExprCtx;
       v->body = unique_ptr<ExprCtx>($8);
       if ($2) v->name = $2->name;
@@ -181,6 +190,7 @@ expr:
     {
       // TODO: Locations
       // TODO: Delete unused stuff
+      @$ = @2;
       auto *v = new FnDeclExprCtx;
       v->body = unique_ptr<ExprCtx>($5);
       if ($2) v->name = $2->name;
@@ -188,21 +198,23 @@ expr:
       $$ = v;
       delete $2;
     }
-  | LPAREN expr RPAREN { $$ = new ParenExprCtx($2); }
+  | LPAREN expr RPAREN { @$ = @1; $$ = new ParenExprCtx($2); }
 ;
 
 semi: %empty | SEMI;
 
 expr_list:
   %empty { $$ = nullptr; }
-  | expr { $$ = new ExprList($1); }
+  | expr { @$ = @1; $$ = new ExprList($1); }
   | expr_list semi expr
     {
       auto *v = new ExprList($3);
       if ($1 == nullptr) {
         $$ = v;
+        @$ = @2;
       } else {
-        $$ = $$->add(v);
+        $$ = $1->add(v);
+        @$ = @1;
       }
     }
 
@@ -210,6 +222,7 @@ tuple_expr_list:
   expr COMMA expr
     {
       auto *tup = dynamic_cast<TupleExprCtx*>($1);
+      @$ = @1;
       if (tup != nullptr) {
         tup->items.emplace_back($3);
         $$ = tup;
@@ -223,40 +236,45 @@ tuple_expr_list:
   | tuple_expr_list expr
     {
       $$ = $1;
+      @$ = @1;
       $1->items.emplace_back($2);
     }
 
 arg_list:
   %empty { $$ = nullptr; }
-  | expr { $$ = new ExprList($1); }
+  | expr { @$ = @1; $$ = new ExprList($1); }
   | arg_list COMMA expr
     {
       auto *v = new ExprList($3);
       if ($1 == nullptr) {
         $$ = v;
+        @$ = @2;
       } else {
-        $$ = $$->add(v);
+        $$ = $1->add(v);
+        @$ = @1;
       }
     }
 
 str_part_list:
   %empty { $$ = nullptr; }
-  | str_part { $$ = new StringPartList($1); }
+  | str_part { @$ = @1; $$ = new StringPartList($1); }
   | str_part_list str_part
     {
       auto *v = new StringPartList($2);
       if ($1 == nullptr) {
         $$ = v;
+        @$ = @2;
       } else {
-        $$ = $$->add(v);
+        $$ = $1->add(v);
+        @$ = @1;
       }
     }
 ;
 
 str_part:
-  TEXT { $$ = new TextStringPartCtx(l, txt); }
-  | HEX_ESCAPE { $$ = new HexEscapeStringPartCtx(l, txt); }
-  | QUOTE_ESCAPE { $$ = new QuoteEscapeStringPartCtx(l); }
+  TEXT { @$ = @1; $$ = new TextStringPartCtx(@1, txt); }
+  | HEX_ESCAPE { @$ = @1; $$ = new HexEscapeStringPartCtx(@1, txt); }
+  | QUOTE_ESCAPE { @$ = @1; $$ = new QuoteEscapeStringPartCtx(@1); }
 ;
 
 arrow:
@@ -266,28 +284,32 @@ arrow:
 
 return_type:
   %empty { $$ = nullptr; }
-  | COLON type { $$ = $2; }
+  | COLON type { $$ = $2; @$ = @2; }
 
 param:
   id
     {
+      @$ = @1;
       $$ = new ParamCtx{$1->location, $1->name, nullptr, nullptr};
       delete $1;
     }
   | id COLON type
     {
+      @$ = @1;
       $$ = new ParamCtx{$1->location, $1->name,
         unique_ptr<TypeCtx>($3), nullptr};
       delete $1;
     }
   | id EQUALS expr
     {
+      @$ = @1;
       $$ = new ParamCtx{$1->location, $1->name, nullptr,
         unique_ptr<ExprCtx>($3)};
       delete $1;
     }
   | id COLON type EQUALS expr
     {
+      @$ = @1;
       $$ = new ParamCtx{$1->location, $1->name,
         unique_ptr<TypeCtx>($3),
         unique_ptr<ExprCtx>($5)};
@@ -297,13 +319,15 @@ param:
 
 param_list:
   %empty { $$ = nullptr; }
-  | param { $$ = new ParamList($1); }
+  | param { $$ = new ParamList($1); @$ = @1; }
   | param_list COMMA param
     {
       auto *v = new ParamList($3);
       if ($1 == nullptr) {
         $$ = v;
+        @$ = @3;
       } else {
-        $$ = $$->add(v);
+        $$ = $1->add(v);
+        @$ = @1;
       }
     }
