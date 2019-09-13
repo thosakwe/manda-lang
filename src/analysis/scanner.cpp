@@ -31,6 +31,7 @@ Token Scanner::nextToken() {
   end.offset += mandaget_leng(flex);
   end.column += mandaget_leng(flex);
   step();
+  return result;
 }
 
 void Scanner::columns(unsigned long count) {

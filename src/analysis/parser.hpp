@@ -3,7 +3,7 @@
 #include "ast.hpp"
 #include "scanner.hpp"
 #include "token.hpp"
-typedef union YYSTYPE YYSTYPE;
+#include <queue>
 #include <vector>
 
 // TODO: Pass an Interpreter instance, and use reportError
@@ -12,9 +12,12 @@ class Parser {
 public:
   explicit Parser(Scanner &scanner);
   std::shared_ptr<CompilationUnitCtx> parseCompilationUnit();
+  bool next(Token::TokenType type);
 
 private:
+  Token current;
   Scanner &scanner;
+  std::queue<Token> queue_;
 };
 } // namespace manda::analysis
 

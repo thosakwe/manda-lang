@@ -21,6 +21,7 @@ int main() {
       auto tok = scanner.nextToken();
       while (tok.type != Token::END_OF_FILE) {
         cout << tok << endl;
+        tok = scanner.nextToken();
       }
       cout << "Done." << endl;
     }
