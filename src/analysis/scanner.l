@@ -1,4 +1,4 @@
-%option noyywrap reentrant
+%option noyywrap reentrant stack
 %option prefix="manda"
 %x DQ SQ
 
@@ -16,8 +16,8 @@ ID [A-Za-z_][A-Za-z0-9_]*
 
 %%
 
-\n      ;
-{WS}    ;
+\n+     lines(yyleng);
+{WS}+   columns(yyleng);
 =       return TT::EQUALS;
 "->"    return TT::ARROW;
 "<"     return TT::LT;
@@ -64,13 +64,13 @@ with    return TT::WITH;
 var     return TT::VAR;
 void    return TT::VOID;
 {NUM}   return TT::NUMBER;
-"\""    { return TT::DOUBLE_QUOTE; BEGIN(DQ); }
-"'"     { return TT::SINGLE_QUOTE; BEGIN(SQ); }
+"\""    { return TT::DOUBLE_QUOTE; yy_push_state(DQ, yyscanner); }
+"'"     { return TT::SINGLE_QUOTE; yy_push_state(SQ, yyscanner); }
 {ID}    return TT::ID;
 
 <DQ>"\\\""        return TT::QUOTE_ESCAPE;
 <SQ>"\\'"         return TT::QUOTE_ESCAPE;
-<DQ>"\""          { return TT::DOUBLE_QUOTE; BEGIN(INITIAL); }
-<SQ>"'"           { return TT::SINGLE_QUOTE; BEGIN(INITIAL); }
+<DQ>"\""          { return TT::DOUBLE_QUOTE; yy_pop_state(yyscanner); }
+<SQ>"'"           { return TT::SINGLE_QUOTE; yy_pop_state(yyscanner); }
 <DQ,SQ>{HEX_ESC}  return TT::HEX_ESCAPE;
 <DQ,SQ>{TEXT}     return TT::TEXT;

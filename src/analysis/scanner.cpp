@@ -34,13 +34,13 @@ Token Scanner::nextToken() {
 }
 
 void Scanner::columns(unsigned long count) {
-  end.offset += mandaget_leng(flex);
-  end.column += mandaget_leng(flex);
+  end.offset += count;
+  end.column += count;
 }
 
 void Scanner::lines(unsigned long count) {
-  end.offset += mandaget_leng(flex);
-  end.line += mandaget_leng(flex);
+  end.offset += count;
+  end.line += count;
   end.column = 1;
 }
 
