@@ -88,7 +88,6 @@ int runFile(const VMOptions &options) {
   VM vm(options);
   Scanner scanner(filename, contents);
   Parser parser(scanner);
-  scanner.scan();
   auto compilationUnit = parser.parseCompilationUnit();
   if (compilationUnit == nullptr) {
     cout << "NULL" << endl;
@@ -135,7 +134,6 @@ int runREPL(const VMOptions &options) {
 
     Scanner scanner("<stdin>", line);
     Parser parser(scanner);
-    scanner.scan();
     auto compilationUnit = parser.parseCompilationUnit();
     if (compilationUnit == nullptr) {
       continue;

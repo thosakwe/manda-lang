@@ -19,7 +19,6 @@ int main() {
       add_history(line.c_str());
       Scanner scanner("stdin", line);
       Parser parser(scanner);
-      scanner.scan();
       auto ctx = parser.parseCompilationUnit();
       if (!ctx) {
         cout << "No compilation unit..." << endl;
