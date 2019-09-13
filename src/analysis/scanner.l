@@ -22,8 +22,8 @@ ID [A-Za-z_][A-Za-z0-9_]*
 "->"    return TT::ARROW;
 "<"     return TT::LT;
 ">"     return TT::GT;
-"<="    return TT::LT;
-">="    return TT::GT;
+"<="    return TT::LTE;
+">="    return TT::GTE;
 "{"     return TT::LCURLY;
 "}"     return TT::RCURLY;
 "("     return TT::LPAREN;
@@ -35,11 +35,14 @@ ID [A-Za-z_][A-Za-z0-9_]*
 "."     return TT::DOT;
 ".."    return TT::TWO_DOTS;
 "..."   return TT::THREE_DOTS;
-"+"     return TT::PLUS;
+"*"     return TT::TIMES;
 "/"     return TT::DIV;
 %       return TT::MOD;
+"+"     return TT::PLUS;
+"-"     return TT::MINUS;
 "^"     return TT::XOR;
 &       return TT::AND;
+"|"     return TT::OR;
 "||"    return TT::BOOL_OR;
 &&      return TT::BOOL_AND;
 ==      return TT::BOOL_EQUALS;
