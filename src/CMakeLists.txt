@@ -16,3 +16,10 @@ target_link_libraries(manda_dump_tree
     manda_analysis
     ${READLINE_LIBRARIES}
     ${JIT_LIBRARY} ${JIT_PLUS_LIBRARY})
+
+add_executable(manda_dump_tokens dump_tokens.cpp)
+target_include_directories(manda_dump_tokens PUBLIC ${READLINE_INCLUDE_DIRS})
+target_link_libraries(manda_dump_tokens
+    manda_analysis
+    ${READLINE_LIBRARIES}
+    ${JIT_LIBRARY} ${JIT_PLUS_LIBRARY})
