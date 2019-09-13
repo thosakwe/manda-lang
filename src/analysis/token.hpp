@@ -72,7 +72,7 @@ struct Token {
   friend std::ostream &operator<<(std::ostream &out, const Token &a);
 };
 
-bool tokenIsLonger(const Token &a, const Token &b);
+std::ostream &operator<<(std::ostream &out, const Token::TokenType &type);
 } // namespace manda::analysis
 
 #endif
