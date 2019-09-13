@@ -7,6 +7,7 @@
 namespace manda::analysis {
 struct Token {
   enum TokenType {
+    END_OF_FILE,
     EQUALS,
     LT,
     GT,
