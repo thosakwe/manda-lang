@@ -12,7 +12,7 @@
 namespace manda::analysis {
 class Scanner {
 public:
-  Scanner(const std::string &filename, const std::string &contents);
+  Scanner(std::string filename, std::string contents);
   Scanner(const Scanner &) = delete;
   Scanner &operator=(const Scanner &) = delete;
   Scanner(Scanner &&) = delete;
