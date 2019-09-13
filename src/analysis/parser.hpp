@@ -6,6 +6,7 @@
 typedef union YYSTYPE YYSTYPE;
 #include <vector>
 
+// TODO: Pass an Interpreter instance, and use reportError
 namespace manda::analysis {
 class Parser {
 public:
