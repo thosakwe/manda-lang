@@ -9,3 +9,10 @@ target_link_libraries(manda
     manda_analysis manda_runtime
     ${READLINE_LIBRARIES}
     ${JIT_LIBRARY} ${JIT_PLUS_LIBRARY})
+
+add_executable(manda_dump_tree dump_tree.cpp)
+target_include_directories(manda_dump_tree PUBLIC ${READLINE_INCLUDE_DIRS})
+target_link_libraries(manda_dump_tree
+    manda_analysis
+    ${READLINE_LIBRARIES}
+    ${JIT_LIBRARY} ${JIT_PLUS_LIBRARY})

@@ -359,7 +359,7 @@ void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
     // TODO: Better error message here?
     interpreter.reportError(ctx.target->location,
                             "Evaluation of this call target failed.");
-    fail();
+    lastValue = nullopt;
     return;
   }
 
@@ -370,7 +370,7 @@ void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
     // TODO: Better error message here?
     interpreter.reportError(ctx.target->location,
                             "Only functions can be called.");
-    fail();
+    lastValue = nullopt;
     return;
   }
 
@@ -382,7 +382,7 @@ void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
   for (auto &arg : ctx.arguments) {
     lastValue = nullopt;
     arg->accept(*this);
-    if (!lastValue) {
+    if (!lastValue || !(lastValue->raw())) {
       // TODO: Better error message here?
       interpreter.reportError(ctx.target->location,
                               "Could not resolve all arguments for this call.");
