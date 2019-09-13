@@ -5,7 +5,7 @@
 using namespace manda::analysis;
 using namespace std;
 
-Parser::Parser(const Scanner &scanner) : scanner(scanner) {}
+Parser::Parser(Scanner &scanner) : scanner(scanner) {}
 
 shared_ptr<CompilationUnitCtx> Parser::parseCompilationUnit() {
   // TODO: Implement this...

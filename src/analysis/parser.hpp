@@ -10,7 +10,7 @@ typedef union YYSTYPE YYSTYPE;
 namespace manda::analysis {
 class Parser {
 public:
-  explicit Parser(const Scanner &scanner);
+  explicit Parser(Scanner &scanner);
   std::shared_ptr<CompilationUnitCtx> parseCompilationUnit();
 
 private:
