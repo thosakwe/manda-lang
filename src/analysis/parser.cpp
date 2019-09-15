@@ -32,3 +32,15 @@ bool Parser::next(Token::TokenType type) {
     }
   }
 }
+
+std::unique_ptr<ExprCtx> Parser::parseExpr() {
+  return std::unique_ptr<ExprCtx>();
+}
+
+std::unique_ptr<ExprCtx> Parser::parsePrefixExpr() {
+  if (next(Token::TRUE) || next(Token::FALSE)) {
+    return make_unique<BoolLiteralCtx>(current);
+  } else {
+    return nullptr;
+  }
+}

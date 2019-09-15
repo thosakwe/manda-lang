@@ -13,6 +13,8 @@ public:
   explicit Parser(Scanner &scanner);
   std::shared_ptr<CompilationUnitCtx> parseCompilationUnit();
   bool next(Token::TokenType type);
+  std::unique_ptr<ExprCtx> parseExpr();
+  std::unique_ptr<ExprCtx> parsePrefixExpr();
 
 private:
   Token current;

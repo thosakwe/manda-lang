@@ -1,6 +1,7 @@
 #ifndef MANDA_EXPR_CTX_HPP
 #define MANDA_EXPR_CTX_HPP
 #include "location.hpp"
+#include "token.hpp"
 #include "type_ctx.hpp"
 #include <memory>
 #include <string>
@@ -14,6 +15,7 @@ class ExprCtx {
 public:
   Location location;
   ExprCtx() = default;
+  explicit ExprCtx(Location location) : location(location) {}
   ExprCtx(const ExprCtx &) = default;
   ExprCtx(ExprCtx &&) = default;
   ExprCtx &operator=(const ExprCtx &) = default;
@@ -194,7 +196,8 @@ struct BoolLiteralCtx : public ExprCtx {
   // TODO: Set location
   bool value = false;
   BoolLiteralCtx() = default;
-  explicit BoolLiteralCtx(bool v) : value(v) {}
+  explicit BoolLiteralCtx(const Token &token)
+      : value(token.text == "true"), ExprCtx(token.location) {}
   void accept(ExprVisitor &visitor) const override;
   BoolLiteralCtx *clone() const override;
 };
