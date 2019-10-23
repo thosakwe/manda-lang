@@ -22,7 +22,7 @@ struct DeclCtx {
 struct ExprDeclCtx : public DeclCtx {
   std::unique_ptr<ExprCtx> value;
   ExprDeclCtx() = default;
-  explicit ExprDeclCtx(ExprCtx *v);
+  explicit ExprDeclCtx(std::unique_ptr<ExprCtx> &v);
   void accept(DeclVisitor &visitor) const override;
   ExprDeclCtx *clone() const override;
 };

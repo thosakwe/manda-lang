@@ -5,6 +5,12 @@
 using namespace manda::analysis;
 using namespace std;
 
+NumberLiteralCtx::NumberLiteralCtx(const Location &location, double value)
+    : value(value), ExprCtx(location) {}
+
+IdExprCtx::IdExprCtx(const Location &location, std::string name)
+    : name(move(name)), ExprCtx(location) {}
+
 void FnDeclExprCtx::accept(ExprVisitor &visitor) const {
   visitor.visitFnDeclExpr(*this);
 }

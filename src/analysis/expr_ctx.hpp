@@ -112,10 +112,9 @@ struct VoidLiteralCtx : public ExprCtx {
 struct IdExprCtx : public ExprCtx {
   std::string name;
   // TODO: Set location
-  IdExprCtx() = default;
-  IdExprCtx(const Location &l, std::string n) : name(std::move(n)) {
-    location = l;
-  }
+  IdExprCtx(const Location &location, std::string name);
+  explicit IdExprCtx(const Token &token)
+      : name(token.text), ExprCtx(token.location) {}
   void accept(ExprVisitor &visitor) const override;
   IdExprCtx *clone() const override;
 };
@@ -124,8 +123,9 @@ class NumberLiteralCtx : public ExprCtx {
 public:
   // TODO: Set location
   double value = 0.0;
-  NumberLiteralCtx() = default;
-  NumberLiteralCtx(const Location &l, double v) : value(v) { location = l; }
+  NumberLiteralCtx(const Location &location, double value);
+  NumberLiteralCtx(const Token &token)
+      : value(std::stod(token.text)), ExprCtx(token.location) {}
   void accept(ExprVisitor &visitor) const override;
   NumberLiteralCtx *clone() const override;
 };

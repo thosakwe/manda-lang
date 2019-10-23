@@ -3,7 +3,9 @@
 using namespace manda::analysis;
 using namespace std;
 
-ExprDeclCtx::ExprDeclCtx(ExprCtx *v) : value(v) { location = value->location; }
+ExprDeclCtx::ExprDeclCtx(std::unique_ptr<ExprCtx> &v) : value(std::move(v)) {
+  location = value->location;
+}
 
 TypeDeclCtx::TypeDeclCtx(string n, TypeCtx *v) : name(move(n)), type(v) {
   location = type->location;
@@ -19,6 +21,7 @@ CompilationUnitCtx *CompilationUnitCtx::clone() const {
   for (auto &ptr : declarations) {
     out->declarations.push_back(ptr->cloneToUniquePointer());
   }
+  return out;
 }
 
 unique_ptr<CompilationUnitCtx>

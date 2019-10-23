@@ -21,6 +21,7 @@ public:
   [[nodiscard]] const std::string &getFilename() const;
   Token::TokenType mandalex(void *yyscanner);
   Token nextToken();
+  [[nodiscard]] bool isDone() const;
   void columns(unsigned long count = 0);
   void lines(unsigned long count = 0);
   void step();
@@ -28,6 +29,7 @@ public:
 private:
   std::string filename, contents;
   void *buf, *flex;
+  bool done;
   Position begin, end;
 };
 } // namespace manda::analysis

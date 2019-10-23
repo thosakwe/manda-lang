@@ -27,6 +27,7 @@ Scanner::~Scanner() {
 
 Token Scanner::nextToken() {
   auto type = mandalex(flex);
+  done = done || (type == Token::END_OF_FILE);
   Token result = {type, {begin, end}, mandaget_text(flex)};
   end.offset += mandaget_leng(flex);
   end.column += mandaget_leng(flex);
@@ -48,3 +49,5 @@ void Scanner::lines(unsigned long count) {
 void Scanner::step() { begin = end; }
 
 const string &Scanner::getFilename() const { return filename; }
+
+bool Scanner::isDone() const { return done; }

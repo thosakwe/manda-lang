@@ -24,6 +24,7 @@ public:
   std::unique_ptr<ParamCtx> parseParam();
   std::unique_ptr<StringLiteralCtx> parseStringLiteral(const Token &token);
   std::unique_ptr<BlockExprCtx> parseBlockExpr(const Token &token);
+  std::unique_ptr<ParenExprCtx> parseParenExpr(const Token &token);
 
   std::unique_ptr<TypeCtx> parseType();
 
