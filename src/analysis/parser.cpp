@@ -77,23 +77,23 @@ bool Parser::next(Token::TokenType type) {
   }
 }
 
-std::unique_ptr<DeclCtx> Parser::parseDecl() {
+unique_ptr<DeclCtx> Parser::parseDecl() {
   auto expr = parseExprDecl();
   if (expr)
     return expr;
   return parseTypeDecl();
 }
 
-std::unique_ptr<ExprDeclCtx> Parser::parseExprDecl() {
+unique_ptr<ExprDeclCtx> Parser::parseExprDecl() {
   auto expr = parseExpr();
   if (!expr)
     return nullptr;
   return make_unique<ExprDeclCtx>(expr);
 }
 
-std::unique_ptr<TypeDeclCtx> Parser::parseTypeDecl() { return nullptr; }
+unique_ptr<TypeDeclCtx> Parser::parseTypeDecl() { return nullptr; }
 
-std::unique_ptr<ExprCtx> Parser::parseExpr() {
+unique_ptr<ExprCtx> Parser::parseExpr() {
   auto lhs = parsePrimaryExpr();
   if (!lhs) {
     return nullptr;
@@ -120,13 +120,15 @@ std::unique_ptr<ExprCtx> Parser::parseExpr() {
   }
 }
 
-std::unique_ptr<ExprCtx> Parser::parsePrimaryExpr() {
+unique_ptr<ExprCtx> Parser::parsePrimaryExpr() {
   if (next(Token::ID)) {
     return make_unique<IdExprCtx>(current);
   } else if (next(Token::NUMBER)) {
     return make_unique<NumberLiteralCtx>(current);
   } else if (next(Token::TRUE) || next(Token::FALSE)) {
     return make_unique<BoolLiteralCtx>(current);
+  } else if (next(Token::SINGLE_QUOTE) || next(Token::DOUBLE_QUOTE)) {
+    return parseStringLiteral(current);
   } else if (next(Token::VOID)) {
     return make_unique<VoidLiteralCtx>();
   } else if (next(Token::VAR) || next(Token::FINAL)) {
@@ -149,8 +151,8 @@ std::unique_ptr<ExprCtx> Parser::parsePrimaryExpr() {
   }
 }
 
-std::unique_ptr<ExprCtx>
-Parser::parseClimbingExpr(std::unique_ptr<ExprCtx> &lhs, int minPrecedence) {
+unique_ptr<ExprCtx> Parser::parseClimbingExpr(unique_ptr<ExprCtx> &lhs,
+                                              int minPrecedence) {
   if (!lhs)
     return nullptr;
   auto lookahead = peek();
@@ -183,7 +185,7 @@ Parser::parseClimbingExpr(std::unique_ptr<ExprCtx> &lhs, int minPrecedence) {
   return move(lhs);
 }
 
-std::unique_ptr<BlockExprCtx> Parser::parseBlockExpr(const Token &token) {
+unique_ptr<BlockExprCtx> Parser::parseBlockExpr(const Token &token) {
   auto ptr = make_unique<BlockExprCtx>(token.location);
   auto lastLocation = token.location;
   auto expr = parseExpr();
@@ -199,7 +201,7 @@ std::unique_ptr<BlockExprCtx> Parser::parseBlockExpr(const Token &token) {
   return ptr;
 }
 
-std::unique_ptr<ExprCtx> Parser::parseParenExpr(const Token &token) {
+unique_ptr<ExprCtx> Parser::parseParenExpr(const Token &token) {
   auto ptr = make_unique<ParenExprCtx>(token.location);
   auto lastLocation = token.location;
   auto expr = parseExpr();
@@ -236,7 +238,7 @@ std::unique_ptr<ExprCtx> Parser::parseParenExpr(const Token &token) {
   }
 }
 
-std::unique_ptr<VarExprCtx> Parser::parseVarExpr(const Token &token) {
+unique_ptr<VarExprCtx> Parser::parseVarExpr(const Token &token) {
   auto ptr =
       make_unique<VarExprCtx>(token.location, token.type == Token::FINAL);
   auto lastLocation = token.location;
@@ -261,7 +263,7 @@ std::unique_ptr<VarExprCtx> Parser::parseVarExpr(const Token &token) {
   return ptr;
 }
 
-std::unique_ptr<FnDeclExprCtx> Parser::parseFnDeclExpr(const Token &token) {
+unique_ptr<FnDeclExprCtx> Parser::parseFnDeclExpr(const Token &token) {
   auto ptr = make_unique<FnDeclExprCtx>(token.location);
   auto lastLocation = ptr->location;
   // TODO: Make name optional
@@ -305,7 +307,7 @@ std::unique_ptr<FnDeclExprCtx> Parser::parseFnDeclExpr(const Token &token) {
   return ptr;
 }
 
-std::unique_ptr<ParamCtx> Parser::parseParam() {
+unique_ptr<ParamCtx> Parser::parseParam() {
   auto ptr = make_unique<ParamCtx>();
   auto name = parseIdentifier();
   if (!name) {
@@ -323,7 +325,30 @@ std::unique_ptr<ParamCtx> Parser::parseParam() {
   return ptr;
 }
 
-std::unique_ptr<TypeCtx> Parser::parseType() {
+unique_ptr<StringLiteralCtx> Parser::parseStringLiteral(const Token &token) {
+  auto ptr = make_unique<StringLiteralCtx>(token);
+  auto part = parseStringPart(ptr->singleQuote);
+  auto lastLocation = ptr->location;
+  while (part) {
+    lastLocation = part->location;
+    ptr->parts.push_back(move(part));
+    part = parseStringPart(ptr->singleQuote);
+  }
+  if (!next(token.type)) {
+    string quote = ptr->singleQuote ? "single quote (\"'\")" : "double quote ('\"')";
+    ostringstream oss;
+    oss << "Missing " << quote << ".";
+    emitError(lastLocation, oss.str());
+    return nullptr;
+  }
+  return ptr;
+}
+
+unique_ptr<StringPartCtx> Parser::parseStringPart(bool isSingleQuote) {
+  return nullptr;
+}
+
+unique_ptr<TypeCtx> Parser::parseType() {
   if (next(Token::ID)) {
     return make_unique<TypeRefCtx>(current);
   } else {
@@ -331,7 +356,7 @@ std::unique_ptr<TypeCtx> Parser::parseType() {
   }
 }
 
-std::unique_ptr<IdExprCtx> Parser::parseIdentifier() {
+unique_ptr<IdExprCtx> Parser::parseIdentifier() {
   if (!next(Token::ID)) {
     return nullptr;
   } else {

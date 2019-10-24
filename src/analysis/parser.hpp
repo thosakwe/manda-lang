@@ -32,6 +32,7 @@ public:
   std::unique_ptr<TypeCtx> parseType();
 
   std::unique_ptr<IdExprCtx> parseIdentifier();
+  std::unique_ptr<StringPartCtx> parseStringPart(bool isSingleQuote);
   Token peek();
 
 private:

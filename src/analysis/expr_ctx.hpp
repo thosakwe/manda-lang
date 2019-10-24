@@ -182,7 +182,11 @@ class StringLiteralCtx : public ExprCtx {
 public:
   // TODO: Location
   StringLiteralCtx() = default;
-  explicit StringLiteralCtx(bool sq) : singleQuote(sq) {}
+  StringLiteralCtx(const Location &location, bool sq)
+      : singleQuote(sq), ExprCtx(location) {}
+  explicit StringLiteralCtx(const Token &token)
+      : singleQuote(token.type == Token::SINGLE_QUOTE),
+        ExprCtx(token.location) {}
   StringLiteralCtx *clone() const override;
   void accept(ExprVisitor &visitor) const override;
   [[nodiscard]] std::string getValue() const;

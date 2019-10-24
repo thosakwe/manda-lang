@@ -148,9 +148,7 @@ ParenExprCtx *ParenExprCtx::clone() const {
 }
 
 StringLiteralCtx *StringLiteralCtx::clone() const {
-  auto *out = new StringLiteralCtx;
-  out->location = location;
-  out->singleQuote = singleQuote;
+  auto *out = new StringLiteralCtx(location, singleQuote);
   out->value = value;
   for (auto &ptr : parts) {
     out->parts.push_back(ptr->cloneToUniquePointer());
