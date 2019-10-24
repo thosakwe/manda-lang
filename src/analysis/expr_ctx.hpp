@@ -212,8 +212,7 @@ struct BlockExprCtx : public ExprCtx {
 };
 
 struct TupleExprCtx : public ExprCtx {
-  // TODO: Set location
-  TupleExprCtx() = default;
+  TupleExprCtx(const Location &location) : ExprCtx(location) {}
   TupleExprCtx *clone() const override;
   void accept(ExprVisitor &visitor) const override;
   std::vector<std::unique_ptr<ExprCtx>> items;

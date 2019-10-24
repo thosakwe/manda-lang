@@ -198,8 +198,7 @@ VoidLiteralCtx *VoidLiteralCtx::clone() const {
 }
 
 TupleExprCtx *TupleExprCtx::clone() const {
-  auto *out = new TupleExprCtx();
-  out->location = location;
+  auto *out = new TupleExprCtx(location);
   for (auto &ptr : items) {
     out->items.push_back(ptr->cloneToUniquePointer());
   }

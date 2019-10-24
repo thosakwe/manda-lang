@@ -199,22 +199,41 @@ std::unique_ptr<BlockExprCtx> Parser::parseBlockExpr(const Token &token) {
   return ptr;
 }
 
-std::unique_ptr<ParenExprCtx> Parser::parseParenExpr(const Token &token) {
+std::unique_ptr<ExprCtx> Parser::parseParenExpr(const Token &token) {
   auto ptr = make_unique<ParenExprCtx>(token.location);
   auto lastLocation = token.location;
   auto expr = parseExpr();
   if (!expr) {
     emitError(lastLocation, "Missing expression after '('.");
     return nullptr;
-  } else {
+  } else if (!next(Token::COMMA)) {
     lastLocation = expr->location;
     ptr->inner = move(expr);
+    if (!next(Token::RPAREN)) {
+      emitError(lastLocation, "Missing ')'.");
+      return nullptr;
+    }
+    return ptr;
+  } else {
+    auto tuple = make_unique<TupleExprCtx>(token.location);
+    tuple->items.push_back(move(expr));
+    expr = parseExpr();
+    while (expr) {
+      lastLocation = expr->location;
+      tuple->items.push_back(move(expr));
+      if (next(Token::COMMA)) {
+        lastLocation = current.location;
+        expr = parseExpr();
+      } else {
+        break;
+      }
+    }
+    if (!next(Token::RPAREN)) {
+      emitError(lastLocation, "Missing ')'.");
+      return nullptr;
+    }
+    return tuple;
   }
-  if (!next(Token::RPAREN)) {
-    emitError(lastLocation, "Missing ')'.");
-    return nullptr;
-  }
-  return ptr;
 }
 
 std::unique_ptr<VarExprCtx> Parser::parseVarExpr(const Token &token) {
