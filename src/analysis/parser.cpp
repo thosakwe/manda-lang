@@ -170,6 +170,24 @@ std::unique_ptr<VarExprCtx> Parser::parseVarExpr(const Token &token) {
   return ptr;
 }
 
+std::unique_ptr<ParamCtx> Parser::parseParam() {
+  auto ptr = make_unique<ParamCtx>();
+  auto name = parseIdentifier();
+  if (!name) {
+    return nullptr;
+  }
+
+  ptr->location = name->location;
+  ptr->name = name->name;
+
+  if (next(Token::COLON)) {
+    // TODO: Parse type associated with a param
+  }
+
+  // TODO: Parse default values
+  return ptr;
+}
+
 std::unique_ptr<TypeCtx> Parser::parseType() {
   if (next(Token::ID)) {
     return make_unique<TypeRefCtx>(current);
