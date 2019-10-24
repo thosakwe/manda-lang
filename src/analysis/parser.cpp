@@ -41,6 +41,20 @@ shared_ptr<CompilationUnitCtx> Parser::parseCompilationUnit() {
   return ptr;
 }
 
+Token Parser::peek() {
+  if (!queue_.empty()) {
+    return queue_.front();
+  } else if (!scanner.isDone()) {
+    auto tok = scanner.nextToken();
+    queue_.push(tok);
+    return tok;
+  } else {
+    auto tok = Token();
+    tok.type = Token::END_OF_FILE;
+    return tok;
+  }
+}
+
 bool Parser::next(Token::TokenType type) {
   if (!queue_.empty()) {
     auto tok = queue_.front();
@@ -160,11 +174,11 @@ Parser::parseClimbingExpr(std::unique_ptr<ExprCtx> &lhs, int minPrecedence) {
       lookahead = peek();
     }
     // TODO: Apply the binary operation...
-//    switch (op.type) {
-//    default: {
-//      return nullptr;
-//    }
-//    }
+    //    switch (op.type) {
+    //    default: {
+    //      return nullptr;
+    //    }
+    //    }
   }
   return move(lhs);
 }
