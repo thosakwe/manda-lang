@@ -143,8 +143,7 @@ BoolLiteralCtx *BoolLiteralCtx::clone() const {
 }
 
 ParenExprCtx *ParenExprCtx::clone() const {
-  auto *out = new ParenExprCtx();
-  out->location = location;
+  auto *out = new ParenExprCtx(location);
   out->inner = inner->cloneToUniquePointer();
   return out;
 }

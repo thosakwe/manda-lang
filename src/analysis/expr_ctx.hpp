@@ -237,10 +237,8 @@ struct CallExprCtx : public ExprCtx {
 };
 
 struct ParenExprCtx : public ExprCtx {
-  // TODO: Location
   std::unique_ptr<ExprCtx> inner;
-  ParenExprCtx() = default;
-  explicit ParenExprCtx(ExprCtx *i) : inner(i) {}
+  ParenExprCtx(const Location &location) : ExprCtx(location) {}
   ParenExprCtx *clone() const override;
   void accept(ExprVisitor &visitor) const override;
 };

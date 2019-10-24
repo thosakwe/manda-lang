@@ -7,11 +7,11 @@ using namespace std;
 
 Parser::Parser(Scanner &scanner) : scanner(scanner) {
   scanner.pipe(*this);
-  auto tok = scanner.nextToken();
-  while (!tok.isEOF()) {
-    queue_.push(tok);
-    tok = scanner.nextToken();
-  }
+  //  auto tok = scanner.nextToken();
+  //  while (!tok.isEOF()) {
+  //    queue_.push(tok);
+  //    tok = scanner.nextToken();
+  //  }
 }
 
 shared_ptr<CompilationUnitCtx> Parser::parseCompilationUnit() {
@@ -100,6 +100,11 @@ std::unique_ptr<ExprCtx> Parser::parsePrefixExpr() {
     return parseBlockExpr(current);
   }
 
+  // Keep this last...
+  else if (next(Token::LPAREN)) {
+    return parseParenExpr(current);
+  }
+
   // TODO: Other exprs
 
   else {
@@ -118,6 +123,24 @@ std::unique_ptr<BlockExprCtx> Parser::parseBlockExpr(const Token &token) {
   }
   if (!next(Token::RCURLY)) {
     emitError(lastLocation, "Missing '}'.");
+    return nullptr;
+  }
+  return ptr;
+}
+
+std::unique_ptr<ParenExprCtx> Parser::parseParenExpr(const Token &token) {
+  auto ptr = make_unique<ParenExprCtx>(token.location);
+  auto lastLocation = token.location;
+  auto expr = parseExpr();
+  if (!expr) {
+    emitError(lastLocation, "Missing expression after '('.");
+    return nullptr;
+  } else {
+    lastLocation = expr->location;
+    ptr->inner = move(expr);
+  }
+  if (!next(Token::RPAREN)) {
+    emitError(lastLocation, "Missing ')'.");
     return nullptr;
   }
   return ptr;
