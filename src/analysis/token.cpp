@@ -10,6 +10,14 @@ ostream &manda::analysis::operator<<(ostream &out, const Token &a) {
 
 bool Token::isEOF() const { return type == END_OF_FILE; }
 
+// TODO: Binary operators
+
+bool Token::isBinaryOp() const { return false; }
+
+int Token::getPrecedence() const { return -1; }
+
+bool Token::isRightAssociative() const { return false; }
+
 ostream &manda::analysis::operator<<(ostream &out,
                                      const Token::TokenType &type) {
   switch (type) {

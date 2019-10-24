@@ -137,7 +137,8 @@ std::unique_ptr<ExprCtx> Parser::parsePrimaryExpr() {
 
 std::unique_ptr<ExprCtx>
 Parser::parseClimbingExpr(std::unique_ptr<ExprCtx> &lhs, int minPrecedence) {
-  if (!lhs) return nullptr;
+  if (!lhs)
+    return nullptr;
   auto lookahead = peek();
   if (lookahead.isBinaryOp() && lookahead.getPrecedence() >= minPrecedence) {
     auto op = lookahead;
@@ -160,7 +161,9 @@ Parser::parseClimbingExpr(std::unique_ptr<ExprCtx> &lhs, int minPrecedence) {
     }
     // TODO: Apply the binary operation...
 //    switch (op.type) {
-//
+//    default: {
+//      return nullptr;
+//    }
 //    }
   }
   return move(lhs);

@@ -70,10 +70,10 @@ struct Token {
   Location location;
   std::string text;
   friend std::ostream &operator<<(std::ostream &out, const Token &a);
-  bool isEOF() const;
-  bool isBinaryOp() const;
-  int getPrecedence() const;
-  bool isRightAssociative() const;
+  [[nodiscard]] bool isEOF() const;
+  [[nodiscard]] bool isBinaryOp() const;
+  [[nodiscard]] int getPrecedence() const;
+  [[nodiscard]] bool isRightAssociative() const;
 };
 
 std::ostream &operator<<(std::ostream &out, const Token::TokenType &type);
