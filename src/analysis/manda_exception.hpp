@@ -11,9 +11,9 @@ public:
   enum MandaExceptionType { ERROR, WARNING, HINT, INFO };
   MandaException(MandaExceptionType type, Location location,
                  std::string message);
-  MandaExceptionType getType() const;
-  const Location &getLocation() const;
-  const std::string &getMessage() const;
+  [[nodiscard]] MandaExceptionType getType() const;
+  [[nodiscard]] const Location &getLocation() const;
+  [[nodiscard]] const std::string &getMessage() const;
 
 private:
   Location location;
@@ -23,10 +23,9 @@ private:
 
 class MandaErrorEmitter {
 public:
-  bool hasErrors() const;
-  const std::vector<MandaException> &getErrors() const;
+  [[nodiscard]] bool hasErrors() const;
+  [[nodiscard]] const std::vector<MandaException> &getErrors() const;
 
-protected:
   void emit(MandaException::MandaExceptionType type, const Location &location,
             const std::string &message);
   void emitError(const Location &location, const std::string &message);
