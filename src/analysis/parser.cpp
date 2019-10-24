@@ -65,9 +65,9 @@ std::unique_ptr<ExprCtx> Parser::parseExpr() {
 
 std::unique_ptr<ExprCtx> Parser::parsePrefixExpr() {
   if (next(Token::ID)) {
-    make_unique<IdExprCtx>(current);
+    return make_unique<IdExprCtx>(current);
   } else if (next(Token::NUMBER)) {
-    make_unique<NumberLiteralCtx>(current);
+    return make_unique<NumberLiteralCtx>(current);
   } else if (next(Token::TRUE) || next(Token::FALSE)) {
     return make_unique<BoolLiteralCtx>(current);
   } else if (next(Token::VOID)) {
@@ -75,6 +75,8 @@ std::unique_ptr<ExprCtx> Parser::parsePrefixExpr() {
   } else if (next(Token::VAR) || next(Token::FINAL)) {
     return nullptr;
     //    return parseVarExpr(current);
+  } else if (next(Token::LCURLY)) {
+    return parseBlockExpr(current);
   }
 
   // TODO: Other exprs
@@ -82,4 +84,18 @@ std::unique_ptr<ExprCtx> Parser::parsePrefixExpr() {
   else {
     return nullptr;
   }
+}
+
+std::unique_ptr<BlockExprCtx> Parser::parseBlockExpr(const Token &token) {
+  auto ptr = make_unique<BlockExprCtx>(token.location);
+  auto expr = parseExpr();
+  while (expr) {
+    ptr->body.push_back(expr);
+    expr = parseExpr();
+  }
+  if (!next(Token::RCURLY)) {
+    emitError(lastLocation, "Missing '}'.");
+    return nullptr;
+  }
+  return ptr;
 }

@@ -20,5 +20,5 @@ add_library(manda_analysis
   token.cpp token.hpp
   parser.cpp parser.hpp
   scanner.cpp scanner.hpp
-  ast_printer.cpp ast_printer.hpp)
+  ast_printer.cpp ast_printer.hpp manda_exception.cpp manda_exception.hpp)
 target_include_directories(manda_analysis PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")

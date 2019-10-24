@@ -187,7 +187,7 @@ VarExprCtx *VarExprCtx::clone() const {
 }
 
 BlockExprCtx *BlockExprCtx::clone() const {
-  auto *out = new BlockExprCtx;
+  auto *out = new BlockExprCtx(location);
   out->location = location;
   for (auto &ptr : body) {
     out->body.push_back(ptr->cloneToUniquePointer());

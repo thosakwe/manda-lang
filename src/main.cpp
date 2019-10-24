@@ -132,6 +132,7 @@ int runREPL(const VMOptions &options) {
       continue;
     }
 
+    Interpreter interpreter(options, module);
     Scanner scanner("<stdin>", line);
     Parser parser(scanner);
     auto compilationUnit = parser.parseCompilationUnit();
@@ -143,7 +144,6 @@ int runREPL(const VMOptions &options) {
         compilationUnit->accept(printer);
       }
       module->getTopLevelExpressions().clear();
-      Interpreter interpreter(options, module);
       ModuleCompiler compiler(interpreter, module);
       compilationUnit->accept(compiler);
       // TODO: Type decl visiting should probably be in the module compiler.

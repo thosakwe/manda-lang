@@ -1,0 +1,47 @@
+#include "manda_exception.hpp"
+
+using namespace manda::analysis;
+using namespace std;
+
+MandaException::MandaException(MandaException::MandaExceptionType type,
+                               Location location, string message)
+    : type(type), location(move(location)), message(move(message)) {}
+
+MandaException::MandaExceptionType MandaException::getType() const {
+  return type;
+}
+
+const Location &MandaException::getLocation() const { return location; }
+
+const string &MandaException::getMessage() const { return message; }
+
+bool MandaErrorEmitter::hasErrors() const { return !errors.empty(); }
+
+const vector<MandaException> &MandaErrorEmitter::getErrors() const {
+  return errors;
+}
+
+void MandaErrorEmitter::emit(MandaException::MandaExceptionType type,
+                             const Location &location, const string &message) {
+  errors.emplace_back(type, location, message);
+}
+
+void MandaErrorEmitter::emitError(const Location &location,
+                                  const string &message) {
+  emit(MandaException::ERROR, location, message);
+}
+
+void MandaErrorEmitter::emitWarning(const Location &location,
+                                    const string &message) {
+  emit(MandaException::WARNING, location, message);
+}
+
+void MandaErrorEmitter::emitHint(const Location &location,
+                                 const string &message) {
+  emit(MandaException::HINT, location, message);
+}
+
+void MandaErrorEmitter::emitInfo(const Location &location,
+                                 const string &message) {
+  emit(MandaException::INFO, location, message);
+}

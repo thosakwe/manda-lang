@@ -203,8 +203,7 @@ struct BoolLiteralCtx : public ExprCtx {
 };
 
 struct BlockExprCtx : public ExprCtx {
-  // TODO: Set location
-  BlockExprCtx() = default;
+  BlockExprCtx(const Location &location) : ExprCtx(location){};
   BlockExprCtx *clone() const override;
   void accept(ExprVisitor &visitor) const override;
   std::vector<std::unique_ptr<ExprCtx>> body;
