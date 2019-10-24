@@ -2,6 +2,7 @@
 #include "analysis/parser.hpp"
 #include "analysis/scanner.hpp"
 #include "defs.hpp"
+#include "runtime/ansi_printer.hpp"
 #include "runtime/core_library.hpp"
 #include "runtime/interpreter.hpp"
 #include "runtime/module_compiler.hpp"
@@ -89,8 +90,12 @@ int runFile(const VMOptions &options) {
   Scanner scanner(filename, contents);
   Parser parser(scanner);
   auto compilationUnit = parser.parseCompilationUnit();
-  if (compilationUnit == nullptr) {
-    cout << "NULL" << endl;
+  if (compilationUnit == nullptr || parser.hasErrors()) {
+    for (auto &error : parser.getErrors()) {
+      ostringstream oss;
+      oss << error;
+      cerr << red(oss.str());
+    }
     return 1;
   } else {
     if (options.developerMode) {
@@ -136,7 +141,12 @@ int runREPL(const VMOptions &options) {
     Scanner scanner("<stdin>", line);
     Parser parser(scanner);
     auto compilationUnit = parser.parseCompilationUnit();
-    if (compilationUnit == nullptr) {
+    if (compilationUnit == nullptr || parser.hasErrors()) {
+      for (auto &error : parser.getErrors()) {
+        ostringstream oss;
+        oss << error;
+        cout << red(oss.str());
+      }
       continue;
     } else {
       if (options.developerMode) {
