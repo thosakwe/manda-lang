@@ -230,8 +230,9 @@ struct CastExprCtx : public ExprCtx {
 struct CallExprCtx : public ExprCtx {
   CallExprCtx() = default;
   CallExprCtx *clone() const override;
-  explicit CallExprCtx(ExprCtx *tgt) : target(tgt) {
-    location = target->location;
+  explicit CallExprCtx(std::unique_ptr<ExprCtx> &target)
+      : target(move(target)) {
+    location = this->target->location;
   }
   void accept(ExprVisitor &visitor) const override;
   std::unique_ptr<ExprCtx> target;

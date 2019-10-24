@@ -80,11 +80,33 @@ std::unique_ptr<ExprDeclCtx> Parser::parseExprDecl() {
 std::unique_ptr<TypeDeclCtx> Parser::parseTypeDecl() { return nullptr; }
 
 std::unique_ptr<ExprCtx> Parser::parseExpr() {
-  // TODO: Infix
-  return parsePrefixExpr();
+  auto lhs = parsePrimaryExpr();
+  if (!lhs) {
+    return nullptr;
+  } else if (next(Token::LPAREN)) {
+    auto lastLocation = current.location;
+    auto ptr = make_unique<CallExprCtx>(lhs);
+    auto arg = parseExpr();
+    while (arg) {
+      lastLocation = arg->location;
+      ptr->arguments.push_back(move(arg));
+      if (next(Token::COMMA)) {
+        arg = parseExpr();
+      } else {
+        break;
+      }
+    }
+    if (!next(Token::RPAREN)) {
+      emitError(lastLocation, "Missing ')' after argument list.");
+      return nullptr;
+    }
+    return ptr;
+  } else {
+    return parseClimbingExpr(lhs, 0);
+  }
 }
 
-std::unique_ptr<ExprCtx> Parser::parsePrefixExpr() {
+std::unique_ptr<ExprCtx> Parser::parsePrimaryExpr() {
   if (next(Token::ID)) {
     return make_unique<IdExprCtx>(current);
   } else if (next(Token::NUMBER)) {
@@ -111,6 +133,37 @@ std::unique_ptr<ExprCtx> Parser::parsePrefixExpr() {
   else {
     return nullptr;
   }
+}
+
+std::unique_ptr<ExprCtx>
+Parser::parseClimbingExpr(std::unique_ptr<ExprCtx> &lhs, int minPrecedence) {
+  if (!lhs) return nullptr;
+  auto lookahead = peek();
+  if (lookahead.isBinaryOp() && lookahead.getPrecedence() >= minPrecedence) {
+    auto op = lookahead;
+    queue_.pop();
+    auto rhs = parsePrimaryExpr();
+    if (!rhs) {
+      emitError(op.location, "Missing expression after operator.");
+      return nullptr;
+    }
+    lookahead = peek();
+    while (lookahead.isBinaryOp() &&
+           (lookahead.getPrecedence() > op.getPrecedence() ||
+            lookahead.isRightAssociative())) {
+      rhs = parseClimbingExpr(rhs, lookahead.getPrecedence());
+      if (!rhs) {
+        // TODO: Report missing expr
+        return nullptr;
+      }
+      lookahead = peek();
+    }
+    // TODO: Apply the binary operation...
+//    switch (op.type) {
+//
+//    }
+  }
+  return move(lhs);
 }
 
 std::unique_ptr<BlockExprCtx> Parser::parseBlockExpr(const Token &token) {

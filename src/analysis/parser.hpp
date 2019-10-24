@@ -19,7 +19,9 @@ public:
 
   std::unique_ptr<ExprDeclCtx> parseExprDecl();
   std::unique_ptr<ExprCtx> parseExpr();
-  std::unique_ptr<ExprCtx> parsePrefixExpr();
+  std::unique_ptr<ExprCtx> parsePrimaryExpr();
+  std::unique_ptr<ExprCtx> parseClimbingExpr(std::unique_ptr<ExprCtx> &lhs,
+                                             int minPrecedence);
   std::unique_ptr<VarExprCtx> parseVarExpr(const Token &token);
   std::unique_ptr<FnDeclExprCtx> parseFnDeclExpr(const Token &token);
   std::unique_ptr<ParamCtx> parseParam();
@@ -30,6 +32,7 @@ public:
   std::unique_ptr<TypeCtx> parseType();
 
   std::unique_ptr<IdExprCtx> parseIdentifier();
+  Token peek();
 
 private:
   Token current;

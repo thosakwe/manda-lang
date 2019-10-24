@@ -71,6 +71,9 @@ struct Token {
   std::string text;
   friend std::ostream &operator<<(std::ostream &out, const Token &a);
   bool isEOF() const;
+  bool isBinaryOp() const;
+  int getPrecedence() const;
+  bool isRightAssociative() const;
 };
 
 std::ostream &operator<<(std::ostream &out, const Token::TokenType &type);
