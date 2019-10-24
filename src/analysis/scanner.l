@@ -67,8 +67,8 @@ with    return TT::WITH;
 var     return TT::VAR;
 void    return TT::VOID;
 {NUM}   return TT::NUMBER;
-"\""    { return TT::DOUBLE_QUOTE; yy_push_state(DQ, yyscanner); }
-"'"     { return TT::SINGLE_QUOTE; yy_push_state(SQ, yyscanner); }
+"\""    { yy_push_state(DQ, yyscanner); return TT::DOUBLE_QUOTE; }
+"'"     { yy_push_state(SQ, yyscanner); return TT::SINGLE_QUOTE; }
 {ID}    return TT::ID;
 .       unexpected(yytext);
 

@@ -25,7 +25,7 @@ public:
   std::unique_ptr<VarExprCtx> parseVarExpr(const Token &token);
   std::unique_ptr<FnDeclExprCtx> parseFnDeclExpr(const Token &token);
   std::unique_ptr<ParamCtx> parseParam();
-  std::unique_ptr<StringLiteralCtx> parseStringLiteral(const Token &token);
+  std::unique_ptr<StringLiteralCtx> parseStringLiteral(const Token &token, bool isSingleQuote);
   std::unique_ptr<BlockExprCtx> parseBlockExpr(const Token &token);
   std::unique_ptr<ExprCtx> parseParenExpr(const Token &token);
 

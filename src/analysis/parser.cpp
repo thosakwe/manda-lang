@@ -33,7 +33,8 @@ shared_ptr<CompilationUnitCtx> Parser::parseCompilationUnit() {
         break;
       } else {
         ostringstream oss;
-        oss << "Unexpected text '" << tok.text << "'.";
+        oss << "Unexpected token '" << tok.text << "' (";
+        oss << tok.type << ").";
         emitError(tok.location, oss.str());
       }
     }
@@ -127,8 +128,10 @@ unique_ptr<ExprCtx> Parser::parsePrimaryExpr() {
     return make_unique<NumberLiteralCtx>(current);
   } else if (next(Token::TRUE) || next(Token::FALSE)) {
     return make_unique<BoolLiteralCtx>(current);
-  } else if (next(Token::SINGLE_QUOTE) || next(Token::DOUBLE_QUOTE)) {
-    return parseStringLiteral(current);
+  } else if (next(Token::SINGLE_QUOTE)) {
+    return parseStringLiteral(current, true);
+  } else if (next(Token::DOUBLE_QUOTE)) {
+    return parseStringLiteral(current, false);
   } else if (next(Token::VOID)) {
     return make_unique<VoidLiteralCtx>();
   } else if (next(Token::VAR) || next(Token::FINAL)) {
@@ -325,25 +328,29 @@ unique_ptr<ParamCtx> Parser::parseParam() {
   return ptr;
 }
 
-unique_ptr<StringLiteralCtx> Parser::parseStringLiteral(const Token &token) {
+unique_ptr<StringLiteralCtx> Parser::parseStringLiteral(const Token &token,
+                                                        bool isSingleQuote) {
   auto ptr = make_unique<StringLiteralCtx>(token);
-  auto part = parseStringPart(ptr->singleQuote);
+  auto part = parseStringPart(isSingleQuote);
   auto lastLocation = ptr->location;
-  if (ptr->singleQuote) {
+  auto closingType = isSingleQuote ? Token::SINGLE_QUOTE : Token::DOUBLE_QUOTE;
+  ptr->singleQuote = isSingleQuote;
+  if (isSingleQuote) {
     if (!part) {
       emitError(lastLocation, "Character literals cannot be empty.");
       return nullptr;
     }
+    ptr->value = part->convert(true);
   } else {
     while (part) {
       lastLocation = part->location;
       ptr->parts.push_back(move(part));
-      part = parseStringPart(ptr->singleQuote);
+      part = parseStringPart(false);
     }
   }
-  if (!next(token.type)) {
+  if (!next(closingType)) {
     string quote =
-        ptr->singleQuote ? "single quote (\"'\")" : "double quote ('\"')";
+        isSingleQuote ? "single quote (\"'\")" : "double quote ('\"')";
     ostringstream oss;
     oss << "Missing " << quote << ".";
     emitError(lastLocation, oss.str());
