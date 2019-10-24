@@ -72,8 +72,8 @@ void    return TT::VOID;
 {ID}    return TT::ID;
 .       unexpected(yytext);
 
-<DQ>"\\\""        return TT::QUOTE_ESCAPE;
-<SQ>"\\'"         return TT::QUOTE_ESCAPE;
+<DQ>"\\\""        return TT::DOUBLE_QUOTE_ESCAPE;
+<SQ>"\\'"         return TT::SINGLE_QUOTE_ESCAPE;
 <DQ>"\""          { return TT::DOUBLE_QUOTE; yy_pop_state(yyscanner); }
 <SQ>"'"           { return TT::SINGLE_QUOTE; yy_pop_state(yyscanner); }
 <DQ,SQ>{HEX_ESC}  return TT::HEX_ESCAPE;

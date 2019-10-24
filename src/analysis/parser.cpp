@@ -329,13 +329,21 @@ unique_ptr<StringLiteralCtx> Parser::parseStringLiteral(const Token &token) {
   auto ptr = make_unique<StringLiteralCtx>(token);
   auto part = parseStringPart(ptr->singleQuote);
   auto lastLocation = ptr->location;
-  while (part) {
-    lastLocation = part->location;
-    ptr->parts.push_back(move(part));
-    part = parseStringPart(ptr->singleQuote);
+  if (ptr->singleQuote) {
+    if (!part) {
+      emitError(lastLocation, "Character literals cannot be empty.");
+      return nullptr;
+    }
+  } else {
+    while (part) {
+      lastLocation = part->location;
+      ptr->parts.push_back(move(part));
+      part = parseStringPart(ptr->singleQuote);
+    }
   }
   if (!next(token.type)) {
-    string quote = ptr->singleQuote ? "single quote (\"'\")" : "double quote ('\"')";
+    string quote =
+        ptr->singleQuote ? "single quote (\"'\")" : "double quote ('\"')";
     ostringstream oss;
     oss << "Missing " << quote << ".";
     emitError(lastLocation, oss.str());
@@ -345,6 +353,15 @@ unique_ptr<StringLiteralCtx> Parser::parseStringLiteral(const Token &token) {
 }
 
 unique_ptr<StringPartCtx> Parser::parseStringPart(bool isSingleQuote) {
+  if (next(Token::TEXT)) {
+    return make_unique<TextStringPartCtx>(current);
+  } else if (next(Token::HEX_ESCAPE)) {
+    return make_unique<HexEscapeStringPartCtx>(current);
+  } else if (isSingleQuote && next(Token::SINGLE_QUOTE_ESCAPE)) {
+    return make_unique<QuoteEscapeStringPartCtx>(current.location);
+  } else if (!isSingleQuote && next(Token::DOUBLE_QUOTE)) {
+    return make_unique<QuoteEscapeStringPartCtx>(current.location);
+  }
   return nullptr;
 }
 

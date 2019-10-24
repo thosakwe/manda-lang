@@ -138,6 +138,7 @@ public:
   Location location;
   [[nodiscard]] virtual std::string convert(bool singleQuote) const = 0;
   StringPartCtx() = default;
+  explicit StringPartCtx(Location location) : location(std::move(location)) {}
   StringPartCtx(const StringPartCtx &) = default;
   StringPartCtx(StringPartCtx &&) = default;
   StringPartCtx &operator=(const StringPartCtx &) = default;
@@ -153,9 +154,10 @@ public:
   [[nodiscard]] std::string convert(bool singleQuote) const override;
   TextStringPartCtx() = default;
   TextStringPartCtx *clone() const override;
-  TextStringPartCtx(const Location &l, std::string t) : text(std::move(t)) {
-    location = l;
-  }
+  TextStringPartCtx(const Location &location, std::string text)
+      : text(std::move(text)), StringPartCtx(location) {}
+  explicit TextStringPartCtx(const Token &token)
+      : text(token.text), StringPartCtx(token.location) {}
 };
 
 class HexEscapeStringPartCtx : public StringPartCtx {
@@ -164,10 +166,10 @@ public:
   [[nodiscard]] std::string convert(bool singleQuote) const override;
   HexEscapeStringPartCtx() = default;
   HexEscapeStringPartCtx *clone() const override;
-  HexEscapeStringPartCtx(const Location &l, std::string t)
-      : text(std::move(t)) {
-    location = l;
-  }
+  HexEscapeStringPartCtx(const Location &location, std::string text)
+      : text(std::move(text)), StringPartCtx(location) {}
+  explicit HexEscapeStringPartCtx(const Token &token)
+      : text(token.text), StringPartCtx(token.location) {}
 };
 
 class QuoteEscapeStringPartCtx : public StringPartCtx {
@@ -175,7 +177,8 @@ public:
   [[nodiscard]] std::string convert(bool singleQuote) const override;
   QuoteEscapeStringPartCtx() = default;
   QuoteEscapeStringPartCtx *clone() const override;
-  explicit QuoteEscapeStringPartCtx(const Location &l) { location = l; }
+  explicit QuoteEscapeStringPartCtx(const Location &location)
+      : StringPartCtx(location) {}
 };
 
 class StringLiteralCtx : public ExprCtx {

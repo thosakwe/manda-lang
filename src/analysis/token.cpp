@@ -186,8 +186,11 @@ ostream &manda::analysis::operator<<(ostream &out,
   case Token::UNICODE_ESCAPE:
     out << "UNICODE_ESCAPE";
     break;
-  case Token::QUOTE_ESCAPE:
-    out << "QUOTE_ESCAPE";
+  case Token::DOUBLE_QUOTE_ESCAPE:
+    out << "DOUBLE_QUOTE_ESCAPE";
+    break;
+  case Token::SINGLE_QUOTE_ESCAPE:
+    out << "SINGLE_QUOTE_ESCAPE";
     break;
   case Token::ARROW:
     out << "ARROW";
