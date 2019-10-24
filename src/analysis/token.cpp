@@ -1,14 +1,17 @@
 #include "token.hpp"
 
-std::ostream &manda::analysis::operator<<(std::ostream &out,
-                                          const manda::analysis::Token &a) {
+using namespace manda::analysis;
+using namespace std;
+
+ostream &manda::analysis::operator<<(ostream &out, const Token &a) {
   out << a.location.begin << ": \"" << a.text << "\" => " << a.type;
   return out;
 }
 
-std::ostream &
-manda::analysis::operator<<(std::ostream &out,
-                            const manda::analysis::Token::TokenType &type) {
+bool Token::isEOF() const { return type == END_OF_FILE; }
+
+ostream &manda::analysis::operator<<(ostream &out,
+                                     const Token::TokenType &type) {
   switch (type) {
   case Token::END_OF_FILE:
     out << "END_OF_FILE";

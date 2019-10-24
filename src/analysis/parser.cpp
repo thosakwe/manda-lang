@@ -5,17 +5,33 @@
 using namespace manda::analysis;
 using namespace std;
 
-Parser::Parser(Scanner &scanner) : scanner(scanner) { scanner.pipe(*this); }
+Parser::Parser(Scanner &scanner) : scanner(scanner) {
+  scanner.pipe(*this);
+  auto tok = scanner.nextToken();
+  while (!tok.isEOF()) {
+    queue_.push(tok);
+    tok = scanner.nextToken();
+  }
+}
 
 shared_ptr<CompilationUnitCtx> Parser::parseCompilationUnit() {
   auto ptr = make_shared<CompilationUnitCtx>();
-  while (!scanner.isDone()) {
+  while (true) {
     auto decl = parseDecl();
     if (decl) {
       ptr->declarations.push_back(move(decl));
     } else {
-      auto tok = scanner.nextToken();
-      if (!tok.text.empty()) {
+      Token tok;
+      if (!queue_.empty()) {
+        tok = queue_.front();
+        queue_.pop();
+      } else {
+        tok = scanner.nextToken();
+      }
+      //      if (!tok.text.empty()) {
+      if (tok.isEOF()) {
+        break;
+      } else {
         ostringstream oss;
         oss << "Unexpected text '" << tok.text << "'.";
         emitError(tok.location, oss.str());

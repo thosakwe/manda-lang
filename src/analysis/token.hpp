@@ -70,6 +70,7 @@ struct Token {
   Location location;
   std::string text;
   friend std::ostream &operator<<(std::ostream &out, const Token &a);
+  bool isEOF() const;
 };
 
 std::ostream &operator<<(std::ostream &out, const Token::TokenType &type);
