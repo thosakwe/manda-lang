@@ -25,6 +25,8 @@ private:
 
 class MandaErrorEmitter {
 public:
+  MandaErrorEmitter() = default;
+  MandaErrorEmitter(const MandaErrorEmitter &other);
   [[nodiscard]] bool hasErrors() const;
   [[nodiscard]] const std::vector<MandaException> &getErrors() const;
 

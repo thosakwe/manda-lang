@@ -17,6 +17,10 @@ const Location &MandaException::getLocation() const { return location; }
 
 const string &MandaException::getMessage() const { return message; }
 
+MandaErrorEmitter::MandaErrorEmitter(const MandaErrorEmitter &other) {
+  errors.insert(errors.end(), other.errors.begin(), other.errors.end());
+}
+
 bool MandaErrorEmitter::hasErrors() const { return !errors.empty(); }
 
 const vector<MandaException> &MandaErrorEmitter::getErrors() const {

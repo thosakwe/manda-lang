@@ -1,5 +1,6 @@
 #ifndef MANDA_ANALYSIS_SCANNER_HPP
 #define MANDA_ANALYSIS_SCANNER_HPP
+#include "manda_exception.hpp"
 #include "token.hpp"
 #include <string>
 #include <vector>
@@ -10,7 +11,7 @@
       void *yyscanner)
 
 namespace manda::analysis {
-class Scanner {
+class Scanner : public MandaErrorEmitter {
 public:
   Scanner(std::string filename, std::string contents);
   Scanner(const Scanner &) = delete;
@@ -22,6 +23,7 @@ public:
   Token::TokenType mandalex(void *yyscanner);
   Token nextToken();
   [[nodiscard]] bool isDone() const;
+  void unexpected(const std::string &text);
   void columns(unsigned long count = 0);
   void lines(unsigned long count = 0);
   void step();

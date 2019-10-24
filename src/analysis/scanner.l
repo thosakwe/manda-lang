@@ -70,6 +70,7 @@ void    return TT::VOID;
 "\""    { return TT::DOUBLE_QUOTE; yy_push_state(DQ, yyscanner); }
 "'"     { return TT::SINGLE_QUOTE; yy_push_state(SQ, yyscanner); }
 {ID}    return TT::ID;
+.+      unexpected(yytext);
 
 <DQ>"\\\""        return TT::QUOTE_ESCAPE;
 <SQ>"\\'"         return TT::QUOTE_ESCAPE;

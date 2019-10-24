@@ -1,6 +1,7 @@
 #include "scanner.hpp"
 #include <iostream>
 #include <manda_flex_scanner.hpp>
+#include <sstream>
 #include <utility>
 
 using namespace manda::analysis;
@@ -33,6 +34,16 @@ Token Scanner::nextToken() {
   end.column += mandaget_leng(flex);
   step();
   return result;
+}
+
+void Scanner::unexpected(const std::string &text) {
+  ostringstream oss;
+  oss << "Unexpected text '" << text << "'.";
+  std::cout << "HUH: " << oss.str() << std::endl;
+  emitError({begin, end}, oss.str());
+  end.offset += mandaget_leng(flex);
+  end.column += mandaget_leng(flex);
+  step();
 }
 
 void Scanner::columns(unsigned long count) {

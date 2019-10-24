@@ -5,7 +5,8 @@
 using namespace manda::analysis;
 using namespace std;
 
-Parser::Parser(Scanner &scanner) : scanner(scanner) {}
+Parser::Parser(Scanner &scanner)
+    : scanner(scanner), MandaErrorEmitter(scanner) {}
 
 shared_ptr<CompilationUnitCtx> Parser::parseCompilationUnit() {
   bool lastWasError = false;
