@@ -39,7 +39,6 @@ Token Scanner::nextToken() {
 void Scanner::unexpected(const std::string &text) {
   ostringstream oss;
   oss << "Unexpected text '" << text << "'.";
-  std::cout << "HUH: " << oss.str() << std::endl;
   emitError({begin, end}, oss.str());
   end.offset += mandaget_leng(flex);
   end.column += mandaget_leng(flex);

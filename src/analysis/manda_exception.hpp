@@ -26,7 +26,6 @@ private:
 class MandaErrorEmitter {
 public:
   MandaErrorEmitter() = default;
-  MandaErrorEmitter(const MandaErrorEmitter &other);
   [[nodiscard]] bool hasErrors() const;
   [[nodiscard]] const std::vector<MandaException> &getErrors() const;
 
@@ -36,8 +35,10 @@ public:
   void emitWarning(const Location &location, const std::string &message);
   void emitHint(const Location &location, const std::string &message);
   void emitInfo(const Location &location, const std::string &message);
+  void pipe(MandaErrorEmitter &other);
 
 private:
+  MandaErrorEmitter *pipe_ = nullptr;
   std::vector<MandaException> errors;
 };
 } // namespace manda::analysis

@@ -17,9 +17,7 @@ const Location &MandaException::getLocation() const { return location; }
 
 const string &MandaException::getMessage() const { return message; }
 
-MandaErrorEmitter::MandaErrorEmitter(const MandaErrorEmitter &other) {
-  errors.insert(errors.end(), other.errors.begin(), other.errors.end());
-}
+void MandaErrorEmitter::pipe(MandaErrorEmitter &other) { pipe_ = &other; }
 
 bool MandaErrorEmitter::hasErrors() const { return !errors.empty(); }
 
@@ -29,7 +27,11 @@ const vector<MandaException> &MandaErrorEmitter::getErrors() const {
 
 void MandaErrorEmitter::emit(MandaException::MandaExceptionType type,
                              const Location &location, const string &message) {
-  errors.emplace_back(type, location, message);
+  if (pipe_) {
+    pipe_->emit(type, location, message);
+  } else {
+    errors.emplace_back(type, location, message);
+  }
 }
 
 void MandaErrorEmitter::emitError(const Location &location,

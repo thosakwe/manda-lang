@@ -23,6 +23,9 @@ int main() {
         cout << tok << endl;
         tok = scanner.nextToken();
       }
+      for (auto &error : scanner.getErrors()) {
+        cout << "ERR: " << error << endl;
+      }
       cout << "Done." << endl;
     }
   }
