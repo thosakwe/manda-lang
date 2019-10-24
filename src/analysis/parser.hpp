@@ -1,6 +1,7 @@
 #ifndef MANDA_PARSER_HPP
 #define MANDA_PARSER_HPP
 #include "ast.hpp"
+#include "manda_exception.hpp"
 #include "scanner.hpp"
 #include "token.hpp"
 #include <queue>
@@ -8,7 +9,7 @@
 
 // TODO: Pass an Interpreter instance, and use reportError
 namespace manda::analysis {
-class Parser {
+class Parser : public MandaErrorEmitter {
 public:
   explicit Parser(Scanner &scanner);
   bool next(Token::TokenType type);

@@ -88,9 +88,11 @@ std::unique_ptr<ExprCtx> Parser::parsePrefixExpr() {
 
 std::unique_ptr<BlockExprCtx> Parser::parseBlockExpr(const Token &token) {
   auto ptr = make_unique<BlockExprCtx>(token.location);
+  auto lastLocation = token.location;
   auto expr = parseExpr();
   while (expr) {
-    ptr->body.push_back(expr);
+    lastLocation = expr->location;
+    ptr->body.push_back(move(expr));
     expr = parseExpr();
   }
   if (!next(Token::RCURLY)) {
