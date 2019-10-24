@@ -359,7 +359,7 @@ unique_ptr<StringPartCtx> Parser::parseStringPart(bool isSingleQuote) {
     return make_unique<HexEscapeStringPartCtx>(current);
   } else if (isSingleQuote && next(Token::SINGLE_QUOTE_ESCAPE)) {
     return make_unique<QuoteEscapeStringPartCtx>(current.location);
-  } else if (!isSingleQuote && next(Token::DOUBLE_QUOTE)) {
+  } else if (!isSingleQuote && next(Token::DOUBLE_QUOTE_ESCAPE)) {
     return make_unique<QuoteEscapeStringPartCtx>(current.location);
   }
   return nullptr;
