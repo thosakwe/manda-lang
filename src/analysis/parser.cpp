@@ -94,8 +94,7 @@ std::unique_ptr<ExprCtx> Parser::parsePrefixExpr() {
   } else if (next(Token::VOID)) {
     return make_unique<VoidLiteralCtx>();
   } else if (next(Token::VAR) || next(Token::FINAL)) {
-    return nullptr;
-    //    return parseVarExpr(current);
+    return parseVarExpr(current);
   } else if (next(Token::LCURLY)) {
     return parseBlockExpr(current);
   }
@@ -144,4 +143,37 @@ std::unique_ptr<ParenExprCtx> Parser::parseParenExpr(const Token &token) {
     return nullptr;
   }
   return ptr;
+}
+
+std::unique_ptr<VarExprCtx> Parser::parseVarExpr(const Token &token) {
+  auto ptr =
+      make_unique<VarExprCtx>(token.location, token.type == Token::FINAL);
+  auto lastLocation = token.location;
+  auto name = parseIdentifier();
+  if (!name) {
+    emitError(lastLocation, "Missing identifier after 'var' or 'final'.");
+    return nullptr;
+  }
+  lastLocation = name->location;
+  if (!next(Token::EQUALS)) {
+    emitError(lastLocation, "Missing '=' after identifier.");
+    return nullptr;
+  }
+  lastLocation = current.location;
+  auto expr = parseExpr();
+  if (!expr) {
+    emitError(lastLocation, "Missing expression after '='.");
+    return nullptr;
+  }
+  ptr->name = name->name;
+  ptr->value = move(expr);
+  return ptr;
+}
+
+std::unique_ptr<IdExprCtx> Parser::parseIdentifier() {
+  if (!next(Token::ID)) {
+    return nullptr;
+  } else {
+    return make_unique<IdExprCtx>(current);
+  }
 }

@@ -176,11 +176,9 @@ TextStringPartCtx *TextStringPartCtx::clone() const {
 }
 
 VarExprCtx *VarExprCtx::clone() const {
-  auto *out = new VarExprCtx;
-  out->location = location;
+  auto *out = new VarExprCtx(location, isFinal);
   out->name = name;
   out->value = value->cloneToUniquePointer();
-  out->isFinal = isFinal;
   out->isPublic = isPublic;
   return out;
 }

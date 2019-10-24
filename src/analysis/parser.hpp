@@ -29,6 +29,8 @@ public:
 
   std::unique_ptr<TypeCtx> parseType();
 
+  std::unique_ptr<IdExprCtx> parseIdentifier();
+
 private:
   Token current;
   Scanner &scanner;

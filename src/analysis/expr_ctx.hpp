@@ -68,6 +68,7 @@ public:
   bool isPublic = false;
   std::string name;
   TopLevelExprCtx() = default;
+  TopLevelExprCtx(const Location &location) : ExprCtx(location) {}
   TopLevelExprCtx(const TopLevelExprCtx &) = default;
   TopLevelExprCtx(TopLevelExprCtx &&) = default;
   TopLevelExprCtx &operator=(const TopLevelExprCtx &) = default;
@@ -79,9 +80,8 @@ struct VarExprCtx : public TopLevelExprCtx {
   bool isFinal = false;
   std::string name;
   std::unique_ptr<ExprCtx> value;
-  VarExprCtx() = default;
-  VarExprCtx(bool f, std::string n, ExprCtx *v)
-      : isFinal(f), name(std::move(n)), value(v) {}
+  VarExprCtx(const Location &location, bool isFinal)
+      : isFinal(isFinal), TopLevelExprCtx(location) {}
   void accept(ExprVisitor &visitor) const override;
   VarExprCtx *clone() const override;
 };
