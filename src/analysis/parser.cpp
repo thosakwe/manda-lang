@@ -170,6 +170,14 @@ std::unique_ptr<VarExprCtx> Parser::parseVarExpr(const Token &token) {
   return ptr;
 }
 
+std::unique_ptr<TypeCtx> Parser::parseType() {
+  if (next(Token::ID)) {
+    return make_unique<TypeRefCtx>(current);
+  } else {
+    return nullptr;
+  }
+}
+
 std::unique_ptr<IdExprCtx> Parser::parseIdentifier() {
   if (!next(Token::ID)) {
     return nullptr;

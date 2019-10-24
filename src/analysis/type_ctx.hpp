@@ -10,6 +10,7 @@ class TypeCtx {
 public:
   Location location;
   TypeCtx() = default;
+  TypeCtx(const Location &location) : location(location) {}
   TypeCtx(const TypeCtx &) = default;
   TypeCtx(TypeCtx &&) = default;
   TypeCtx &operator=(const TypeCtx &) = default;
@@ -23,7 +24,10 @@ public:
 struct TypeRefCtx : public TypeCtx {
   std::string name;
   TypeRefCtx() = default;
-  TypeRefCtx(const Location &l, std::string name);
+  TypeRefCtx(const Location &l, std::string name)
+      : name(std::move(name)), TypeCtx(l) {}
+  explicit TypeRefCtx(const Token &token)
+      : name(token.text), TypeCtx(token.location) {}
   void accept(TypeVisitor &visitor) const override;
   TypeRefCtx *clone() const override;
 };
