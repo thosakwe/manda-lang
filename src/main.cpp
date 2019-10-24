@@ -94,7 +94,7 @@ int runFile(const VMOptions &options) {
     for (auto &error : parser.getErrors()) {
       ostringstream oss;
       oss << error;
-      cerr << red(oss.str());
+      cerr << red(oss.str()) << endl;
     }
     return 1;
   } else {
@@ -145,7 +145,7 @@ int runREPL(const VMOptions &options) {
       for (auto &error : parser.getErrors()) {
         ostringstream oss;
         oss << error;
-        cout << red(oss.str());
+        cout << red(oss.str()) << endl;
       }
       continue;
     } else {

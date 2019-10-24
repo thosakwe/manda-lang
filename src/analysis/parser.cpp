@@ -1,5 +1,6 @@
 #include "parser.hpp"
 #include <iostream>
+#include <sstream>
 
 using namespace manda::analysis;
 using namespace std;
@@ -7,14 +8,21 @@ using namespace std;
 Parser::Parser(Scanner &scanner) : scanner(scanner) {}
 
 shared_ptr<CompilationUnitCtx> Parser::parseCompilationUnit() {
+  bool lastWasError = false;
   auto ptr = make_shared<CompilationUnitCtx>();
   while (!scanner.isDone()) {
     auto decl = parseDecl();
     if (decl) {
       ptr->declarations.push_back(move(decl));
+      lastWasError = false;
     } else {
-      // TODO: Handle errors here...
-      scanner.nextToken();
+      auto tok = scanner.nextToken();
+      if (!lastWasError && !tok.text.empty()) {
+        ostringstream oss;
+        oss << "Unexpected text '" << tok.text << "'.";
+        emitError(tok.location, oss.str());
+        lastWasError = true;
+      }
     }
   }
   return ptr;

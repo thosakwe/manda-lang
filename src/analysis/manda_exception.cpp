@@ -52,16 +52,16 @@ std::ostream &manda::analysis::operator<<(std::ostream &os,
                                           const MandaException &a) {
   switch (a.getType()) {
   case MandaException::ERROR:
-    os << red("error");
+    os << "error";
     break;
   case MandaException::WARNING:
-    os << yellow("warning");
+    os << "warning";
     break;
   case MandaException::HINT:
-    os << gray("hint");
+    os << "hint";
     break;
   case MandaException::INFO:
-    os << cyan("hint");
+    os << "info";
     break;
   }
 
