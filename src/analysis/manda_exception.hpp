@@ -15,6 +15,7 @@ public:
   [[nodiscard]] MandaExceptionType getType() const;
   [[nodiscard]] const Location &getLocation() const;
   [[nodiscard]] const std::string &getMessage() const;
+  friend std::ostream &operator<<(std::ostream &os, const MandaException &a);
 
 private:
   Location location;
@@ -33,7 +34,6 @@ public:
   void emitWarning(const Location &location, const std::string &message);
   void emitHint(const Location &location, const std::string &message);
   void emitInfo(const Location &location, const std::string &message);
-  friend std::ostream& operator<<(std::ostream &os, const MandaException &a);
 
 private:
   std::vector<MandaException> errors;
