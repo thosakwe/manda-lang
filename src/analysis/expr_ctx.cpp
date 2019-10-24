@@ -110,8 +110,7 @@ CallExprCtx *CallExprCtx::clone() const {
 }
 
 FnDeclExprCtx *FnDeclExprCtx::clone() const {
-  auto *out = new FnDeclExprCtx;
-  out->location = location;
+  auto *out = new FnDeclExprCtx(location);
   out->isPublic = isPublic;
   out->name = name;
   out->body = body == nullptr ? nullptr : body->cloneToUniquePointer();

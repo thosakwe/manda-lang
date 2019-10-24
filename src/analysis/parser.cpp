@@ -95,6 +95,8 @@ std::unique_ptr<ExprCtx> Parser::parsePrefixExpr() {
     return make_unique<VoidLiteralCtx>();
   } else if (next(Token::VAR) || next(Token::FINAL)) {
     return parseVarExpr(current);
+  } else if (next(Token::FN)) {
+    return parseFnDeclExpr(current);
   } else if (next(Token::LCURLY)) {
     return parseBlockExpr(current);
   }
@@ -167,6 +169,50 @@ std::unique_ptr<VarExprCtx> Parser::parseVarExpr(const Token &token) {
   }
   ptr->name = name->name;
   ptr->value = move(expr);
+  return ptr;
+}
+
+std::unique_ptr<FnDeclExprCtx> Parser::parseFnDeclExpr(const Token &token) {
+  auto ptr = make_unique<FnDeclExprCtx>(token.location);
+  auto lastLocation = ptr->location;
+  // TODO: Make name optional
+  if (!next(Token::ID)) {
+    emitError(lastLocation, "Missing name for function.");
+    return nullptr;
+  }
+  lastLocation = current.location;
+  ptr->name = current.text;
+  if (next(Token::LPAREN)) {
+    lastLocation = current.location;
+    auto param = parseParam();
+    while (param) {
+      lastLocation = param->location;
+      ptr->params.push_back(move(param));
+      if (!next(Token::COMMA)) {
+        break;
+      } else {
+        param = parseParam();
+      }
+    }
+    if (!next(Token::RPAREN)) {
+      emitError(lastLocation, "Missing ')' after parameter list.");
+      return nullptr;
+    }
+  }
+  // TODO: Parse return type
+  if (next(Token::ARROW)) {
+    lastLocation = current.location;
+  }
+  auto body = parseExpr();
+  if (!body) {
+    ostringstream oss;
+    oss << "Missing body in function '";
+    oss << ptr->name;
+    oss << "'.";
+    emitError(lastLocation, oss.str());
+    return nullptr;
+  }
+  ptr->body = move(body);
   return ptr;
 }
 

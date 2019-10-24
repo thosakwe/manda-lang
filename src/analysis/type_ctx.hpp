@@ -1,6 +1,7 @@
 #ifndef MANDA_ANALYSIS_TYPE_HPP
 #define MANDA_ANALYSIS_TYPE_HPP
 #include "location.hpp"
+#include "token.hpp"
 #include <string>
 
 namespace manda::analysis {

@@ -99,6 +99,8 @@ struct FnDeclExprCtx : public TopLevelExprCtx {
   std::vector<std::unique_ptr<ParamCtx>> params;
   std::unique_ptr<TypeCtx> returnType;
   std::unique_ptr<ExprCtx> body;
+  explicit FnDeclExprCtx(const Location &location)
+      : TopLevelExprCtx(location) {}
   void accept(ExprVisitor &visitor) const override;
   FnDeclExprCtx *clone() const override;
 };
