@@ -1,6 +1,8 @@
 #include "manda_exception.hpp"
+#include "../runtime/ansi_printer.hpp"
 
 using namespace manda::analysis;
+using namespace manda::runtime;
 using namespace std;
 
 MandaException::MandaException(MandaException::MandaExceptionType type,
@@ -44,4 +46,25 @@ void MandaErrorEmitter::emitHint(const Location &location,
 void MandaErrorEmitter::emitInfo(const Location &location,
                                  const string &message) {
   emit(MandaException::INFO, location, message);
+}
+
+std::ostream &manda::analysis::operator<<(std::ostream &os,
+                                          const MandaException &a) {
+  switch (a.getType()) {
+  case MandaException::ERROR:
+    os << red("error");
+    break;
+  case MandaException::WARNING:
+    os << yellow("warning");
+    break;
+  case MandaException::HINT:
+    os << gray("hint");
+    break;
+  case MandaException::INFO:
+    os << cyan("hint");
+    break;
+  }
+
+  os << ": " << a.getLocation() << ": " << a.getMessage();
+  return os;
 }

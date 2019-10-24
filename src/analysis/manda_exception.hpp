@@ -2,6 +2,7 @@
 #define MANDA_MANDA_EXCEPTION_HPP
 #include "location.hpp"
 #include <exception>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -32,6 +33,7 @@ public:
   void emitWarning(const Location &location, const std::string &message);
   void emitHint(const Location &location, const std::string &message);
   void emitInfo(const Location &location, const std::string &message);
+  friend std::ostream& operator<<(std::ostream &os, const MandaException &a);
 
 private:
   std::vector<MandaException> errors;
