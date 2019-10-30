@@ -1,4 +1,5 @@
 #include "parser.hpp"
+#include "ast_printer.hpp"
 #include <iostream>
 #include <sstream>
 

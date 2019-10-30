@@ -56,7 +56,7 @@ void AstPrinter::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
     // TODO: Print type, default value
     print() << "Param " << param->name << endl;
   }
-  if (ctx.body) {
+  if (!ctx.body) {
     print() << "<no body>" << endl;
   } else {
     ctx.body->accept(*this);

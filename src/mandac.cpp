@@ -69,7 +69,9 @@ int main(int argc, const char **argv) {
         compilationUnit->accept(printer);
       }
 
-      // TODO: Compile it
+      // Compile it
+      MandaCompiler compiler;
+      compilationUnit->accept(compiler);
     }
   }
 }
