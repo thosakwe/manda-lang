@@ -4,6 +4,10 @@ using namespace manda::analysis;
 using namespace manda::compiler;
 using namespace std;
 
+const std::shared_ptr<manda::ir::IRModule> &MandaCompiler::getModule() const {
+  return module;
+}
+
 void MandaCompiler::visitExprDecl(const ExprDeclCtx &ctx) {}
 
 void MandaCompiler::visitTypeDecl(const TypeDeclCtx &ctx) {}

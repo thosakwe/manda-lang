@@ -79,7 +79,6 @@ int main(int argc, const char **argv) {
 void printHelp(ostream &out) {
   out << "Usage: mandac [<options>] [<input_file>]" << endl;
   out << endl << "Compile the program in <input_file> into bytecode." << endl;
-  out << "If no <input_file> is given, a REPL will begin." << endl;
   out << endl << "Options:" << endl;
   out << "--help or -h" << endl;
   out << tab << "Print this help information." << endl;

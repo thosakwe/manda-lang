@@ -3,6 +3,7 @@
 
 #include "../analysis/ast.hpp"
 #include "../analysis/expr_ctx.hpp"
+#include "../ir/ir_module.hpp"
 #include "../runtime/base_resolver.hpp"
 #include "../runtime/type_resolver.hpp"
 
@@ -17,6 +18,7 @@ class MandaCompiler : public analysis::CompilationUnitVisitor,
                       public analysis::DeclVisitor,
                       public runtime::BaseResolver {
 public:
+  const std::shared_ptr<manda::ir::IRModule> &getModule() const;
   void visitExprDecl(const analysis::ExprDeclCtx &ctx) override;
   void visitTypeDecl(const analysis::TypeDeclCtx &ctx) override;
   void visitCompilationUnit(const analysis::CompilationUnitCtx &ctx) override;
@@ -33,6 +35,9 @@ public:
   void visitCallExpr(const analysis::CallExprCtx &ctx) override;
   void visitParenExpr(const analysis::ParenExprCtx &ctx) override;
   void visitTypeRef(const analysis::TypeRefCtx &ctx) override;
+
+private:
+  std::shared_ptr<manda::ir::IRModule> module;
 };
 } // namespace manda::compiler
 
