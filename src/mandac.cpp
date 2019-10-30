@@ -33,8 +33,6 @@ int main(int argc, const char **argv) {
   } else if (options.showVersion) {
     cout << "Manda " << MANDA_VERSION << endl;
     return 0;
-  } else if (options.isREPL()) {
-    cerr << "Error: The compiler does not support a REPL." << endl;
   } else if (options.inputFile.empty()) {
     cerr << "Error: No input file was given." << endl;
     printHelp(cerr);

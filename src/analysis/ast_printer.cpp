@@ -49,6 +49,19 @@ void AstPrinter::visitVarExpr(const VarExprCtx &ctx) {
 
 void AstPrinter::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
   // TODO: Print
+  print() << "FnDeclExpr(" << (ctx.name.empty() ? "<anonymous>" : ctx.name)
+          << ")" << endl;
+  indent();
+  for (auto &param : ctx.params) {
+    // TODO: Print type, default value
+    print() << "Param " << param->name << endl;
+  }
+  if (ctx.body) {
+    print() << "<no body>" << endl;
+  } else {
+    ctx.body->accept(*this);
+  }
+  outdent();
 }
 
 void AstPrinter::visitVoidLiteral(const VoidLiteralCtx &ctx) {
