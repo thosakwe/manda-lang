@@ -18,7 +18,7 @@ class MandaCompiler : public analysis::CompilationUnitVisitor,
                       public analysis::DeclVisitor,
                       public runtime::BaseResolver {
 public:
-  const std::shared_ptr<manda::ir::IRModule> &getModule() const;
+  [[nodiscard]] const std::shared_ptr<manda::ir::IRModule> &getModule() const;
   void visitExprDecl(const analysis::ExprDeclCtx &ctx) override;
   void visitTypeDecl(const analysis::TypeDeclCtx &ctx) override;
   void visitCompilationUnit(const analysis::CompilationUnitCtx &ctx) override;
