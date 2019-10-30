@@ -71,7 +71,7 @@ int main(int argc, const char **argv) {
 
       // Compile it
       MandaCompiler compiler;
-      compilationUnit->accept(compiler);
+      compiler.compile(*compilationUnit);
     }
   }
 }

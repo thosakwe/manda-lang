@@ -6,6 +6,7 @@
 #include "../ir/ir_module.hpp"
 #include "../runtime/base_resolver.hpp"
 #include "../runtime/type_resolver.hpp"
+#include <stack>
 
 namespace manda::compiler {
 /**
@@ -19,6 +20,7 @@ class MandaCompiler : public analysis::CompilationUnitVisitor,
                       public runtime::BaseResolver {
 public:
   [[nodiscard]] const std::shared_ptr<manda::ir::IRModule> &getModule() const;
+  void compile(const analysis::CompilationUnitCtx &ctx);
   void visitExprDecl(const analysis::ExprDeclCtx &ctx) override;
   void visitTypeDecl(const analysis::TypeDeclCtx &ctx) override;
   void visitCompilationUnit(const analysis::CompilationUnitCtx &ctx) override;
@@ -37,6 +39,13 @@ public:
   void visitTypeRef(const analysis::TypeRefCtx &ctx) override;
 
 private:
+  struct CompilerState {
+    manda::analysis::FnDeclExprCtx *functionAst;
+    std::shared_ptr<manda::ir::IRFunction> function;
+    std::shared_ptr<manda::ir::IRBlock> block;
+  };
+
+  std::stack<CompilerState> stateStack;
   std::shared_ptr<manda::ir::IRModule> module;
 };
 } // namespace manda::compiler

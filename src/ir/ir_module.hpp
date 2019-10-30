@@ -1,5 +1,6 @@
 #ifndef MANDA_IR_MODULE_HPP
 #define MANDA_IR_MODULE_HPP
+#include "ir_function.hpp"
 #include <memory>
 #include <string>
 
@@ -8,8 +9,8 @@ class IRModule {
 public:
   explicit IRModule(std::string name);
   IRModule(std::string name, std::shared_ptr<IRModule> parent);
-  const std::shared_ptr<IRModule> &getParent() const;
-  const std::string &getName() const;
+  [[nodiscard]] const std::shared_ptr<IRModule> &getParent() const;
+  [[nodiscard]] const std::string &getName() const;
 
 private:
   std::shared_ptr<IRModule> parent;
