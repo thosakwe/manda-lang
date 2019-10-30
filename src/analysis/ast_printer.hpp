@@ -1,16 +1,16 @@
 #ifndef MANDA_AST_PRINTER_HPP
 #define MANDA_AST_PRINTER_HPP
 #include "ast.hpp"
+#include "indenting_printer.hpp"
 #include <ostream>
 
 namespace manda::analysis {
 class AstPrinter : public CompilationUnitVisitor,
                    public DeclVisitor,
-                   public ExprVisitor {
+                   public ExprVisitor,
+                   public IndentingPrinter {
 public:
   explicit AstPrinter(std::ostream &out);
-  void indent();
-  void outdent();
   void visitCompilationUnit(const CompilationUnitCtx &ctx) override;
   void visitExprDecl(const ExprDeclCtx &ctx) override;
   void visitTypeDecl(const TypeDeclCtx &ctx) override;
@@ -26,11 +26,6 @@ public:
   void visitCastExpr(const CastExprCtx &ctx) override;
   void visitCallExpr(const CallExprCtx &ctx) override;
   void visitParenExpr(const ParenExprCtx &ctx) override;
-
-private:
-  std::ostream &out;
-  unsigned long level;
-  std::ostream &print();
 };
 } // namespace manda::analysis
 

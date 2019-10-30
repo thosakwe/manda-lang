@@ -13,7 +13,7 @@ const std::shared_ptr<manda::ir::IRModule> &MandaCompiler::getModule() const {
 
 void MandaCompiler::compile(const CompilationUnitCtx &ctx) {
   // TODO: Module names
-  module = make_shared<IRModule>("unnamed");
+  module = make_shared<IRModule>();
   visitCompilationUnit(ctx);
 }
 
@@ -45,6 +45,8 @@ void MandaCompiler::visitExprDecl(const ExprDeclCtx &ctx) {
       func->blocks.push_back(block);
       stateStack.push({fnDecl, func, block});
       fnDecl->body->accept(*this);
+      emit(IRInstruction::RETURN);
+      module->functions.push_back(func);
       stateStack.pop();
     }
   }

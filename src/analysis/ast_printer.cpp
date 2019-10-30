@@ -3,22 +3,7 @@
 using namespace manda::analysis;
 using namespace std;
 
-AstPrinter::AstPrinter(ostream &out) : out(out) { level = 0; }
-
-void AstPrinter::indent() { level++; }
-
-void AstPrinter::outdent() {
-  if (level > 0)
-    level--;
-}
-
-ostream &AstPrinter::print() {
-  for (unsigned long i = 0; i < level; i++) {
-    out << "  ";
-  }
-  out << "- ";
-  return out;
-}
+AstPrinter::AstPrinter(ostream &out) : IndentingPrinter(out) {}
 
 void AstPrinter::visitCompilationUnit(const CompilationUnitCtx &ctx) {
   print() << "CompilationUnit" << endl;

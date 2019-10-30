@@ -1,6 +1,7 @@
 #ifndef MANDA_IR_INSTRUCTION_HPP
 #define MANDA_IR_INSTRUCTION_HPP
 #include <cstdint>
+#include <ostream>
 
 namespace manda::ir {
 struct IRInstruction {
@@ -45,7 +46,8 @@ struct IRInstruction {
     GET_LOCAL,
     // Write a value from the stack into locals[operand1].
     SET_LOCAL,
-    // Allocate, and mark, operand1 bytes of dynamic memory; places a 64-bit pointer on the stack.
+    // Allocate, and mark, operand1 bytes of dynamic memory; places a 64-bit
+    // pointer on the stack.
     ALLOC,
     // Mark a pointer as "in use" for this round of GC sweeping.
     MARK,
@@ -63,6 +65,8 @@ struct IRInstruction {
     double operandf64;
   };
 };
+
+std::ostream &operator<<(std::ostream &out, const IRInstruction &a);
 } // namespace manda::ir
 
 #endif

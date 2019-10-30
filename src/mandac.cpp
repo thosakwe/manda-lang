@@ -3,6 +3,7 @@
 #include "analysis/scanner.hpp"
 #include "compiler/manda_compiler.hpp"
 #include "defs.hpp"
+#include "ir/module_text_printer.hpp"
 #include "runtime/ansi_printer.hpp"
 #include "runtime/vm_options.hpp"
 #include <fstream>
@@ -15,6 +16,7 @@
 
 using namespace manda::analysis;
 using namespace manda::compiler;
+using namespace manda::ir;
 using namespace manda::runtime;
 using namespace std;
 
@@ -72,6 +74,7 @@ int main(int argc, const char **argv) {
       // Compile it
       MandaCompiler compiler;
       compiler.compile(*compilationUnit);
+      ModuleTextPrinter(cout).dump(*compiler.getModule());
     }
   }
 }
