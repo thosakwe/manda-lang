@@ -47,6 +47,9 @@ private:
 
   std::stack<CompilerState> stateStack;
   std::shared_ptr<manda::ir::IRModule> module;
+
+  void emit(const manda::ir::IRInstruction &instruction);
+  void emit(const manda::ir::IRInstruction::Opcode opcode);
 };
 } // namespace manda::compiler
 

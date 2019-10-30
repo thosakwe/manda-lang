@@ -17,6 +17,16 @@ void MandaCompiler::compile(const CompilationUnitCtx &ctx) {
   visitCompilationUnit(ctx);
 }
 
+void MandaCompiler::emit(const IRInstruction &instruction) {
+  stateStack.top().block->instructions.push_back(
+      make_unique<IRInstruction>(instruction));
+}
+
+void MandaCompiler::emit(const manda::ir::IRInstruction::Opcode opcode) {
+  IRInstruction instruction{opcode};
+  emit(instruction);
+}
+
 void MandaCompiler::visitExprDecl(const ExprDeclCtx &ctx) {
   auto *topLevel = dynamic_cast<TopLevelExprCtx *>(ctx.value.get());
   if (!topLevel) {
@@ -60,8 +70,9 @@ void MandaCompiler::visitVoidLiteral(const VoidLiteralCtx &ctx) {}
 void MandaCompiler::visitIdExpr(const IdExprCtx &ctx) {}
 
 void MandaCompiler::visitNumberLiteral(const NumberLiteralCtx &ctx) {
-  // TODO: Emit into block
-
+  IRInstruction instruction = {IRInstruction::FLOAT_CONST_64};
+  instruction.operandf64 = ctx.value;
+  emit(instruction);
 }
 
 void MandaCompiler::visitStringLiteral(const StringLiteralCtx &ctx) {}

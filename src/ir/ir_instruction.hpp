@@ -6,7 +6,7 @@ namespace manda::ir {
 struct IRInstruction {
   enum Opcode {
     // Push a 64-bit float constant to the stack.
-    DOUBLE_CONST_64,
+    FLOAT_CONST_64,
     // Push a 64-bit integer constant to the stack.
     INT_CONST_64,
     // Multiply two integers on the stack.
@@ -60,6 +60,7 @@ struct IRInstruction {
       uint32_t operand1, operand2;
     } operands32;
     uint64_t operand64;
+    double operandf64;
   };
 };
 } // namespace manda::ir
