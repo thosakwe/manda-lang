@@ -32,6 +32,33 @@ void AstPrinter::visitVarExpr(const VarExprCtx &ctx) {
   outdent();
 }
 
+void AstPrinter::visitIfClause(const IfClause &ctx) {
+  print() << "if" << endl;
+  indent();
+  ctx.condition->accept(*this);
+  indent();
+  print() << "then" << endl;
+  ctx.body->accept(*this);
+  outdent();
+  outdent();
+}
+
+void AstPrinter::visitIfExpr(const IfExprCtx &ctx) {
+  print() << "IfExpr" << endl;
+  indent();
+  visitIfClause(*ctx.ifClause);
+  for (auto &clause : ctx.elseIfClauses) {
+    visitIfClause(*clause);
+  }
+  if (ctx.elseClause) {
+    print() << "else" << endl;
+    indent();
+    ctx.elseClause->accept(*this);
+    outdent();
+  }
+  outdent();
+}
+
 void AstPrinter::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
   // TODO: Print
   print() << "FnDeclExpr(" << (ctx.name.empty() ? "<anonymous>" : ctx.name)

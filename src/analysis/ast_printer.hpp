@@ -16,6 +16,7 @@ public:
   void visitTypeDecl(const TypeDeclCtx &ctx) override;
   void visitVarExpr(const VarExprCtx &ctx) override;
   void visitFnDeclExpr(const FnDeclExprCtx &ctx) override;
+  void visitIfClause(const IfClause &ctx);
   void visitVoidLiteral(const VoidLiteralCtx &ctx) override;
   void visitIdExpr(const IdExprCtx &ctx) override;
   void visitNumberLiteral(const NumberLiteralCtx &ctx) override;
@@ -26,6 +27,7 @@ public:
   void visitCastExpr(const CastExprCtx &ctx) override;
   void visitCallExpr(const CallExprCtx &ctx) override;
   void visitParenExpr(const ParenExprCtx &ctx) override;
+  void visitIfExpr(const IfExprCtx &ctx) override;
 };
 } // namespace manda::analysis
 
