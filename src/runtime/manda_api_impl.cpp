@@ -49,10 +49,12 @@ MANDA_EXTERN_C manda_result_t manda_to_string(manda_context_t context,
   if (!context || !value || (value->object == nullptr)) {
     return MANDA_RESULT_ERROR;
   } else {
+    // TODO: Mark duplicate pointer in GC
     ostringstream oss;
     value->object->print(oss, false);
     auto str = oss.str();
-    *ptr = str.c_str();
+    //    *ptr = str.c_str();
+    *ptr = jit_strdup(str.c_str());
     return MANDA_RESULT_OK;
   }
 }

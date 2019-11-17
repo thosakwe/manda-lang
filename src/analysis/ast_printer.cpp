@@ -61,7 +61,14 @@ void AstPrinter::visitNumberLiteral(const NumberLiteralCtx &ctx) {
   print() << "NumberLiteral(" << ctx.value << ")" << endl;
 }
 
-void AstPrinter::visitStringLiteral(const StringLiteralCtx &ctx) {}
+void AstPrinter::visitStringLiteral(const StringLiteralCtx &ctx) {
+  if (ctx.isChar()) {
+    print() << "CharLiteral(" << ctx.getValue() << ")" << endl;
+  } else {
+    print() << "StringLiteral, len=" << ctx.getValue().length() << " ("
+            << ctx.getValue() << ")" << endl;
+  }
+}
 
 void AstPrinter::visitBoolLiteral(const BoolLiteralCtx &ctx) {
   print() << "BoolLiteral(" << ctx.value << ")" << endl;
@@ -90,11 +97,18 @@ void AstPrinter::visitCastExpr(const CastExprCtx &ctx) {
 }
 
 void AstPrinter::visitCallExpr(const CallExprCtx &ctx) {
-  print() << "CallExpr" << endl;
+  print() << "CallExpr(" << ctx.arguments.size() << " argument(s))" << endl;
   indent();
   ctx.target->accept(*this);
-  for (auto &node : ctx.arguments) {
-    node->accept(*this);
+  if (!ctx.arguments.empty()) {
+    indent();
+    print() << "Arguments:" << endl;
+    indent();
+    for (auto &node : ctx.arguments) {
+      node->accept(*this);
+    }
+    outdent();
+    outdent();
   }
   outdent();
 }
