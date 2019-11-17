@@ -247,6 +247,72 @@ void JitCompiledFunction::visitBoolLiteral(const BoolLiteralCtx &ctx) {
   }
 }
 
+void JitCompiledFunction::visitIfClause(const IfClause &ctx,
+                                        jit_value &output) {
+  // Evaluate the condition.
+  // TODO: What if the return is *not* a jit_bool? Such a case would require
+  //  unboxing.
+  ctx.condition->accept(*this);
+  if (!lastValue) {
+    interpreter.reportError(ctx.location,
+                            "Compilation of this if clause failed.");
+    return;
+  }
+
+  // Create two labels: one for if the condition is true, and one if it's false.
+  jit_label ifTrue, ifFalse;
+  insn_branch_if(*lastValue, ifTrue);
+  insn_branch(ifFalse);
+
+  // Compile the `true` case, then `false.
+  insn_label(ifTrue);
+  ctx.body->accept(*this);
+  if (!lastValue) {
+    interpreter.reportError(ctx.body->location,
+                            "Compilation of this if clause's body failed.");
+    return;
+  } else {
+    jit_insn_store(raw(), output.raw(), lastValue->raw());
+    lastValue = insn_load(output);
+  }
+
+  insn_label(ifFalse);
+}
+
+void JitCompiledFunction::visitIfExpr(const IfExprCtx &ctx) {
+  // Introduce an intermediate variable, and assign all results to it.
+  // To do this, we must resolve the return type, and get its JIT type.
+  TypeResolver typeResolver(interpreter, getCurrentScope());
+  ctx.accept(typeResolver);
+
+  auto outputType = typeResolver.getLastType();
+  if (!outputType) {
+    interpreter.reportError(
+        ctx.location,
+        "Could not determine what type this if expression returns.");
+    return;
+  }
+
+  auto output = new_value(outputType->toJitType());
+  visitIfClause(*ctx.ifClause, output);
+  for (auto &clause : ctx.elseIfClauses) {
+    visitIfClause(*clause, output);
+  }
+  if (ctx.elseClause) {
+    ctx.elseClause->accept(*this);
+    if (!lastValue) {
+      interpreter.reportError(ctx.elseClause->location,
+                              "Compilation of this else clause's body failed.");
+      return;
+    } else {
+      jit_insn_store(raw(), output.raw(), lastValue->raw());
+    }
+  }
+
+  // Return the intermediate variable.
+  lastValue = insn_load(output);
+}
+
 void JitCompiledFunction::visitBlockExpr(const BlockExprCtx &ctx) {
   // Create a new label, and introduce a new scope. Then, resolve
   // all expressions.
