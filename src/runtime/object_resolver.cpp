@@ -133,6 +133,19 @@ void ObjectResolver::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
   }
 }
 
+shared_ptr<Object> ObjectResolver::visitIfClause(const IfClause &ctx) {
+  ctx.condition->accept(*this);
+  auto *asBool = dynamic_cast<Bool*>(lastObject.get());
+  if (!asBool) {
+    return nullptr;
+  } else if (!asBool->getValue()) {
+    return nullptr;
+  } else {
+    ctx.body->accept(*this);
+    return lastObject;
+  }
+}
+
 void ObjectResolver::visitIfExpr(const IfExprCtx &ctx) {
   if ((lastObject = visitIfClause(*ctx.ifClause))) {
     return;

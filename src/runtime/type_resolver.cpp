@@ -69,7 +69,7 @@ std::shared_ptr<Type> TypeResolver::visitIfClause(const IfClause &ctx) {
     oss << "This expression produces ";
     oss << lastType->getName();
     oss << ", but if conditions can only produce bool.";
-    interpreter.reportError(ctx.body->location, oss.str();)
+    interpreter.reportError(ctx.body->location, oss.str());
   }
 
   ctx.body->accept(*this);
