@@ -112,12 +112,12 @@ struct IfClauseCtx {
   std::unique_ptr<IfClauseCtx> cloneToUniquePointer() const;
 };
 
-struct IfExprCtx : public TopLevelExprCtx {
+struct IfExprCtx : public ExprCtx {
   std::unique_ptr<IfClauseCtx> ifClause;
   std::vector<std::unique_ptr<IfClauseCtx>> elseIfClauses;
   std::unique_ptr<ExprCtx> elseClause;
   explicit IfExprCtx(std::unique_ptr<IfClauseCtx> ifClause)
-      : TopLevelExprCtx(ifClause->location), ifClause(move(ifClause)) {}
+      : ExprCtx(ifClause->location), ifClause(move(ifClause)) {}
   void accept(ExprVisitor &visitor) const override;
   ExprCtx *clone() const override;
 };

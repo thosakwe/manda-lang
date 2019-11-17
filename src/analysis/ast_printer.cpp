@@ -38,7 +38,9 @@ void AstPrinter::visitIfClause(const IfClauseCtx &ctx) {
   ctx.condition->accept(*this);
   indent();
   print() << "then" << endl;
+  indent();
   ctx.body->accept(*this);
+  outdent();
   outdent();
   outdent();
 }
@@ -98,7 +100,7 @@ void AstPrinter::visitStringLiteral(const StringLiteralCtx &ctx) {
 }
 
 void AstPrinter::visitBoolLiteral(const BoolLiteralCtx &ctx) {
-  print() << "BoolLiteral(" << ctx.value << ")" << endl;
+  print() << "BoolLiteral(" << (ctx.value ? "true" : "false") << ")" << endl;
 }
 
 void AstPrinter::visitBlockExpr(const BlockExprCtx &ctx) {

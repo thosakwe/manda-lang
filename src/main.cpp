@@ -164,6 +164,11 @@ int runREPL(const VMOptions &options) {
         }
       }
 
+      if (options.developerMode) {
+        cout << "Top level expressions: "
+             << module->getTopLevelExpressions().size() << endl;
+      }
+
       for (auto &node : module->getTopLevelExpressions()) {
         UnifiedScope scope;
         scope.runtimeScope = module->getSymbolTable();
