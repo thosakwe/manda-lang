@@ -55,6 +55,42 @@ void TypeResolver::visitVarExpr(const VarExprCtx &ctx) {
 
 void TypeResolver::visitFnDeclExpr(const FnDeclExprCtx &ctx) {}
 
+void TypeResolver::visitIfExpr(const IfExprCtx &ctx) {
+  // Ensure that the value in the if is a boolean, etc.
+  auto ifClauseType = visitIfClause(*ctx.ifClause);
+  if (!ifClauseType) {
+    // Don't report an additional error here, as visitIfClause will do it.
+    lastType = nullptr;
+    return;
+  }
+
+  // Next, resolve all else-if clauses, and ensure there is a common denominator
+  // type.
+  // TODO: Reduce to common denominator type
+  for (auto &clause : ctx.elseIfClauses) {
+    auto clauseType = visitIfClause(*clause);
+    if (!clauseType) {
+      lastType = nullptr;
+      return;
+    }
+  }
+
+  // If there is no else, the if must return void.
+  if (!ctx.elseClause) {
+    if (!ifClauseType->isAssignableTo(interpreter.getCoreLibrary().voidType)) {
+      interpreter.reportError(ctx.location,
+                              "If there is no 'else' clause, then an 'if' "
+                              "expression must resolve to the void type.");
+      lastType = nullptr;
+    }
+  } else {
+    // TODO: Reduce to common denominator type
+  }
+
+  // Return the reduced type.
+  lastType = ifClauseType;
+}
+
 void TypeResolver::visitVoidLiteral(const VoidLiteralCtx &ctx) {
   lastType = interpreter.getCoreLibrary().voidType;
 }

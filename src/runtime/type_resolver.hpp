@@ -27,6 +27,13 @@ public:
   void visitCastExpr(const analysis::CastExprCtx &ctx) override;
   void visitCallExpr(const analysis::CallExprCtx &ctx) override;
   void visitParenExpr(const analysis::ParenExprCtx &ctx) override;
+  void visitIfExpr(const analysis::IfExprCtx &ctx) override;
+
+  /**
+   * Ensures that the expression in the clause is a boolean, and returns the resolution of the body.
+   * @return Returns the resolved body type, or nullptr if something went wrong.
+   */
+  std::shared_ptr<Type> visitIfClause(const analysis::IfClause& ctx);
 
 private:
   Interpreter &interpreter;
