@@ -133,6 +133,24 @@ void ObjectResolver::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
   }
 }
 
+void ObjectResolver::visitIfExpr(const IfExprCtx &ctx) {
+  if ((lastObject = visitIfClause(*ctx.ifClause))) {
+    return;
+  }
+
+  for (auto &clause : ctx.elseIfClauses) {
+    if ((lastObject = visitIfClause(*clause))) {
+      return;
+    }
+  }
+
+  if (!ctx.elseClause) {
+    lastObject = make_shared<Void>();
+  } else {
+    ctx.elseClause->accept(*this);
+  }
+}
+
 void ObjectResolver::visitVoidLiteral(const VoidLiteralCtx &ctx) {
   lastObject = make_shared<Void>();
 }

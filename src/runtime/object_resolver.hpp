@@ -25,6 +25,14 @@ public:
   void visitCastExpr(const analysis::CastExprCtx &ctx) override;
   void visitCallExpr(const analysis::CallExprCtx &ctx) override;
   void visitParenExpr(const analysis::ParenExprCtx &ctx) override;
+  void visitIfExpr(const analysis::IfExprCtx &ctx) override;
+
+  /**
+   * Tries to evaluate the value of a clause, in the given scope.
+   * @param ctx
+   * @return Returns nullptr if the condition was false.
+   */
+  std::shared_ptr<Object> visitIfClause(const analysis::IfClause& ctx);
 
 private:
   Interpreter &interpreter;
