@@ -105,6 +105,23 @@ struct FnDeclExprCtx : public TopLevelExprCtx {
   FnDeclExprCtx *clone() const override;
 };
 
+struct IfClause {
+  Location location;
+  std::unique_ptr<ExprCtx> condition, body;
+  IfClause *clone() const;
+  std::unique_ptr<IfClause> cloneToUniquePointer() const;
+};
+
+struct IfExprCtx : public TopLevelExprCtx {
+  std::unique_ptr<IfClause> ifClause;
+  std::vector<std::unique_ptr<IfClause>> elseIfClauses;
+  std::unique_ptr<ExprCtx> elseClause;
+  explicit IfExprCtx(std::unique_ptr<IfClause> ifClause)
+      : TopLevelExprCtx(ifClause->location), ifClause(move(ifClause)) {}
+  void accept(ExprVisitor &visitor) const override;
+  ExprCtx *clone() const override;
+};
+
 struct VoidLiteralCtx : public ExprCtx {
   // TODO: Set location
   void accept(ExprVisitor &visitor) const override;
@@ -256,6 +273,7 @@ class ExprVisitor {
 public:
   virtual void visitVarExpr(const VarExprCtx &ctx) = 0;
   virtual void visitFnDeclExpr(const FnDeclExprCtx &ctx) = 0;
+  virtual void visitIfExpr(const IfExprCtx &ctx) = 0;
   virtual void visitVoidLiteral(const VoidLiteralCtx &ctx) = 0;
   virtual void visitIdExpr(const IdExprCtx &ctx) = 0;
   virtual void visitNumberLiteral(const NumberLiteralCtx &ctx) = 0;

@@ -122,6 +122,28 @@ FnDeclExprCtx *FnDeclExprCtx::clone() const {
   return out;
 }
 
+IfClause *IfClause::clone() const {
+  return new IfClause{location, condition->cloneToUniquePointer(),
+                      body->cloneToUniquePointer()};
+}
+
+std::unique_ptr<IfClause> IfClause::cloneToUniquePointer() const {
+  return unique_ptr<IfClause>(clone());
+}
+
+void IfExprCtx::accept(ExprVisitor &visitor) const {
+  visitor.visitIfExpr(*this);
+}
+
+ExprCtx *IfExprCtx::clone() const {
+  auto *out = new IfExprCtx(ifClause->cloneToUniquePointer());
+  for (auto &clause : elseIfClauses) {
+    out->elseIfClauses.push_back(clause->cloneToUniquePointer());
+  }
+  out->elseClause = elseClause->cloneToUniquePointer();
+  return out;
+}
+
 CastExprCtx *CastExprCtx::clone() const {
   auto *out = new CastExprCtx;
   out->location = location;
