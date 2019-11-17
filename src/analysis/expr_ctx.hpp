@@ -105,18 +105,18 @@ struct FnDeclExprCtx : public TopLevelExprCtx {
   FnDeclExprCtx *clone() const override;
 };
 
-struct IfClause {
+struct IfClauseCtx {
   Location location;
   std::unique_ptr<ExprCtx> condition, body;
-  IfClause *clone() const;
-  std::unique_ptr<IfClause> cloneToUniquePointer() const;
+  IfClauseCtx *clone() const;
+  std::unique_ptr<IfClauseCtx> cloneToUniquePointer() const;
 };
 
 struct IfExprCtx : public TopLevelExprCtx {
-  std::unique_ptr<IfClause> ifClause;
-  std::vector<std::unique_ptr<IfClause>> elseIfClauses;
+  std::unique_ptr<IfClauseCtx> ifClause;
+  std::vector<std::unique_ptr<IfClauseCtx>> elseIfClauses;
   std::unique_ptr<ExprCtx> elseClause;
-  explicit IfExprCtx(std::unique_ptr<IfClause> ifClause)
+  explicit IfExprCtx(std::unique_ptr<IfClauseCtx> ifClause)
       : TopLevelExprCtx(ifClause->location), ifClause(move(ifClause)) {}
   void accept(ExprVisitor &visitor) const override;
   ExprCtx *clone() const override;

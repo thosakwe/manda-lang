@@ -32,7 +32,7 @@ void AstPrinter::visitVarExpr(const VarExprCtx &ctx) {
   outdent();
 }
 
-void AstPrinter::visitIfClause(const IfClause &ctx) {
+void AstPrinter::visitIfClause(const IfClauseCtx &ctx) {
   print() << "if" << endl;
   indent();
   ctx.condition->accept(*this);

@@ -55,7 +55,7 @@ void TypeResolver::visitVarExpr(const VarExprCtx &ctx) {
 
 void TypeResolver::visitFnDeclExpr(const FnDeclExprCtx &ctx) {}
 
-std::shared_ptr<Type> TypeResolver::visitIfClause(const IfClause &ctx) {
+std::shared_ptr<Type> TypeResolver::visitIfClause(const IfClauseCtx &ctx) {
   // Resolve the condition, and make sure it is a bool.
   // TODO: Support Any in bool expression
   ctx.body->accept(*this);

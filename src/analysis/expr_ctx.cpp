@@ -122,13 +122,13 @@ FnDeclExprCtx *FnDeclExprCtx::clone() const {
   return out;
 }
 
-IfClause *IfClause::clone() const {
-  return new IfClause{location, condition->cloneToUniquePointer(),
+IfClauseCtx *IfClauseCtx::clone() const {
+  return new IfClauseCtx{location, condition->cloneToUniquePointer(),
                       body->cloneToUniquePointer()};
 }
 
-std::unique_ptr<IfClause> IfClause::cloneToUniquePointer() const {
-  return unique_ptr<IfClause>(clone());
+std::unique_ptr<IfClauseCtx> IfClauseCtx::cloneToUniquePointer() const {
+  return unique_ptr<IfClauseCtx>(clone());
 }
 
 void IfExprCtx::accept(ExprVisitor &visitor) const {

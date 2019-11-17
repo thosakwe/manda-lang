@@ -32,7 +32,7 @@ public:
    * @param ctx
    * @return Returns nullptr if the condition was false.
    */
-  std::shared_ptr<Object> visitIfClause(const analysis::IfClause& ctx);
+  std::shared_ptr<Object> visitIfClause(const analysis::IfClauseCtx & ctx);
 
 private:
   Interpreter &interpreter;

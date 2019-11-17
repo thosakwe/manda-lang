@@ -33,7 +33,7 @@ public:
    * Ensures that the expression in the clause is a boolean, and returns the resolution of the body.
    * @return Returns the resolved body type, or nullptr if something went wrong.
    */
-  std::shared_ptr<Type> visitIfClause(const analysis::IfClause& ctx);
+  std::shared_ptr<Type> visitIfClause(const analysis::IfClauseCtx & ctx);
 
 private:
   Interpreter &interpreter;

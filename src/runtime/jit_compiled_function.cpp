@@ -247,7 +247,7 @@ void JitCompiledFunction::visitBoolLiteral(const BoolLiteralCtx &ctx) {
   }
 }
 
-void JitCompiledFunction::visitIfClause(const IfClause &ctx,
+void JitCompiledFunction::visitIfClause(const IfClauseCtx &ctx,
                                         jit_value &output) {
   // Evaluate the condition.
   // TODO: What if the return is *not* a jit_bool? Such a case would require
