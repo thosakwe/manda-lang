@@ -1,17 +1,19 @@
-pub type OS = sum
-  Windows;
-  Mac;
-  Linux(string);
-  Other({name: string})
+type OS = sum {
+  Windows
+  Mac
+  Linux(String)
+  Other({name: String})
+}
 
 fn main {
   var ubuntu = Linux("Ubuntu")
   printOS(ubuntu)
 }
 
-pub fn printOS (os: OS) ->
-  match os with
-    Windows -> print("Windows");
-    Mac -> print("Mac");
-    Linux(variant) -> print("Linux - " + variant);
+fn printOS (os: OS) ->
+  match os with {
+    Windows -> print("Windows")
+    Mac -> print("Mac")
+    Linux(variant) -> print("Linux - " + variant)
     Other({name}) -> print(name)
+  }

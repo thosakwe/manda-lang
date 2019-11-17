@@ -1,10 +1,19 @@
-class Greet(message) =
-  let str () =
-    "Hello, " ^ message ^ " world!"
+class Greet {
+  new(val message: String)
 
-class SayTwice(message) : Greet(message) 
-  let str () =
-    super.str() ^ super.str()
+  fn str() ->
+    "Hello, " + message + "world"
+}
+
+class SayTwice : Greet {
+  new(message) : super(message)
+
+  fn str() ->
+    super.str() + super.str()
+}
   
-let gt = SayTwice("new")
-print(gt.str())
+fn main {
+  var gt = SayTwice("new")
+  print(gt.str())
+}
+
