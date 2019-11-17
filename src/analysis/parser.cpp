@@ -324,7 +324,7 @@ unique_ptr<IfClauseCtx> Parser::parseIfClause(const Token &token) {
   if (next(Token::THEN)) {
     lastLocation = token.location;
   }
-  auto body = parseExprDecl();
+  auto body = parseExpr();
   if (!body) {
     emitError(lastLocation, "Missing body for 'if' expression.");
     return nullptr;
@@ -341,7 +341,7 @@ unique_ptr<IfExprCtx> Parser::parseIfExpr(const Token &token) {
   }
 
   auto lastLocation = ifClause->location;
-  auto ptr = make_unique<IfExprCtx>(ifClause);
+  auto ptr = make_unique<IfExprCtx>(move(ifClause));
   while (next(Token::ELSE)) {
     lastLocation = current.location;
     if (next(Token::IF)) {
@@ -358,7 +358,7 @@ unique_ptr<IfExprCtx> Parser::parseIfExpr(const Token &token) {
         emitError(lastLocation, "Missing expression after 'else'.");
         return nullptr;
       } else {
-        ptr->elseClause = elseClause;
+        ptr->elseClause = move(elseClause);
       }
     }
   }
