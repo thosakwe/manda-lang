@@ -55,6 +55,27 @@ void TypeResolver::visitVarExpr(const VarExprCtx &ctx) {
 
 void TypeResolver::visitFnDeclExpr(const FnDeclExprCtx &ctx) {}
 
+std::shared_ptr<Type> TypeResolver::visitIfClause(const IfClause &ctx) {
+  // Resolve the condition, and make sure it is a bool.
+  // TODO: Support Any in bool expression
+  ctx.body->accept(*this);
+  if (!lastType) {
+    interpreter.reportError(
+        ctx.body->location,
+        "Could not determine the type of the condition for this if clause.");
+    return nullptr;
+  } else if (!lastType->isAssignableTo(interpreter.getCoreLibrary().boolType)) {
+    ostringstream oss;
+    oss << "This expression produces ";
+    oss << lastType->getName();
+    oss << ", but if conditions can only produce bool.";
+    interpreter.reportError(ctx.body->location, oss.str();)
+  }
+
+  ctx.body->accept(*this);
+  return lastType;
+}
+
 void TypeResolver::visitIfExpr(const IfExprCtx &ctx) {
   // Ensure that the value in the if is a boolean, etc.
   auto ifClauseType = visitIfClause(*ctx.ifClause);
