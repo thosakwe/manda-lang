@@ -97,6 +97,17 @@ TypeResolver::findCommonAncestor(const shared_ptr<Type> &left,
   return interpreter.getCoreLibrary().anyType;
 }
 
+vector<shared_ptr<Type>>
+TypeResolver::findPathToRoot(const shared_ptr<Type> &type) {
+  vector<shared_ptr<Type>> out;
+  auto t = type;
+  while (t) {
+    out.push_back(t);
+    t = t->getParent();
+  }
+  return out;
+}
+
 void TypeResolver::visitIfExpr(const IfExprCtx &ctx) {
   // Ensure that the value in the if is a boolean, etc.
   auto ifClauseType = visitIfClause(*ctx.ifClause);
