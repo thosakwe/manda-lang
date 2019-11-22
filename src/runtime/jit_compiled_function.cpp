@@ -248,7 +248,8 @@ void JitCompiledFunction::visitBoolLiteral(const BoolLiteralCtx &ctx) {
 }
 
 void JitCompiledFunction::visitIfClause(const IfClauseCtx &ctx,
-                                        jit_value &output) {
+                                        jit_value &output,
+                                        jit_label &endLabel) {
   // Evaluate the condition.
   // TODO: What if the return is *not* a jit_bool? Such a case would require
   //  unboxing.
@@ -260,20 +261,23 @@ void JitCompiledFunction::visitIfClause(const IfClauseCtx &ctx,
   }
 
   // Create two labels: one for if the condition is true, and one if it's false.
-  jit_label ifTrue, ifFalse;
+  jit_label start, ifTrue, ifFalse;
+  insn_label(start);
   insn_branch_if(*lastValue, ifTrue);
   insn_branch(ifFalse);
 
   // Compile the `true` case, then `false.
   insn_label(ifTrue);
   ctx.body->accept(*this);
+
   if (!lastValue) {
     interpreter.reportError(ctx.body->location,
                             "Compilation of this if clause's body failed.");
     return;
   } else {
     jit_insn_store(raw(), output.raw(), lastValue->raw());
-    lastValue = insn_load(output);
+    lastValue = output;
+    insn_branch(endLabel);
   }
 
   insn_label(ifFalse);
@@ -293,10 +297,12 @@ void JitCompiledFunction::visitIfExpr(const IfExprCtx &ctx) {
     return;
   }
 
+  // We also need an "end" label for cases to jump to.
+  jit_label end;
   auto output = new_value(outputType->toJitType());
-  visitIfClause(*ctx.ifClause, output);
+  visitIfClause(*ctx.ifClause, output, end);
   for (auto &clause : ctx.elseIfClauses) {
-    visitIfClause(*clause, output);
+    visitIfClause(*clause, output, end);
   }
   if (ctx.elseClause) {
     ctx.elseClause->accept(*this);
@@ -306,10 +312,12 @@ void JitCompiledFunction::visitIfExpr(const IfExprCtx &ctx) {
       return;
     } else {
       jit_insn_store(raw(), output.raw(), lastValue->raw());
+      insn_branch(end);
     }
   }
 
-  // Return the intermediate variable.
+  // Return the intermediate variable at the end.
+  insn_label(end);
   lastValue = insn_load(output);
 }
 

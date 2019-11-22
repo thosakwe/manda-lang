@@ -36,7 +36,8 @@ public:
   void visitParenExpr(const analysis::ParenExprCtx &ctx) override;
   void visitIfExpr(const analysis::IfExprCtx &ctx) override;
 
-  void visitIfClause(const analysis::IfClauseCtx &ctx, jit_value &output);
+  void visitIfClause(const analysis::IfClauseCtx &ctx, jit_value &output,
+                     jit_label &endLabel);
 
 protected:
   void build() override;
