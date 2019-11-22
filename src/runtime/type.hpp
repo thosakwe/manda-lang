@@ -10,6 +10,7 @@ class Interpreter;
 class Object;
 class Type {
 public:
+  virtual const std::shared_ptr<Type> &getParent() const;
   virtual std::string getName() const = 0;
   virtual jit_type_t toJitType() const = 0;
   virtual bool isExactly(const Type &other);

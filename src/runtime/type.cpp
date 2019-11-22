@@ -42,6 +42,10 @@ jit_value Type::invokeStaticBoxFunction(const char *name, void *funcPtr,
   return fn.insn_call_native(name, funcPtr, sig, args, 1, 0);
 }
 
+const std::shared_ptr<Type> &Type::getParent() const {
+  return nullptr;
+}
+
 //
 // jit_value Type::boxRawValue(JitCompiledFunction &fn,
 //                            const jit_value &rawValue) {
