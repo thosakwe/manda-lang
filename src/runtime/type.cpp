@@ -42,9 +42,7 @@ jit_value Type::invokeStaticBoxFunction(const char *name, void *funcPtr,
   return fn.insn_call_native(name, funcPtr, sig, args, 1, 0);
 }
 
-const std::shared_ptr<Type> &Type::getParent() const {
-  return nullptr;
-}
+std::shared_ptr<Type> Type::getParent() const { return nullptr; }
 
 unsigned long Type::getLevel() const { return 0; }
 

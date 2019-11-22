@@ -10,7 +10,7 @@ class Interpreter;
 class Object;
 class Type {
 public:
-  [[nodiscard]] virtual const std::shared_ptr<Type> &getParent() const;
+  [[nodiscard]] virtual std::shared_ptr<Type> getParent() const;
   [[nodiscard]] virtual unsigned long getLevel() const;
   virtual std::string getName() const = 0;
   virtual jit_type_t toJitType() const = 0;
