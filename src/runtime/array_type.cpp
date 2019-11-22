@@ -36,3 +36,9 @@ shared_ptr<Object> ArrayType::deserialize(Interpreter &interpreter, void *ptr) {
   }
   return out;
 }
+
+jit_value ArrayType::boxRawValue(JitCompiledFunction &fn,
+                                 const jit_value &rawValue) {
+  // TODO: Box value!!!
+  return jit_value();
+}
