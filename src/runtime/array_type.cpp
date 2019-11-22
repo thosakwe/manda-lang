@@ -20,3 +20,7 @@ jit_type_t ArrayType::toJitType() const {
   fields[1] = jit_type_create_pointer(innerType->toJitType(), 0);
   return jit_type_create_struct(fields, 2, 0);
 }
+
+shared_ptr<Object> ArrayType::deserialize(Interpreter &interpreter, void *ptr) {
+
+}
