@@ -119,12 +119,13 @@ void TypeResolver::visitIfExpr(const IfExprCtx &ctx) {
 
   // Next, resolve all else-if clauses, and ensure there is a common denominator
   // type.
-  // TODO: Reduce to common denominator type
   for (auto &clause : ctx.elseIfClauses) {
     auto clauseType = visitIfClause(*clause);
     if (!clauseType) {
       lastType = nullptr;
       return;
+    } else {
+      lastType = findCommonAncestor(lastType, clauseType);
     }
   }
 
@@ -135,9 +136,23 @@ void TypeResolver::visitIfExpr(const IfExprCtx &ctx) {
                               "If there is no 'else' clause, then an 'if' "
                               "expression must resolve to the void type.");
       lastType = nullptr;
+      return;
     }
   } else {
-    // TODO: Reduce to common denominator type
+    // Reduce to common denominator type, once more.
+    TypeResolver elseClauseResolver(interpreter,
+                                    getCurrentScope().createChild());
+    ctx.elseClause->accept(elseClauseResolver);
+    if (!elseClauseResolver.getLastType()) {
+      interpreter.reportError(
+          ctx.elseClause->location,
+          "Could not resolve the return type of the 'else' clause, so "
+          "resolution of the entire 'if' expression failed.");
+      lastType = nullptr;
+      return;
+    } else {
+      lastType = findCommonAncestor(lastType, elseClauseResolver.getLastType());
+    }
   }
 
   // Return the reduced type.
