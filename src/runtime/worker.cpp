@@ -1,4 +1,5 @@
 #include "worker.hpp"
+#include "array.hpp"
 #include "function.hpp"
 #include "interpreter.hpp"
 #include "module_compiler.hpp"
@@ -44,12 +45,13 @@ void Worker::executeProgram(shared_ptr<analysis::CompilationUnitCtx> &ctx) {
     } else {
       // Pass arguments to main, regardless of whether it requests them.
       shared_ptr<Object> thisObject;
-      // Forward command line args
-      // TODO: This should be a list
+      // Forward command line args. Array<String>
       vector<shared_ptr<Object>> args;
-      //      for (auto &s : options.rest) {
-      //        args.push_back(make_shared<String>(s));
-      //      }
+      auto argList = make_shared<Array>(interpreter->getCoreLibrary().stringType);
+      args.push_back(argList);
+      for (auto &s : options.rest) {
+        argList->getItems().push_back(make_shared<String>(s));
+      }
 
       // Create a new task, that will eventually be started.
       auto task =
