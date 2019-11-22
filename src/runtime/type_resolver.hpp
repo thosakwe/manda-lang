@@ -30,10 +30,18 @@ public:
   void visitIfExpr(const analysis::IfExprCtx &ctx) override;
 
   /**
-   * Ensures that the expression in the clause is a boolean, and returns the resolution of the body.
+   * Ensures that the expression in the clause is a boolean, and returns the
+   * resolution of the body.
    * @return Returns the resolved body type, or nullptr if something went wrong.
    */
-  std::shared_ptr<Type> visitIfClause(const analysis::IfClauseCtx & ctx);
+  std::shared_ptr<Type> visitIfClause(const analysis::IfClauseCtx &ctx);
+
+  /**
+   * Attempts to find the common ancestor of the two given types.
+   * @return Returns the common ancestor, or Any.
+   */
+  std::shared_ptr<Type> findCommonAncestor(std::shared_ptr<Type> left,
+                                           std::shared_ptr<Type> right);
 
 private:
   Interpreter &interpreter;

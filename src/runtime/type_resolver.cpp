@@ -76,6 +76,14 @@ std::shared_ptr<Type> TypeResolver::visitIfClause(const IfClauseCtx &ctx) {
   return lastType;
 }
 
+std::shared_ptr<Type> TypeResolver::findCommonAncestor(shared_ptr<Type> left,
+                                                       shared_ptr<Type> right) {
+  while (left && right) {
+
+  }
+  return interpreter.getCoreLibrary().anyType;
+}
+
 void TypeResolver::visitIfExpr(const IfExprCtx &ctx) {
   // Ensure that the value in the if is a boolean, etc.
   auto ifClauseType = visitIfClause(*ctx.ifClause);
