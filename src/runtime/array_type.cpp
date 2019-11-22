@@ -1,4 +1,5 @@
 #include "array_type.hpp"
+#include "array.hpp"
 
 using namespace manda::runtime;
 using namespace std;
@@ -22,5 +23,16 @@ jit_type_t ArrayType::toJitType() const {
 }
 
 shared_ptr<Object> ArrayType::deserialize(Interpreter &interpreter, void *ptr) {
-
+  // TODO: This is probably pretty unsafe, lmao
+  auto *p = (uint8_t*) ptr;
+  auto length = *((uint64_t *)p);
+  auto itemSize = jit_type_get_size(innerType->toJitType());
+  auto out = make_shared<Array>(innerType);
+  p += sizeof(length);
+  for (uint64_t i = 0; i < length; i++) {
+    auto object = innerType->deserialize(interpreter, p);
+    out->getItems().push_back(object);
+    p += itemSize;
+  }
+  return out;
 }
