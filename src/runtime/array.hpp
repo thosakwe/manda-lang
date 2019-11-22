@@ -10,6 +10,8 @@ public:
   std::vector<std::shared_ptr<Object>> &getItems();
   [[nodiscard]] const std::shared_ptr<Type> &getInnerType() const;
   [[nodiscard]] const std::vector<std::shared_ptr<Object>> &getItems() const;
+  void print(std::ostream &out, bool ansiSupported) const override;
+  std::shared_ptr<Type> getType(Interpreter &interpreter) const override;
 
 private:
   std::shared_ptr<Type> innerType;
