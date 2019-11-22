@@ -6,6 +6,7 @@
 #include "symbol_table.hpp"
 #include "type.hpp"
 #include <memory>
+#include <vector>
 
 namespace manda::runtime {
 class TypeResolver : public manda::analysis::TypeVisitor,
@@ -40,8 +41,15 @@ public:
    * Attempts to find the common ancestor of the two given types.
    * @return Returns the common ancestor, or Any.
    */
-  std::shared_ptr<Type> findCommonAncestor(std::shared_ptr<Type> left,
-                                           std::shared_ptr<Type> right);
+  std::shared_ptr<Type> findCommonAncestor(const std::shared_ptr<Type> &left,
+                                           const std::shared_ptr<Type> &right);
+
+  /**
+   * Computes the type hierarchy, up to a given type.
+   * @param type
+   * @return Returns a vector containing the given type and all of its parents, in order. The last will be the root type.
+   */
+  std::vector<std::shared_ptr<Type>> findPathToRoot(const std::shared_ptr<Type> &type);
 
 private:
   Interpreter &interpreter;

@@ -76,10 +76,23 @@ std::shared_ptr<Type> TypeResolver::visitIfClause(const IfClauseCtx &ctx) {
   return lastType;
 }
 
-std::shared_ptr<Type> TypeResolver::findCommonAncestor(shared_ptr<Type> left,
-                                                       shared_ptr<Type> right) {
-  while (left && right) {
-
+std::shared_ptr<Type>
+TypeResolver::findCommonAncestor(const shared_ptr<Type> &left,
+                                 const shared_ptr<Type> &right) {
+  // Types are aware of their level within the type tree, so because these can
+  // be compared... This becomes an application of the classic "find the
+  // intersection of two arrays problem", and therefore is pretty easy to solve.
+  auto l = findPathToRoot(left), r = findPathToRoot(right);
+  unsigned long i = 0, j = 0;
+  while (i < l.size() && j < r.size()) {
+    auto &leftType = l[i], &rightType = r[j];
+    if (leftType->isExactly(*rightType)) {
+      return leftType;
+    } else if (leftType->getLevel() < rightType->getLevel()) {
+      i++;
+    } else {
+      j++;
+    }
   }
   return interpreter.getCoreLibrary().anyType;
 }

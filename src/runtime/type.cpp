@@ -46,6 +46,8 @@ const std::shared_ptr<Type> &Type::getParent() const {
   return nullptr;
 }
 
+unsigned long Type::getLevel() const { return 0; }
+
 //
 // jit_value Type::boxRawValue(JitCompiledFunction &fn,
 //                            const jit_value &rawValue) {
