@@ -1,6 +1,7 @@
-type compilation_unit_ctx = (directive list)
-and comment = Lexing.position * string
-and node_info = (comment list) * Lexing.position
+type compilation_unit = (directive list) * (decl list)
+and span = Lexing.position * Lexing.position
+and comment = span * string
+and node_info = (comment list) * span
 and directive =
   | ImportAll of node_info * string
   | ImportSome of node_info * string * (string list)
@@ -14,7 +15,7 @@ and expr =
   | ConstFloat of node_info * float
   | ConstBool of node_info * bool
   | ConstChar of node_info * char
-  | BinOp of expr * (node_info * string) * expr
+  (* | BinOp of expr * (node_info * string) * expr *)
 and string_part =
   | Text of node_info * string
 
@@ -23,7 +24,7 @@ let node_info_of_expr = function
   | ConstFloat (info, _) -> info
   | ConstBool (info, _) -> info
   | ConstChar (info, _) -> info
-  | BinOp (_, (info, _), _) -> info
+  (* | BinOp (_, (info, _), _) -> info *)
 
 let position_of_expr exp = 
   let (_, pos) = node_info_of_expr exp in
