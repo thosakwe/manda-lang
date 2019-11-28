@@ -23,7 +23,7 @@ jit_type_t ArrayType::toJitType() const {
 }
 
 shared_ptr<Object> ArrayType::deserialize(Interpreter &interpreter, void *ptr) {
-  // TODO: This is probably pretty unsafe, lmao
+  // This is probably pretty unsafe, lmao
   auto *p = (uint8_t*) ptr;
   auto length = *((uint64_t *)p);
   auto itemSize = jit_type_get_size(innerType->toJitType());

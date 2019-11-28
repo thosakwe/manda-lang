@@ -28,19 +28,13 @@ shared_ptr<Object>
 AstFunction::invoke(Interpreter &interpreter, const Location &location,
                     shared_ptr<Object> &thisObject,
                     const vector<shared_ptr<Object>> &args) const {
-  // TODO: Use JIT here only
+  // Invoke the JIT function.
   JitCompiledFunction jitFunction(interpreter, *this);
-  // TODO: Apply the function properly
+  // TODO: Validate parameters, and inject parameters into scope.
+  //  This is still to-do, as it will require writing parameters directly
+  // into memory.
   vector<void *> jitArgs;
   return returnType->applyJitFunction(interpreter, jitArgs, jitFunction);
-
-  // TODO: Invoke the JIT function.
-  // TODO: Validate parameters
-  // TODO: Inject parameters into scope
-  auto childScope = scope.createChild();
-  ObjectResolver resolver(interpreter, childScope);
-  node->body->accept(resolver);
-  return resolver.getLastObject();
 }
 
 jit_value AstFunction::acceptForJitCall(JitCompiledFunction &fn,
