@@ -1,6 +1,6 @@
 type compilation_unit_ctx = (directive list)
-and comments = string list
-and node_info = comments * Lexing.position
+and comment = Lexing.position * string
+and node_info = (comment list) * Lexing.position
 and directive =
   | ImportAll of node_info * string
   | ImportSome of node_info * string * (string list)
