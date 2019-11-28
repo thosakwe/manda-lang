@@ -2,3 +2,4 @@
  (name manda))
 (menhir
   (modules parser))
+(ocamllex lexer)

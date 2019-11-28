@@ -28,7 +28,7 @@ decl:
     EQUALS;
     value = typ
     { 
-      Ast.TypeDecl  ((comments, $loc), name, value)
+      Ast.TypeDecl ((comments, $loc), name, value)
     }
 
 expr:
