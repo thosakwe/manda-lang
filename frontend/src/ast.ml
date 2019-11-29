@@ -1,31 +1,41 @@
 type compilation_unit = (directive list) * (decl list)
 and span = Lexing.position * Lexing.position
 and comment = span * string
-and node_info = (comment list) * span
 and directive =
-  | ImportAll of node_info * string
-  | ImportSome of node_info * string * (string list)
+  | ImportAll of span * string
+  | ImportSome of span * string * (string list)
 and decl =
-  | TypeDecl of node_info * string * typ
+  | TypeDecl of (comment list) * span * string * typ
   | ExprDecl of expr
 and typ =
-  | TypeRef of node_info * string
+  | TypeRef of span * string
+  | OptionalType of span * typ
 and expr =
-  | ConstInt of node_info * int
-  | ConstFloat of node_info * float
-  | ConstBool of node_info * bool
-  | ConstChar of node_info * char
-  (* | BinOp of expr * (node_info * string) * expr *)
+  | ConstInt of span * int
+  | ConstFloat of span * float
+  | ConstBool of span * bool
+  | ConstChar of span * char
+  | Block of span * (expr list)
+  | BinOp of span * expr * string * expr
+  | Call of span * expr * (expr list)
+  | Fn of span * (comment list) * string * (param list) * (expr option)
+  | If of span * if_clause * (if_clause list) * (expr option)
+  | Var of span * bool * string * expr
+  | NullCheck of span * expr
+and if_clause = span * expr * expr
+and param = span * string * (typ option)
 and string_part =
-  | Text of node_info * string
+  | Text of span * string
 
-let node_info_of_expr = function
+let span_of_expr = function
   | ConstInt (info, _) -> info
   | ConstFloat (info, _) -> info
   | ConstBool (info, _) -> info
   | ConstChar (info, _) -> info
-  (* | BinOp (_, (info, _), _) -> info *)
-
-let position_of_expr exp = 
-  let (_, pos) = node_info_of_expr exp in
-  pos
+  | Block (info, _) -> info
+  | BinOp (info, _, _, _) -> info
+  | Call (span, _, _) -> span
+  | Fn (span, _, _, _, _) -> span
+  | If (span, _, _, _) -> span
+  | Var (span, _,  _, _) -> span
+  | NullCheck (span, _) -> span

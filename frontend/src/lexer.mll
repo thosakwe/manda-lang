@@ -29,6 +29,14 @@ let comment = "//" [^'\n']+ '\n'
 rule read = parse
   | white    { read lexbuf }
   | newline  { next_line lexbuf; read lexbuf }
+  | "->" { ARROW }
+  | ',' { COMMA }
+  | '[' { LBRACKET }
+  | ']' { RBRACKET }
+  | '{' { LCURLY }
+  | '}' { RCURLY }
+  | '(' { LPAREN }
+  | ')' { RPAREN }
   | decimal { DECIMAL (int_of_string (Lexing.lexeme lexbuf)) }
   | float { FLOAT (float_of_string (Lexing.lexeme lexbuf)) }
   | hex { HEX (int_of_string (Lexing.lexeme lexbuf)) }
