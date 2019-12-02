@@ -1,0 +1,43 @@
+message QualifiedName {
+  required string moduleName = 1;
+  required string localName = 2;
+}
+
+message MandaIntType {
+  required bool isSigned = 1;
+  required int32 size = 2;
+}
+
+message MandaFloatType {
+  required int32 size = 1;
+}
+
+message MandaType {
+  oneof value {
+    QualifiedName classRef = 1;
+    MandaIntType intType = 2;
+    MandaFloatType floatType = 3;
+  }
+}
+
+message MandaInstruction {
+  message ConstIntParams {
+    required MandaType type = 1;
+    required int64 value = 2;
+  }
+
+  oneof value {
+    required ConstIntParams constInt = 1;
+  }
+}
+
+message MandaFunction {
+  required string name = 1;
+  required MandaType returns = 2;
+  repeated MandaType params = 3;
+  repeated MandaType locals = 4;
+}
+
+message MandaModule {
+
+}
