@@ -20,7 +20,8 @@ and expr =
   | Call of span * expr * (expr list)
   | Fn of span * (comment list) * string * (param list) * (expr option)
   | If of span * if_clause * (if_clause list) * (expr option)
-  | Var of span * bool * string * expr
+  | Var of span * bool * string * expr * expr
+  (* | Let of span * string * expr * expr *)
   | NullCheck of span * expr
 and if_clause = span * expr * expr
 and param = span * string * (typ option)
@@ -37,5 +38,5 @@ let span_of_expr = function
   | Call (span, _, _) -> span
   | Fn (span, _, _, _, _) -> span
   | If (span, _, _, _) -> span
-  | Var (span, _,  _, _) -> span
+  | Var (span, _,  _, _, _) -> span
   | NullCheck (span, _) -> span
