@@ -6,6 +6,7 @@ fn fib (n) {
 }
 
 fn main {
-  async asyncFibTask -> fib(13)
-  print(await asyncFibTask)
+  var asyncFibTask -> do fib(13)
+  // TODO: Async/await?
+  then(asyncFibTask, print)
 }
