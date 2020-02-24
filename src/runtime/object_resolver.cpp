@@ -1,6 +1,8 @@
 #include "object_resolver.hpp"
 #include "any_type.hpp"
 #include "ast_function.hpp"
+#include "array.hpp"
+#include "array_type.hpp"
 #include "bool.hpp"
 #include "char.hpp"
 #include "function.hpp"
@@ -246,6 +248,31 @@ void ObjectResolver::visitTupleExpr(const TupleExprCtx &ctx) {
     }
   }
   lastObject = tup;
+}
+
+void ObjectResolver::visitListExpr(const ListExprCtx &ctx) {
+  // Use a type resolver to get the type.
+  TypeResolver typeResolver(interpreter, getCurrentScope());
+  ctx.accept(typeResolver);
+
+  shared_ptr<ArrayType> arrayType = static_pointer_cast<ArrayType>(typeResolver.getLastType());
+  auto obj = make_shared<Array>(arrayType->getInnerType());
+  for (unsigned long i = 0; i < ctx.items.size(); i++) {
+    auto &ptr = ctx.items[i];
+    lastObject = nullptr;
+    ptr->accept(*this);
+    if (!lastObject) {
+      ostringstream oss;
+      oss << "Failed to resolve item " << i;
+      oss << " in array.";
+      interpreter.reportError(ptr->location, oss.str());
+      lastObject = nullptr;
+      return;
+    } else {
+      obj->getItems().push_back(lastObject);
+    }
+  }
+  lastObject = obj;
 }
 
 void ObjectResolver::visitCastExpr(const CastExprCtx &ctx) {}

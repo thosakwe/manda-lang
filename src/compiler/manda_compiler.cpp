@@ -63,6 +63,8 @@ void MandaCompiler::visitCompilationUnit(const CompilationUnitCtx &ctx) {
 
 void MandaCompiler::visitVarExpr(const VarExprCtx &ctx) {}
 
+void MandaCompiler::visitIfExpr(const IfExprCtx &ctx) {}
+
 void MandaCompiler::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
   // TODO: This is only for lambdas
 }
@@ -84,6 +86,8 @@ void MandaCompiler::visitBoolLiteral(const BoolLiteralCtx &ctx) {}
 void MandaCompiler::visitBlockExpr(const BlockExprCtx &ctx) {}
 
 void MandaCompiler::visitTupleExpr(const TupleExprCtx &ctx) {}
+
+void MandaCompiler::visitListExpr(const ListExprCtx &ctx) {}
 
 void MandaCompiler::visitCastExpr(const CastExprCtx &ctx) {}
 

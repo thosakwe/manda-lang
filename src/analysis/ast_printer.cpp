@@ -121,6 +121,16 @@ void AstPrinter::visitTupleExpr(const TupleExprCtx &ctx) {
   outdent();
 }
 
+void AstPrinter::visitListExpr(const ListExprCtx &ctx) {
+  print() << "ListExpr [" << endl;
+  indent();
+  for (auto &node : ctx.items) {
+    node->accept(*this);
+  }
+  outdent();
+  print() << "]" << endl;
+}
+
 void AstPrinter::visitCastExpr(const CastExprCtx &ctx) {
   // TODO: Print
 }

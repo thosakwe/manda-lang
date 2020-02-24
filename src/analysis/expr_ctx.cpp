@@ -65,6 +65,10 @@ void TupleExprCtx::accept(ExprVisitor &visitor) const {
   visitor.visitTupleExpr(*this);
 }
 
+void ListExprCtx::accept(ExprVisitor &visitor) const {
+  visitor.visitListExpr(*this);
+}
+
 void BoolLiteralCtx::accept(ExprVisitor &visitor) const {
   visitor.visitBoolLiteral(*this);
 }
@@ -219,6 +223,14 @@ VoidLiteralCtx *VoidLiteralCtx::clone() const {
 
 TupleExprCtx *TupleExprCtx::clone() const {
   auto *out = new TupleExprCtx(location);
+  for (auto &ptr : items) {
+    out->items.push_back(ptr->cloneToUniquePointer());
+  }
+  return out;
+}
+
+ListExprCtx *ListExprCtx::clone() const {
+  auto *out = new ListExprCtx(location);
   for (auto &ptr : items) {
     out->items.push_back(ptr->cloneToUniquePointer());
   }

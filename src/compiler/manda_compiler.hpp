@@ -24,6 +24,7 @@ public:
   void visitExprDecl(const analysis::ExprDeclCtx &ctx) override;
   void visitTypeDecl(const analysis::TypeDeclCtx &ctx) override;
   void visitCompilationUnit(const analysis::CompilationUnitCtx &ctx) override;
+  void visitIfExpr(const analysis::IfExprCtx &ctx) override;
   void visitVarExpr(const analysis::VarExprCtx &ctx) override;
   void visitFnDeclExpr(const analysis::FnDeclExprCtx &ctx) override;
   void visitVoidLiteral(const analysis::VoidLiteralCtx &ctx) override;
@@ -33,6 +34,7 @@ public:
   void visitBoolLiteral(const analysis::BoolLiteralCtx &ctx) override;
   void visitBlockExpr(const analysis::BlockExprCtx &ctx) override;
   void visitTupleExpr(const analysis::TupleExprCtx &ctx) override;
+  void visitListExpr(const analysis::ListExprCtx &ctx) override;
   void visitCastExpr(const analysis::CastExprCtx &ctx) override;
   void visitCallExpr(const analysis::CallExprCtx &ctx) override;
   void visitParenExpr(const analysis::ParenExprCtx &ctx) override;

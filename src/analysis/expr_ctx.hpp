@@ -242,6 +242,13 @@ struct TupleExprCtx : public ExprCtx {
   std::vector<std::unique_ptr<ExprCtx>> items;
 };
 
+struct ListExprCtx : public ExprCtx {
+  ListExprCtx(const Location &location) : ExprCtx(location) {}
+  ListExprCtx *clone() const override;
+  void accept(ExprVisitor &visitor) const override;
+  std::vector<std::unique_ptr<ExprCtx>> items;
+};
+
 struct CastExprCtx : public ExprCtx {
   CastExprCtx() = default;
   CastExprCtx *clone() const override;
@@ -281,6 +288,7 @@ public:
   virtual void visitBoolLiteral(const BoolLiteralCtx &ctx) = 0;
   virtual void visitBlockExpr(const BlockExprCtx &ctx) = 0;
   virtual void visitTupleExpr(const TupleExprCtx &ctx) = 0;
+  virtual void visitListExpr(const ListExprCtx &ctx) = 0;
   virtual void visitCastExpr(const CastExprCtx &ctx) = 0;
   virtual void visitCallExpr(const CallExprCtx &ctx) = 0;
   virtual void visitParenExpr(const ParenExprCtx &ctx) = 0;

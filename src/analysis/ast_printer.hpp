@@ -24,6 +24,7 @@ public:
   void visitBoolLiteral(const BoolLiteralCtx &ctx) override;
   void visitBlockExpr(const BlockExprCtx &ctx) override;
   void visitTupleExpr(const TupleExprCtx &ctx) override;
+  void visitListExpr(const ListExprCtx &ctx) override;
   void visitCastExpr(const CastExprCtx &ctx) override;
   void visitCallExpr(const CallExprCtx &ctx) override;
   void visitParenExpr(const ParenExprCtx &ctx) override;

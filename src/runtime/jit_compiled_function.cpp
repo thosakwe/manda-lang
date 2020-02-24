@@ -422,6 +422,13 @@ void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
   }
 }
 
+void JitCompiledFunction::visitListExpr(const ListExprCtx &ctx) {
+  // Compile Array<T> to: { uint64 size; T* data; }
+  if (coerceToAny.top()) {
+    // TODO: Coerce to any
+  }
+}
+
 void JitCompiledFunction::visitCastExpr(const CastExprCtx &ctx) {}
 
 void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {

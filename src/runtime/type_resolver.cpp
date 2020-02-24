@@ -1,4 +1,6 @@
 #include "type_resolver.hpp"
+#include "array.hpp"
+#include "array_type.hpp"
 #include "function.hpp"
 #include "tuple.hpp"
 #include <iostream>
@@ -248,6 +250,31 @@ void TypeResolver::visitTupleExpr(const TupleExprCtx &ctx) {
   }
 
   lastType = make_shared<TupleType>(items);
+}
+
+void TypeResolver::visitListExpr(const ListExprCtx &ctx) {
+  shared_ptr<Type> innerType;
+  for (auto &item : ctx.items) {
+    lastType = nullptr;
+    item->accept(*this);
+    if (!lastType) {
+      // TODO: Allow passing as Any
+      // TODO: Should any errors be in the TypeResolver at all?
+      interpreter.reportError(
+          item->location,
+          "Could not resolve the types of all items in this list.");
+      return;
+    } else {
+      // Find the nearest parent type, or default to any.
+      if (!innerType) {
+        innerType = lastType;
+      } else {
+        innerType = findCommonAncestor(innerType, lastType);
+      }
+    }
+  }
+
+  lastType = make_shared<ArrayType>(innerType);
 }
 
 void TypeResolver::visitCastExpr(const CastExprCtx &ctx) {}

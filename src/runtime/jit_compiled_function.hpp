@@ -31,6 +31,7 @@ public:
   void visitBoolLiteral(const analysis::BoolLiteralCtx &ctx) override;
   void visitBlockExpr(const analysis::BlockExprCtx &ctx) override;
   void visitTupleExpr(const analysis::TupleExprCtx &ctx) override;
+  void visitListExpr(const analysis::ListExprCtx &ctx) override;
   void visitCastExpr(const analysis::CastExprCtx &ctx) override;
   void visitCallExpr(const analysis::CallExprCtx &ctx) override;
   void visitParenExpr(const analysis::ParenExprCtx &ctx) override;
