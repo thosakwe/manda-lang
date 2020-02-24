@@ -27,6 +27,7 @@ public:
   std::unique_ptr<ParamCtx> parseParam();
   std::unique_ptr<StringLiteralCtx> parseStringLiteral(const Token &token, bool isSingleQuote);
   std::unique_ptr<BlockExprCtx> parseBlockExpr(const Token &token);
+  std::unique_ptr<ListExprCtx> parseListExpr(const Token &token);
   std::unique_ptr<ExprCtx> parseParenExpr(const Token &token);
   std::unique_ptr<IfExprCtx> parseIfExpr(const Token &token);
   std::unique_ptr<IfClauseCtx> parseIfClause(const Token &token);

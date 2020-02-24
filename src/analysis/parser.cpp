@@ -143,7 +143,9 @@ unique_ptr<ExprCtx> Parser::parsePrimaryExpr() {
     return parseIfExpr(current);
   } else if (next(Token::LCURLY)) {
     return parseBlockExpr(current);
-  }
+  } else if (next(Token::LBRACKET)) {
+    return parseListExpr(current);
+  } 
 
   // Keep this last...
   else if (next(Token::LPAREN)) {
@@ -202,6 +204,26 @@ unique_ptr<BlockExprCtx> Parser::parseBlockExpr(const Token &token) {
   }
   if (!next(Token::RCURLY)) {
     emitError(lastLocation, "Missing '}'.");
+    return nullptr;
+  }
+  return ptr;
+}
+
+unique_ptr<ListExprCtx> Parser::parseListExpr(const Token &token) {
+  auto ptr = make_unique<ListExprCtx>(token.location);
+  auto lastLocation = token.location;
+  auto expr = parseExpr();
+  while (expr) {
+    lastLocation = expr->location;
+    ptr->items.push_back(move(expr));
+    if (!next(Token::COMMA)) {
+      break;
+    } else {
+      expr = parseExpr();
+    }
+  }
+  if (!next(Token::RBRACKET)) {
+    emitError(lastLocation, "Missing ']'.");
     return nullptr;
   }
   return ptr;
