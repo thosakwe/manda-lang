@@ -423,9 +423,28 @@ void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
 }
 
 void JitCompiledFunction::visitListExpr(const ListExprCtx &ctx) {
-  // Compile Array<T> to: { uint64 size; T* data; }
   if (coerceToAny.top()) {
     // TODO: Coerce to any
+  } else {
+    // Compile Array<T> to: { uint64 size; T* data; }
+    TypeResolver resolver(interpreter, getCurrentScope());
+    ctx.accept(resolver);
+    auto arrayType = static_pointer_cast<ArrayType>(resolver.getLastType());
+    auto jitArrayType = arrayType->toJitType();
+    auto variable = new_value(jitArrayType);
+
+    // Set size
+    auto sizeOffset = jit_type_get_offset(jitArrayType, 0);
+    auto sizeType = jit_type_get_field(jitArrayType, 0);
+    auto size = new_constant(ctx.items.size(), sizeType);
+    insn_store_relative(variable, sizeOffset, size);
+    
+    // Set data
+    auto dataOffset = jit_type_get_offset(jitArrayType, 1);
+    auto dataType = jit_type_get_field(jitArrayType, 1);
+    // TODO: Provide a pointer here
+    
+    lastValue = variable;
   }
 }
 

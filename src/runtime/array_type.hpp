@@ -1,10 +1,15 @@
 #ifndef MANDA_ARRAY_TYPE_HPP
 #define MANDA_ARRAY_TYPE_HPP
+#include <jit/jit.h>
 #include "type.hpp"
 
 namespace manda::runtime {
 class ArrayType : public Type {
 public:
+  struct AbstractData {
+    uint64_t length;
+    void* data;
+  };
   explicit ArrayType(std::shared_ptr<Type> innerType);
   const std::shared_ptr<Type> &getInnerType() const;
   std::string getName() const override;

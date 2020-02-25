@@ -1,5 +1,6 @@
 #ifndef MANDA_JIT_COMPILED_FUNCTION_HPP
 #define MANDA_JIT_COMPILED_FUNCTION_HPP
+#include "array_type.hpp"
 #include "ast_function.hpp"
 #include "base_resolver.hpp"
 #include "symbol_table.hpp"
