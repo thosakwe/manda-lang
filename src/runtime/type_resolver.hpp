@@ -14,7 +14,7 @@ class TypeResolver : public manda::analysis::TypeVisitor,
                      public BaseResolver {
 public:
   TypeResolver(Interpreter &interpreter, const UnifiedScope &scope);
-  [[nodiscard]] const std::shared_ptr<Type> &getLastType() const;
+//  [[nodiscard]] const std::shared_ptr<Type> &getLastType() const;
   void visitTypeRef(const analysis::TypeRefCtx &ctx) override;
   void visitVarExpr(const analysis::VarExprCtx &ctx) override;
   void visitFnDeclExpr(const analysis::FnDeclExprCtx &ctx) override;
