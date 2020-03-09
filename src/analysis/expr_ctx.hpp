@@ -1,5 +1,6 @@
 #ifndef MANDA_EXPR_CTX_HPP
 #define MANDA_EXPR_CTX_HPP
+#include "../runtime/type.hpp"
 #include "location.hpp"
 #include "token.hpp"
 #include "type_ctx.hpp"
@@ -14,8 +15,9 @@ class ExprVisitor;
 class ExprCtx {
 public:
   Location location;
+  std::shared_ptr<manda::runtime::Type> type;
   ExprCtx() = default;
-  explicit ExprCtx(Location location) : location(location) {}
+  explicit ExprCtx(Location location) : location(std::move(location)) {}
   ExprCtx(const ExprCtx &) = default;
   ExprCtx(ExprCtx &&) = default;
   ExprCtx &operator=(const ExprCtx &) = default;
