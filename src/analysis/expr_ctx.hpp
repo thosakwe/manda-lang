@@ -280,20 +280,20 @@ struct ParenExprCtx : public ExprCtx {
 
 class ExprVisitor {
 public:
-  virtual void visitVarExpr(const VarExprCtx &ctx) = 0;
-  virtual void visitFnDeclExpr(const FnDeclExprCtx &ctx) = 0;
-  virtual void visitIfExpr(const IfExprCtx &ctx) = 0;
-  virtual void visitVoidLiteral(const VoidLiteralCtx &ctx) = 0;
-  virtual void visitIdExpr(const IdExprCtx &ctx) = 0;
-  virtual void visitNumberLiteral(const NumberLiteralCtx &ctx) = 0;
-  virtual void visitStringLiteral(const StringLiteralCtx &ctx) = 0;
-  virtual void visitBoolLiteral(const BoolLiteralCtx &ctx) = 0;
-  virtual void visitBlockExpr(const BlockExprCtx &ctx) = 0;
-  virtual void visitTupleExpr(const TupleExprCtx &ctx) = 0;
-  virtual void visitListExpr(const ListExprCtx &ctx) = 0;
-  virtual void visitCastExpr(const CastExprCtx &ctx) = 0;
-  virtual void visitCallExpr(const CallExprCtx &ctx) = 0;
-  virtual void visitParenExpr(const ParenExprCtx &ctx) = 0;
+  virtual void visitVarExpr(VarExprCtx &ctx) = 0;
+  virtual void visitFnDeclExpr(FnDeclExprCtx &ctx) = 0;
+  virtual void visitIfExpr(IfExprCtx &ctx) = 0;
+  virtual void visitVoidLiteral(VoidLiteralCtx &ctx) = 0;
+  virtual void visitIdExpr(IdExprCtx &ctx) = 0;
+  virtual void visitNumberLiteral(NumberLiteralCtx &ctx) = 0;
+  virtual void visitStringLiteral(StringLiteralCtx &ctx) = 0;
+  virtual void visitBoolLiteral(BoolLiteralCtx &ctx) = 0;
+  virtual void visitBlockExpr(BlockExprCtx &ctx) = 0;
+  virtual void visitTupleExpr(TupleExprCtx &ctx) = 0;
+  virtual void visitListExpr(ListExprCtx &ctx) = 0;
+  virtual void visitCastExpr(CastExprCtx &ctx) = 0;
+  virtual void visitCallExpr(CallExprCtx &ctx) = 0;
+  virtual void visitParenExpr(ParenExprCtx &ctx) = 0;
 };
 } // namespace manda::analysis
 
