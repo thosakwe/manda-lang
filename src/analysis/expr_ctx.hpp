@@ -15,7 +15,7 @@ class ExprVisitor;
 class ExprCtx {
 public:
   Location location;
-  std::shared_ptr<manda::runtime::Type> type;
+  std::shared_ptr<manda::runtime::Type> runtimeType;
   ExprCtx() = default;
   explicit ExprCtx(Location location) : location(std::move(location)) {}
   ExprCtx(const ExprCtx &) = default;

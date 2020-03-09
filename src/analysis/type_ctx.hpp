@@ -1,5 +1,6 @@
 #ifndef MANDA_ANALYSIS_TYPE_HPP
 #define MANDA_ANALYSIS_TYPE_HPP
+#include "../runtime/type.hpp"
 #include "location.hpp"
 #include "token.hpp"
 #include <string>
@@ -10,6 +11,7 @@ class TypeVisitor;
 class TypeCtx {
 public:
   Location location;
+  std::shared_ptr<manda::runtime::Type> runtimeType;
   TypeCtx() = default;
   TypeCtx(const Location &location) : location(location) {}
   TypeCtx(const TypeCtx &) = default;
