@@ -37,7 +37,7 @@ struct TypeRefCtx : public TypeCtx {
 
 class TypeVisitor {
 public:
-  virtual void visitTypeRef(const TypeRefCtx &ctx) = 0;
+  virtual void visitTypeRef(TypeRefCtx &ctx) = 0;
 };
 } // namespace manda::analysis
 

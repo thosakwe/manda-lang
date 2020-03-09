@@ -10,26 +10,26 @@
 
 namespace manda::runtime {
 class TypeResolver : public manda::analysis::TypeVisitor,
-                     public manda::analysis::ExprVisitor,
+//                     public manda::analysis::ExprVisitor,
                      public BaseResolver {
 public:
   TypeResolver(Interpreter &interpreter, const UnifiedScope &scope);
 //  [[nodiscard]] const std::shared_ptr<Type> &getLastType() const;
-  void visitTypeRef(const analysis::TypeRefCtx &ctx) override;
-  void visitVarExpr(const analysis::VarExprCtx &ctx) override;
-  void visitFnDeclExpr(const analysis::FnDeclExprCtx &ctx) override;
-  void visitVoidLiteral(const analysis::VoidLiteralCtx &ctx) override;
-  void visitIdExpr(const analysis::IdExprCtx &ctx) override;
-  void visitNumberLiteral(const analysis::NumberLiteralCtx &ctx) override;
-  void visitStringLiteral(const analysis::StringLiteralCtx &ctx) override;
-  void visitBoolLiteral(const analysis::BoolLiteralCtx &ctx) override;
-  void visitBlockExpr(const analysis::BlockExprCtx &ctx) override;
-  void visitTupleExpr(const analysis::TupleExprCtx &ctx) override;
-  void visitListExpr(const analysis::ListExprCtx &ctx) override;
-  void visitCastExpr(const analysis::CastExprCtx &ctx) override;
-  void visitCallExpr(const analysis::CallExprCtx &ctx) override;
-  void visitParenExpr(const analysis::ParenExprCtx &ctx) override;
-  void visitIfExpr(const analysis::IfExprCtx &ctx) override;
+//  void visitTypeRef(analysis::TypeRefCtx &ctx) override;
+//  void visitVarExpr(const analysis::VarExprCtx &ctx) override;
+//  void visitFnDeclExpr(const analysis::FnDeclExprCtx &ctx) override;
+//  void visitVoidLiteral(const analysis::VoidLiteralCtx &ctx) override;
+//  void visitIdExpr(const analysis::IdExprCtx &ctx) override;
+//  void visitNumberLiteral(const analysis::NumberLiteralCtx &ctx) override;
+//  void visitStringLiteral(const analysis::StringLiteralCtx &ctx) override;
+//  void visitBoolLiteral(const analysis::BoolLiteralCtx &ctx) override;
+//  void visitBlockExpr(const analysis::BlockExprCtx &ctx) override;
+//  void visitTupleExpr(const analysis::TupleExprCtx &ctx) override;
+//  void visitListExpr(const analysis::ListExprCtx &ctx) override;
+//  void visitCastExpr(const analysis::CastExprCtx &ctx) override;
+//  void visitCallExpr(const analysis::CallExprCtx &ctx) override;
+//  void visitParenExpr(const analysis::ParenExprCtx &ctx) override;
+//  void visitIfExpr(const analysis::IfExprCtx &ctx) override;
 
   /**
    * Ensures that the expression in the clause is a boolean, and returns the
