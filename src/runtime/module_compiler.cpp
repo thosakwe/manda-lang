@@ -3,7 +3,9 @@
 #include "ast_function.hpp"
 #include "number.hpp"
 #include "object_resolver.hpp"
+#include "type_resolver.hpp"
 #include <iostream>
+#include <sstream>
 
 using namespace manda::analysis;
 using namespace manda::runtime;
@@ -48,9 +50,95 @@ void ModuleCompiler::visitExprDecl(ExprDeclCtx &ctx) {
     // Visit top-level
     UnifiedScope scope;
     scope.runtimeScope = module->getSymbolTable();
-//    ObjectResolver resolver(interpreter, scope);
-//    topLevel->accept(resolver);
+
+    // Try to visit functions
+    if (auto *fnDecl = dynamic_cast<FnDeclExprCtx *>(topLevel)) {
+      visitFnDecl(*fnDecl, scope);
+    }
+
+    //    ObjectResolver resolver(interpreter, scope);
+    //    topLevel->accept(resolver);
   }
 }
 
 void ModuleCompiler::visitTypeDecl(TypeDeclCtx &ctx) {}
+
+void ModuleCompiler::visitFnDecl(FnDeclExprCtx &ctx, UnifiedScope &scope) {
+  // Determine the function's return type.
+  // If none is given, default to `Any`.
+  //
+  // TODO: Compare the declared return type to the actual return type.
+  shared_ptr<Type> returnType;
+
+  if (!ctx.returnType) {
+    TypeResolver typeResolver(interpreter, scope);
+    ctx.body->accept(typeResolver);
+    returnType = ctx.body->runtimeType;
+  } else {
+    TypeResolver typeResolver(interpreter, scope);
+    ctx.returnType->accept(typeResolver);
+    returnType = ctx.returnType->runtimeType;
+  }
+
+  if (!returnType) {
+    ostringstream oss;
+    oss << "Failed to resolve the return type";
+    if (!ctx.name.empty()) {
+      oss << " of function \"";
+      oss << ctx.name << "\"";
+    }
+    oss << ".";
+    interpreter.reportError(ctx.location, oss.str());
+    lastObject = nullptr;
+    // Default to returning Any.
+    returnType = interpreter.getCoreLibrary().anyType;
+    return;
+  }
+
+  // Build the list of parameters.
+  // TODO: Handle default symbols on parameters
+  vector<Parameter> params;
+  if (interpreter.getOptions().developerMode) {
+    // TODO: Print param types
+    cout << "Total params: " << ctx.params.size() << endl;
+  }
+
+  for (auto &node : ctx.params) {
+    shared_ptr<Type> type;
+    if (!node->type) {
+      type = interpreter.getCoreLibrary().anyType;
+    } else {
+      TypeResolver typeResolver(interpreter, scope);
+      node->type->accept(typeResolver);
+      type = node->type->runtimeType;
+    }
+
+    if (!type) {
+      ostringstream oss;
+      oss << "Failed to resolve a type for parameter \"";
+      oss << node->name << "\".";
+      interpreter.reportError(node->location, oss.str());
+      lastObject = nullptr;
+      return;
+    } else {
+      if (interpreter.getOptions().developerMode) {
+        // TODO: Print param types
+        cout << "Found param \"" << node->name << "\"";
+      }
+      params.push_back({node->location, node->name, type});
+    }
+  }
+
+  // Build the function object, AND its type.
+  auto value = make_shared<AstFunction>(ctx, scope, params, returnType);
+  ctx.runtimeType = value->getType(interpreter);
+  lastObject = value;
+
+  if (!ctx.name.empty()) {
+    // TODO: Handle redefined names
+    if (interpreter.getOptions().developerMode) {
+      cout << "Defining " << ctx.name << " in current scope." << endl;
+    }
+    scope.runtimeScope->add(ctx.name, value, interpreter.getOptions().isREPL());
+  }
+}

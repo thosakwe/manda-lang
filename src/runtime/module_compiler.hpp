@@ -19,6 +19,8 @@ public:
   void visitExprDecl(analysis::ExprDeclCtx &ctx) override;
   void visitTypeDecl(analysis::TypeDeclCtx &ctx) override;
 
+  void visitFnDecl(analysis::FnDeclExprCtx &ctx, UnifiedScope& scope);
+
 private:
   Interpreter &interpreter;
   std::shared_ptr<Module> module;
