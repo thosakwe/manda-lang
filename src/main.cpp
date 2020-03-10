@@ -169,17 +169,18 @@ int runREPL(const VMOptions &options) {
              << module->getTopLevelExpressions().size() << endl;
       }
 
-      for (auto &node : module->getTopLevelExpressions()) {
-        UnifiedScope scope;
-        scope.runtimeScope = module->getSymbolTable();
-        ObjectResolver resolver(interpreter, scope);
-        node->accept(resolver);
-        auto result = resolver.getLastObject();
-        if (result) {
-          result->print(cout, true);
-        }
-        cout << endl;
-      }
+      // TODO: REPL execution
+      //      for (auto &node : module->getTopLevelExpressions()) {
+      //        UnifiedScope scope;
+      //        scope.runtimeScope = module->getSymbolTable();
+      //        ObjectResolver resolver(interpreter, scope);
+      //        node->accept(resolver);
+      //        auto result = resolver.getLastObject();
+      //        if (result) {
+      //          result->print(cout, true);
+      //        }
+      //        cout << endl;
+      //      }
     }
   }
   return 0;
