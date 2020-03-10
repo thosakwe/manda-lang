@@ -24,13 +24,13 @@ ModuleCompiler::ModuleCompiler(Interpreter &interpreter,
 
 shared_ptr<Module> &ModuleCompiler::getModule() { return module; }
 
-void ModuleCompiler::visitCompilationUnit(const CompilationUnitCtx &ctx) {
+void ModuleCompiler::visitCompilationUnit(CompilationUnitCtx &ctx) {
   for (auto &node : ctx.declarations) {
     node->accept(*this);
   }
 }
 
-void ModuleCompiler::visitExprDecl(const ExprDeclCtx &ctx) {
+void ModuleCompiler::visitExprDecl(ExprDeclCtx &ctx) {
   using namespace manda::analysis;
   auto *topLevel = dynamic_cast<TopLevelExprCtx *>(ctx.value.get());
   if (!topLevel) {
@@ -48,9 +48,9 @@ void ModuleCompiler::visitExprDecl(const ExprDeclCtx &ctx) {
     // Visit top-level
     UnifiedScope scope;
     scope.runtimeScope = module->getSymbolTable();
-    ObjectResolver resolver(interpreter, scope);
-    topLevel->accept(resolver);
+//    ObjectResolver resolver(interpreter, scope);
+//    topLevel->accept(resolver);
   }
 }
 
-void ModuleCompiler::visitTypeDecl(const TypeDeclCtx &ctx) {}
+void ModuleCompiler::visitTypeDecl(TypeDeclCtx &ctx) {}

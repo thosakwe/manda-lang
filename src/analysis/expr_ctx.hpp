@@ -15,6 +15,7 @@ class ExprVisitor;
 class ExprCtx {
 public:
   Location location;
+  //  std::shared_ptr<manda::runtime::Object> constantValue;
   std::shared_ptr<manda::runtime::Type> runtimeType;
   ExprCtx() = default;
   explicit ExprCtx(Location location) : location(std::move(location)) {}
@@ -23,7 +24,7 @@ public:
   ExprCtx &operator=(const ExprCtx &) = default;
   ExprCtx &operator=(ExprCtx &&) = default;
   virtual ~ExprCtx() = default;
-  virtual void accept(ExprVisitor &visitor) const = 0;
+  virtual void accept(ExprVisitor &visitor) = 0;
   virtual ExprCtx *clone() const = 0;
   virtual std::unique_ptr<ExprCtx> cloneToUniquePointer() const;
 };
@@ -84,7 +85,7 @@ struct VarExprCtx : public TopLevelExprCtx {
   std::unique_ptr<ExprCtx> value;
   VarExprCtx(const Location &location, bool isFinal)
       : isFinal(isFinal), TopLevelExprCtx(location) {}
-  void accept(ExprVisitor &visitor) const override;
+  void accept(ExprVisitor &visitor) override;
   VarExprCtx *clone() const override;
 };
 
@@ -103,7 +104,7 @@ struct FnDeclExprCtx : public TopLevelExprCtx {
   std::unique_ptr<ExprCtx> body;
   explicit FnDeclExprCtx(const Location &location)
       : TopLevelExprCtx(location) {}
-  void accept(ExprVisitor &visitor) const override;
+  void accept(ExprVisitor &visitor) override;
   FnDeclExprCtx *clone() const override;
 };
 
@@ -120,13 +121,13 @@ struct IfExprCtx : public ExprCtx {
   std::unique_ptr<ExprCtx> elseClause;
   explicit IfExprCtx(std::unique_ptr<IfClauseCtx> ifClause)
       : ExprCtx(ifClause->location), ifClause(move(ifClause)) {}
-  void accept(ExprVisitor &visitor) const override;
+  void accept(ExprVisitor &visitor) override;
   ExprCtx *clone() const override;
 };
 
 struct VoidLiteralCtx : public ExprCtx {
   // TODO: Set location
-  void accept(ExprVisitor &visitor) const override;
+  void accept(ExprVisitor &visitor) override;
   VoidLiteralCtx *clone() const override;
 };
 
@@ -136,7 +137,7 @@ struct IdExprCtx : public ExprCtx {
   IdExprCtx(const Location &location, std::string name);
   explicit IdExprCtx(const Token &token)
       : name(token.text), ExprCtx(token.location) {}
-  void accept(ExprVisitor &visitor) const override;
+  void accept(ExprVisitor &visitor) override;
   IdExprCtx *clone() const override;
 };
 
@@ -147,7 +148,7 @@ public:
   NumberLiteralCtx(const Location &location, double value);
   NumberLiteralCtx(const Token &token)
       : value(std::stod(token.text)), ExprCtx(token.location) {}
-  void accept(ExprVisitor &visitor) const override;
+  void accept(ExprVisitor &visitor) override;
   NumberLiteralCtx *clone() const override;
 };
 
@@ -210,7 +211,7 @@ public:
       : singleQuote(token.type == Token::SINGLE_QUOTE),
         ExprCtx(token.location) {}
   StringLiteralCtx *clone() const override;
-  void accept(ExprVisitor &visitor) const override;
+  void accept(ExprVisitor &visitor) override;
   [[nodiscard]] std::string getValue() const;
   [[nodiscard]] bool isChar() const;
 
@@ -226,35 +227,35 @@ struct BoolLiteralCtx : public ExprCtx {
   BoolLiteralCtx() = default;
   explicit BoolLiteralCtx(const Token &token)
       : value(token.text == "true"), ExprCtx(token.location) {}
-  void accept(ExprVisitor &visitor) const override;
+  void accept(ExprVisitor &visitor) override;
   BoolLiteralCtx *clone() const override;
 };
 
 struct BlockExprCtx : public ExprCtx {
   BlockExprCtx(const Location &location) : ExprCtx(location){};
   BlockExprCtx *clone() const override;
-  void accept(ExprVisitor &visitor) const override;
+  void accept(ExprVisitor &visitor) override;
   std::vector<std::unique_ptr<ExprCtx>> body;
 };
 
 struct TupleExprCtx : public ExprCtx {
   TupleExprCtx(const Location &location) : ExprCtx(location) {}
   TupleExprCtx *clone() const override;
-  void accept(ExprVisitor &visitor) const override;
+  void accept(ExprVisitor &visitor) override;
   std::vector<std::unique_ptr<ExprCtx>> items;
 };
 
 struct ListExprCtx : public ExprCtx {
   ListExprCtx(const Location &location) : ExprCtx(location) {}
   ListExprCtx *clone() const override;
-  void accept(ExprVisitor &visitor) const override;
+  void accept(ExprVisitor &visitor) override;
   std::vector<std::unique_ptr<ExprCtx>> items;
 };
 
 struct CastExprCtx : public ExprCtx {
   CastExprCtx() = default;
   CastExprCtx *clone() const override;
-  void accept(ExprVisitor &visitor) const override;
+  void accept(ExprVisitor &visitor) override;
   std::unique_ptr<ExprCtx> value;
   std::unique_ptr<TypeCtx> type;
 };
@@ -266,7 +267,7 @@ struct CallExprCtx : public ExprCtx {
       : target(move(target)) {
     location = this->target->location;
   }
-  void accept(ExprVisitor &visitor) const override;
+  void accept(ExprVisitor &visitor) override;
   std::unique_ptr<ExprCtx> target;
   std::vector<std::unique_ptr<ExprCtx>> arguments;
 };
@@ -275,7 +276,7 @@ struct ParenExprCtx : public ExprCtx {
   std::unique_ptr<ExprCtx> inner;
   ParenExprCtx(const Location &location) : ExprCtx(location) {}
   ParenExprCtx *clone() const override;
-  void accept(ExprVisitor &visitor) const override;
+  void accept(ExprVisitor &visitor) override;
 };
 
 class ExprVisitor {

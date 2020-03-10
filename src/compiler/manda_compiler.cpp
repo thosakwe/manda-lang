@@ -11,7 +11,7 @@ const std::shared_ptr<manda::ir::IRModule> &MandaCompiler::getModule() const {
   return module;
 }
 
-void MandaCompiler::compile(const CompilationUnitCtx &ctx) {
+void MandaCompiler::compile(CompilationUnitCtx &ctx) {
   // TODO: Module names
   module = make_shared<IRModule>();
   visitCompilationUnit(ctx);
@@ -27,7 +27,7 @@ void MandaCompiler::emit(const manda::ir::IRInstruction::Opcode opcode) {
   emit(instruction);
 }
 
-void MandaCompiler::visitExprDecl(const ExprDeclCtx &ctx) {
+void MandaCompiler::visitExprDecl(ExprDeclCtx &ctx) {
   auto *topLevel = dynamic_cast<TopLevelExprCtx *>(ctx.value.get());
   if (!topLevel) {
     // TODO: Proper errors
@@ -52,47 +52,47 @@ void MandaCompiler::visitExprDecl(const ExprDeclCtx &ctx) {
   }
 }
 
-void MandaCompiler::visitTypeDecl(const TypeDeclCtx &ctx) {}
+void MandaCompiler::visitTypeDecl(TypeDeclCtx &ctx) {}
 
-void MandaCompiler::visitCompilationUnit(const CompilationUnitCtx &ctx) {
+void MandaCompiler::visitCompilationUnit(CompilationUnitCtx &ctx) {
   // TODO: Forward refs?
   for (auto &decl : ctx.declarations) {
     decl->accept(*this);
   }
 }
 
-void MandaCompiler::visitVarExpr(const VarExprCtx &ctx) {}
+void MandaCompiler::visitVarExpr(VarExprCtx &ctx) {}
 
-void MandaCompiler::visitIfExpr(const IfExprCtx &ctx) {}
+void MandaCompiler::visitIfExpr(IfExprCtx &ctx) {}
 
-void MandaCompiler::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
+void MandaCompiler::visitFnDeclExpr(FnDeclExprCtx &ctx) {
   // TODO: This is only for lambdas
 }
 
-void MandaCompiler::visitVoidLiteral(const VoidLiteralCtx &ctx) {}
+void MandaCompiler::visitVoidLiteral(VoidLiteralCtx &ctx) {}
 
-void MandaCompiler::visitIdExpr(const IdExprCtx &ctx) {}
+void MandaCompiler::visitIdExpr(IdExprCtx &ctx) {}
 
-void MandaCompiler::visitNumberLiteral(const NumberLiteralCtx &ctx) {
+void MandaCompiler::visitNumberLiteral(NumberLiteralCtx &ctx) {
   IRInstruction instruction = {IRInstruction::FLOAT_CONST_64};
   instruction.operandf64 = ctx.value;
   emit(instruction);
 }
 
-void MandaCompiler::visitStringLiteral(const StringLiteralCtx &ctx) {}
+void MandaCompiler::visitStringLiteral(StringLiteralCtx &ctx) {}
 
-void MandaCompiler::visitBoolLiteral(const BoolLiteralCtx &ctx) {}
+void MandaCompiler::visitBoolLiteral(BoolLiteralCtx &ctx) {}
 
-void MandaCompiler::visitBlockExpr(const BlockExprCtx &ctx) {}
+void MandaCompiler::visitBlockExpr(BlockExprCtx &ctx) {}
 
-void MandaCompiler::visitTupleExpr(const TupleExprCtx &ctx) {}
+void MandaCompiler::visitTupleExpr(TupleExprCtx &ctx) {}
 
-void MandaCompiler::visitListExpr(const ListExprCtx &ctx) {}
+void MandaCompiler::visitListExpr(ListExprCtx &ctx) {}
 
-void MandaCompiler::visitCastExpr(const CastExprCtx &ctx) {}
+void MandaCompiler::visitCastExpr(CastExprCtx &ctx) {}
 
-void MandaCompiler::visitCallExpr(const CallExprCtx &ctx) {}
+void MandaCompiler::visitCallExpr(CallExprCtx &ctx) {}
 
-void MandaCompiler::visitParenExpr(const ParenExprCtx &ctx) {}
+void MandaCompiler::visitParenExpr(ParenExprCtx &ctx) {}
 
-void MandaCompiler::visitTypeRef(const TypeRefCtx &ctx) {}
+void MandaCompiler::visitTypeRef(TypeRefCtx &ctx) {}

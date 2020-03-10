@@ -11,15 +11,13 @@ NumberLiteralCtx::NumberLiteralCtx(const Location &location, double value)
 IdExprCtx::IdExprCtx(const Location &location, std::string name)
     : name(move(name)), ExprCtx(location) {}
 
-void FnDeclExprCtx::accept(ExprVisitor &visitor) const {
+void FnDeclExprCtx::accept(ExprVisitor &visitor) {
   visitor.visitFnDeclExpr(*this);
 }
 
-void VarExprCtx::accept(ExprVisitor &visitor) const {
-  visitor.visitVarExpr(*this);
-}
+void VarExprCtx::accept(ExprVisitor &visitor) { visitor.visitVarExpr(*this); }
 
-void StringLiteralCtx::accept(ExprVisitor &visitor) const {
+void StringLiteralCtx::accept(ExprVisitor &visitor) {
   visitor.visitStringLiteral(*this);
 }
 
@@ -37,43 +35,35 @@ string StringLiteralCtx::getValue() const {
 
 bool StringLiteralCtx::isChar() const { return singleQuote; }
 
-void IdExprCtx::accept(ExprVisitor &visitor) const {
-  visitor.visitIdExpr(*this);
-}
+void IdExprCtx::accept(ExprVisitor &visitor) { visitor.visitIdExpr(*this); }
 
-void CallExprCtx::accept(ExprVisitor &visitor) const {
-  visitor.visitCallExpr(*this);
-}
+void CallExprCtx::accept(ExprVisitor &visitor) { visitor.visitCallExpr(*this); }
 
-void VoidLiteralCtx::accept(ExprVisitor &visitor) const {
+void VoidLiteralCtx::accept(ExprVisitor &visitor) {
   visitor.visitVoidLiteral(*this);
 }
 
-void CastExprCtx::accept(ExprVisitor &visitor) const {
-  visitor.visitCastExpr(*this);
-}
+void CastExprCtx::accept(ExprVisitor &visitor) { visitor.visitCastExpr(*this); }
 
-void NumberLiteralCtx::accept(ExprVisitor &visitor) const {
+void NumberLiteralCtx::accept(ExprVisitor &visitor) {
   visitor.visitNumberLiteral(*this);
 }
 
-void BlockExprCtx::accept(ExprVisitor &visitor) const {
+void BlockExprCtx::accept(ExprVisitor &visitor) {
   visitor.visitBlockExpr(*this);
 }
 
-void TupleExprCtx::accept(ExprVisitor &visitor) const {
+void TupleExprCtx::accept(ExprVisitor &visitor) {
   visitor.visitTupleExpr(*this);
 }
 
-void ListExprCtx::accept(ExprVisitor &visitor) const {
-  visitor.visitListExpr(*this);
-}
+void ListExprCtx::accept(ExprVisitor &visitor) { visitor.visitListExpr(*this); }
 
-void BoolLiteralCtx::accept(ExprVisitor &visitor) const {
+void BoolLiteralCtx::accept(ExprVisitor &visitor) {
   visitor.visitBoolLiteral(*this);
 }
 
-void ParenExprCtx::accept(ExprVisitor &visitor) const {
+void ParenExprCtx::accept(ExprVisitor &visitor) {
   visitor.visitParenExpr(*this);
 }
 
@@ -128,16 +118,14 @@ FnDeclExprCtx *FnDeclExprCtx::clone() const {
 
 IfClauseCtx *IfClauseCtx::clone() const {
   return new IfClauseCtx{location, condition->cloneToUniquePointer(),
-                      body->cloneToUniquePointer()};
+                         body->cloneToUniquePointer()};
 }
 
 std::unique_ptr<IfClauseCtx> IfClauseCtx::cloneToUniquePointer() const {
   return unique_ptr<IfClauseCtx>(clone());
 }
 
-void IfExprCtx::accept(ExprVisitor &visitor) const {
-  visitor.visitIfExpr(*this);
-}
+void IfExprCtx::accept(ExprVisitor &visitor) { visitor.visitIfExpr(*this); }
 
 ExprCtx *IfExprCtx::clone() const {
   auto *out = new IfExprCtx(ifClause->cloneToUniquePointer());

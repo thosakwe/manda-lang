@@ -11,24 +11,24 @@ class AstPrinter : public CompilationUnitVisitor,
                    public IndentingPrinter {
 public:
   explicit AstPrinter(std::ostream &out);
-  void visitCompilationUnit(const CompilationUnitCtx &ctx) override;
-  void visitExprDecl(const ExprDeclCtx &ctx) override;
-  void visitTypeDecl(const TypeDeclCtx &ctx) override;
-  void visitVarExpr(const VarExprCtx &ctx) override;
-  void visitFnDeclExpr(const FnDeclExprCtx &ctx) override;
-  void visitIfClause(const IfClauseCtx &ctx);
-  void visitVoidLiteral(const VoidLiteralCtx &ctx) override;
-  void visitIdExpr(const IdExprCtx &ctx) override;
-  void visitNumberLiteral(const NumberLiteralCtx &ctx) override;
-  void visitStringLiteral(const StringLiteralCtx &ctx) override;
-  void visitBoolLiteral(const BoolLiteralCtx &ctx) override;
-  void visitBlockExpr(const BlockExprCtx &ctx) override;
-  void visitTupleExpr(const TupleExprCtx &ctx) override;
-  void visitListExpr(const ListExprCtx &ctx) override;
-  void visitCastExpr(const CastExprCtx &ctx) override;
-  void visitCallExpr(const CallExprCtx &ctx) override;
-  void visitParenExpr(const ParenExprCtx &ctx) override;
-  void visitIfExpr(const IfExprCtx &ctx) override;
+  void visitCompilationUnit(CompilationUnitCtx &ctx) override;
+  void visitExprDecl(ExprDeclCtx &ctx) override;
+  void visitTypeDecl(TypeDeclCtx &ctx) override;
+  void visitVarExpr(VarExprCtx &ctx) override;
+  void visitFnDeclExpr(FnDeclExprCtx &ctx) override;
+  void visitIfClause(IfClauseCtx &ctx);
+  void visitVoidLiteral(VoidLiteralCtx &ctx) override;
+  void visitIdExpr(IdExprCtx &ctx) override;
+  void visitNumberLiteral(NumberLiteralCtx &ctx) override;
+  void visitStringLiteral(StringLiteralCtx &ctx) override;
+  void visitBoolLiteral(BoolLiteralCtx &ctx) override;
+  void visitBlockExpr(BlockExprCtx &ctx) override;
+  void visitTupleExpr(TupleExprCtx &ctx) override;
+  void visitListExpr(ListExprCtx &ctx) override;
+  void visitCastExpr(CastExprCtx &ctx) override;
+  void visitCallExpr(CallExprCtx &ctx) override;
+  void visitParenExpr(ParenExprCtx &ctx) override;
+  void visitIfExpr(IfExprCtx &ctx) override;
 };
 } // namespace manda::analysis
 

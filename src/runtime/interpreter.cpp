@@ -59,14 +59,13 @@ bool Interpreter::ensureArguments(const Location &location,
   return false;
 }
 
-void Interpreter::visitExprDecl(const ExprDeclCtx &ctx) {}
+void Interpreter::visitExprDecl(ExprDeclCtx &ctx) {}
 
-void Interpreter::visitTypeDecl(const TypeDeclCtx &ctx) {
+void Interpreter::visitTypeDecl(TypeDeclCtx &ctx) {
   // TODO: Plain mode implementation (lazy?, etc.?)
   TypeResolver resolver(*this, getCurrentScope());
   ctx.type->accept(resolver);
-  auto result = resolver.getLastType();
-  if (!result) {
+  if (!ctx.type->runtimeType) {
     ostringstream oss;
     oss << "Could not resolve the right hand side of type '";
     oss << ctx.name << "'.";
@@ -75,11 +74,11 @@ void Interpreter::visitTypeDecl(const TypeDeclCtx &ctx) {
   } else {
     // TODO: Handle type parameters for generic types
     // TODO: Handle redefined symbols in non-REPL mode
-    getCurrentScope().addType(ctx.name, result, options.isREPL());
+    getCurrentScope().addType(ctx.name, ctx.type->runtimeType, options.isREPL());
   }
 }
 
-void Interpreter::visitCompilationUnit(const CompilationUnitCtx &ctx) {}
+void Interpreter::visitCompilationUnit(CompilationUnitCtx &ctx) {}
 
 const CoreLibrary &Interpreter::getCoreLibrary() const { return coreLibrary; }
 

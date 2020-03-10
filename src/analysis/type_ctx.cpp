@@ -3,9 +3,7 @@
 using namespace manda::analysis;
 using namespace std;
 
-void TypeRefCtx::accept(TypeVisitor &visitor) const {
-  visitor.visitTypeRef(*this);
-}
+void TypeRefCtx::accept(TypeVisitor &visitor) { visitor.visitTypeRef(*this); }
 
 unique_ptr<TypeCtx> TypeCtx::cloneToUniquePointer() const {
   return unique_ptr<TypeCtx>(clone());

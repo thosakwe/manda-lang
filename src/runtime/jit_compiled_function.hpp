@@ -23,22 +23,22 @@ public:
                                  void *func);
   jit_value insn_gc_incref(const jit_value &ptr);
   jit_value insn_gc_decref(const jit_value &ptr);
-  void visitVarExpr(const analysis::VarExprCtx &ctx) override;
-  void visitFnDeclExpr(const analysis::FnDeclExprCtx &ctx) override;
-  void visitVoidLiteral(const analysis::VoidLiteralCtx &ctx) override;
-  void visitIdExpr(const analysis::IdExprCtx &ctx) override;
-  void visitNumberLiteral(const analysis::NumberLiteralCtx &ctx) override;
-  void visitStringLiteral(const analysis::StringLiteralCtx &ctx) override;
-  void visitBoolLiteral(const analysis::BoolLiteralCtx &ctx) override;
-  void visitBlockExpr(const analysis::BlockExprCtx &ctx) override;
-  void visitTupleExpr(const analysis::TupleExprCtx &ctx) override;
-  void visitListExpr(const analysis::ListExprCtx &ctx) override;
-  void visitCastExpr(const analysis::CastExprCtx &ctx) override;
-  void visitCallExpr(const analysis::CallExprCtx &ctx) override;
-  void visitParenExpr(const analysis::ParenExprCtx &ctx) override;
-  void visitIfExpr(const analysis::IfExprCtx &ctx) override;
+  void visitVarExpr(analysis::VarExprCtx &ctx) override;
+  void visitFnDeclExpr(analysis::FnDeclExprCtx &ctx) override;
+  void visitVoidLiteral(analysis::VoidLiteralCtx &ctx) override;
+  void visitIdExpr(analysis::IdExprCtx &ctx) override;
+  void visitNumberLiteral(analysis::NumberLiteralCtx &ctx) override;
+  void visitStringLiteral(analysis::StringLiteralCtx &ctx) override;
+  void visitBoolLiteral(analysis::BoolLiteralCtx &ctx) override;
+  void visitBlockExpr(analysis::BlockExprCtx &ctx) override;
+  void visitTupleExpr(analysis::TupleExprCtx &ctx) override;
+  void visitListExpr(analysis::ListExprCtx &ctx) override;
+  void visitCastExpr(analysis::CastExprCtx &ctx) override;
+  void visitCallExpr(analysis::CallExprCtx &ctx) override;
+  void visitParenExpr(analysis::ParenExprCtx &ctx) override;
+  void visitIfExpr(analysis::IfExprCtx &ctx) override;
 
-  void visitIfClause(const analysis::IfClauseCtx &ctx, jit_value &output,
+  void visitIfClause(analysis::IfClauseCtx &ctx, jit_value &output,
                      jit_label &endLabel);
 
 protected:

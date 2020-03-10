@@ -5,7 +5,7 @@ using namespace std;
 
 AstPrinter::AstPrinter(ostream &out) : IndentingPrinter(out) {}
 
-void AstPrinter::visitCompilationUnit(const CompilationUnitCtx &ctx) {
+void AstPrinter::visitCompilationUnit(CompilationUnitCtx &ctx) {
   print() << "CompilationUnit" << endl;
   indent();
   for (auto &node : ctx.declarations) {
@@ -14,25 +14,25 @@ void AstPrinter::visitCompilationUnit(const CompilationUnitCtx &ctx) {
   outdent();
 }
 
-void AstPrinter::visitExprDecl(const ExprDeclCtx &ctx) {
+void AstPrinter::visitExprDecl(ExprDeclCtx &ctx) {
   print() << "ExprDecl" << endl;
   indent();
   ctx.value->accept(*this);
   outdent();
 }
 
-void AstPrinter::visitTypeDecl(const TypeDeclCtx &ctx) {
+void AstPrinter::visitTypeDecl(TypeDeclCtx &ctx) {
   // TODO: Print
 }
 
-void AstPrinter::visitVarExpr(const VarExprCtx &ctx) {
+void AstPrinter::visitVarExpr(VarExprCtx &ctx) {
   print() << "VarExpr(" << ctx.name << ")" << endl;
   indent();
   ctx.value->accept(*this);
   outdent();
 }
 
-void AstPrinter::visitIfClause(const IfClauseCtx &ctx) {
+void AstPrinter::visitIfClause(IfClauseCtx &ctx) {
   print() << "if" << endl;
   indent();
   ctx.condition->accept(*this);
@@ -45,7 +45,7 @@ void AstPrinter::visitIfClause(const IfClauseCtx &ctx) {
   outdent();
 }
 
-void AstPrinter::visitIfExpr(const IfExprCtx &ctx) {
+void AstPrinter::visitIfExpr(IfExprCtx &ctx) {
   print() << "IfExpr" << endl;
   indent();
   visitIfClause(*ctx.ifClause);
@@ -61,7 +61,7 @@ void AstPrinter::visitIfExpr(const IfExprCtx &ctx) {
   outdent();
 }
 
-void AstPrinter::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
+void AstPrinter::visitFnDeclExpr(FnDeclExprCtx &ctx) {
   // TODO: Print
   print() << "FnDeclExpr(" << (ctx.name.empty() ? "<anonymous>" : ctx.name)
           << ")" << endl;
@@ -78,19 +78,19 @@ void AstPrinter::visitFnDeclExpr(const FnDeclExprCtx &ctx) {
   outdent();
 }
 
-void AstPrinter::visitVoidLiteral(const VoidLiteralCtx &ctx) {
+void AstPrinter::visitVoidLiteral(VoidLiteralCtx &ctx) {
   print() << "VoidLiteral" << endl;
 }
 
-void AstPrinter::visitIdExpr(const IdExprCtx &ctx) {
+void AstPrinter::visitIdExpr(IdExprCtx &ctx) {
   print() << "IdExpr(" << ctx.name << ")" << endl;
 }
 
-void AstPrinter::visitNumberLiteral(const NumberLiteralCtx &ctx) {
+void AstPrinter::visitNumberLiteral(NumberLiteralCtx &ctx) {
   print() << "NumberLiteral(" << ctx.value << ")" << endl;
 }
 
-void AstPrinter::visitStringLiteral(const StringLiteralCtx &ctx) {
+void AstPrinter::visitStringLiteral(StringLiteralCtx &ctx) {
   if (ctx.isChar()) {
     print() << "CharLiteral(" << ctx.getValue() << ")" << endl;
   } else {
@@ -99,11 +99,11 @@ void AstPrinter::visitStringLiteral(const StringLiteralCtx &ctx) {
   }
 }
 
-void AstPrinter::visitBoolLiteral(const BoolLiteralCtx &ctx) {
+void AstPrinter::visitBoolLiteral(BoolLiteralCtx &ctx) {
   print() << "BoolLiteral(" << (ctx.value ? "true" : "false") << ")" << endl;
 }
 
-void AstPrinter::visitBlockExpr(const BlockExprCtx &ctx) {
+void AstPrinter::visitBlockExpr(BlockExprCtx &ctx) {
   print() << "BlockExpr" << endl;
   indent();
   for (auto &node : ctx.body) {
@@ -112,7 +112,7 @@ void AstPrinter::visitBlockExpr(const BlockExprCtx &ctx) {
   outdent();
 }
 
-void AstPrinter::visitTupleExpr(const TupleExprCtx &ctx) {
+void AstPrinter::visitTupleExpr(TupleExprCtx &ctx) {
   print() << "TupleExpr" << endl;
   indent();
   for (auto &node : ctx.items) {
@@ -121,7 +121,7 @@ void AstPrinter::visitTupleExpr(const TupleExprCtx &ctx) {
   outdent();
 }
 
-void AstPrinter::visitListExpr(const ListExprCtx &ctx) {
+void AstPrinter::visitListExpr(ListExprCtx &ctx) {
   print() << "ListExpr [" << endl;
   indent();
   for (auto &node : ctx.items) {
@@ -131,11 +131,11 @@ void AstPrinter::visitListExpr(const ListExprCtx &ctx) {
   print() << "]" << endl;
 }
 
-void AstPrinter::visitCastExpr(const CastExprCtx &ctx) {
+void AstPrinter::visitCastExpr(CastExprCtx &ctx) {
   // TODO: Print
 }
 
-void AstPrinter::visitCallExpr(const CallExprCtx &ctx) {
+void AstPrinter::visitCallExpr(CallExprCtx &ctx) {
   print() << "CallExpr(" << ctx.arguments.size() << " argument(s))" << endl;
   indent();
   ctx.target->accept(*this);
@@ -152,7 +152,7 @@ void AstPrinter::visitCallExpr(const CallExprCtx &ctx) {
   outdent();
 }
 
-void AstPrinter::visitParenExpr(const ParenExprCtx &ctx) {
+void AstPrinter::visitParenExpr(ParenExprCtx &ctx) {
   print() << "ParenExpr" << endl;
   indent();
   ctx.inner->accept(*this);

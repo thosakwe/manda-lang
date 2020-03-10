@@ -19,7 +19,7 @@ public:
   TypeCtx &operator=(const TypeCtx &) = default;
   TypeCtx &operator=(TypeCtx &&) = default;
   virtual ~TypeCtx() = default;
-  virtual void accept(TypeVisitor &visitor) const = 0;
+  virtual void accept(TypeVisitor &visitor) = 0;
   virtual TypeCtx *clone() const = 0;
   virtual std::unique_ptr<TypeCtx> cloneToUniquePointer() const;
 };
@@ -31,7 +31,7 @@ struct TypeRefCtx : public TypeCtx {
       : name(std::move(name)), TypeCtx(l) {}
   explicit TypeRefCtx(const Token &token)
       : name(token.text), TypeCtx(token.location) {}
-  void accept(TypeVisitor &visitor) const override;
+  void accept(TypeVisitor &visitor) override;
   TypeRefCtx *clone() const override;
 };
 

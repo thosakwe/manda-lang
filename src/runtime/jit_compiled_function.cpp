@@ -114,7 +114,7 @@ void JitCompiledFunction::build() {
   }
 }
 
-void JitCompiledFunction::visitVarExpr(const VarExprCtx &ctx) {
+void JitCompiledFunction::visitVarExpr(VarExprCtx &ctx) {
   // TODO: Throw on redefines?
   ctx.value->accept(*this);
   if (!lastValue) {
@@ -127,7 +127,7 @@ void JitCompiledFunction::visitVarExpr(const VarExprCtx &ctx) {
     // Also, determine its type.
     TypeResolver typeResolver(interpreter, getCurrentScope());
     ctx.value->accept(typeResolver);
-    auto resolvedType = typeResolver.getLastType();
+    auto resolvedType = ctx.value->runtimeType;
     if (!resolvedType) {
       ostringstream oss;
       oss << "Failed to resolve the type for variable \"" << ctx.name << "\".";
@@ -142,11 +142,11 @@ void JitCompiledFunction::visitVarExpr(const VarExprCtx &ctx) {
   }
 }
 
-void JitCompiledFunction::visitFnDeclExpr(const FnDeclExprCtx &ctx) {}
+void JitCompiledFunction::visitFnDeclExpr(FnDeclExprCtx &ctx) {}
 
-void JitCompiledFunction::visitVoidLiteral(const VoidLiteralCtx &ctx) {}
+void JitCompiledFunction::visitVoidLiteral(VoidLiteralCtx &ctx) {}
 
-void JitCompiledFunction::visitIdExpr(const IdExprCtx &ctx) {
+void JitCompiledFunction::visitIdExpr(IdExprCtx &ctx) {
   // Search to see if we have already compiled the given symbol.
   // If not, compile it, and add it to the current scope.
   // TODO: Throw on redefines?
@@ -202,7 +202,7 @@ void JitCompiledFunction::visitIdExpr(const IdExprCtx &ctx) {
   }
 }
 
-void JitCompiledFunction::visitNumberLiteral(const NumberLiteralCtx &ctx) {
+void JitCompiledFunction::visitNumberLiteral(NumberLiteralCtx &ctx) {
   if (!coerceToAny.top()) {
     // Manda Numbers are sys doubles.
     auto jitNumberType = interpreter.getCoreLibrary().numberType->toJitType();
@@ -213,7 +213,7 @@ void JitCompiledFunction::visitNumberLiteral(const NumberLiteralCtx &ctx) {
   }
 }
 
-void JitCompiledFunction::visitStringLiteral(const StringLiteralCtx &ctx) {
+void JitCompiledFunction::visitStringLiteral(StringLiteralCtx &ctx) {
   if (!coerceToAny.top()) {
     if (ctx.isChar()) {
       auto jitCharType = interpreter.getCoreLibrary().charType->toJitType();
@@ -235,7 +235,7 @@ void JitCompiledFunction::visitStringLiteral(const StringLiteralCtx &ctx) {
   }
 }
 
-void JitCompiledFunction::visitBoolLiteral(const BoolLiteralCtx &ctx) {
+void JitCompiledFunction::visitBoolLiteral(BoolLiteralCtx &ctx) {
   jit_ubyte value = ctx.value ? 0x1 : 0x0;
   if (!coerceToAny.top()) {
     // Manda Booleans are either 0x0 or 0x1.
@@ -247,8 +247,7 @@ void JitCompiledFunction::visitBoolLiteral(const BoolLiteralCtx &ctx) {
   }
 }
 
-void JitCompiledFunction::visitIfClause(const IfClauseCtx &ctx,
-                                        jit_value &output,
+void JitCompiledFunction::visitIfClause(IfClauseCtx &ctx, jit_value &output,
                                         jit_label &endLabel) {
   // Evaluate the condition.
   // TODO: What if the return is *not* a jit_bool? Such a case would require
@@ -283,13 +282,13 @@ void JitCompiledFunction::visitIfClause(const IfClauseCtx &ctx,
   insn_label(ifFalse);
 }
 
-void JitCompiledFunction::visitIfExpr(const IfExprCtx &ctx) {
+void JitCompiledFunction::visitIfExpr(IfExprCtx &ctx) {
   // Introduce an intermediate variable, and assign all results to it.
   // To do this, we must resolve the return type, and get its JIT type.
   TypeResolver typeResolver(interpreter, getCurrentScope());
   ctx.accept(typeResolver);
 
-  auto outputType = typeResolver.getLastType();
+  auto outputType = ctx.runtimeType;
   if (!outputType) {
     interpreter.reportError(
         ctx.location,
@@ -321,7 +320,7 @@ void JitCompiledFunction::visitIfExpr(const IfExprCtx &ctx) {
   lastValue = insn_load(output);
 }
 
-void JitCompiledFunction::visitBlockExpr(const BlockExprCtx &ctx) {
+void JitCompiledFunction::visitBlockExpr(BlockExprCtx &ctx) {
   // Create a new label, and introduce a new scope. Then, resolve
   // all expressions.
   // If there are no expressions, return void (a.k.a., do nothing here).
@@ -348,26 +347,29 @@ void JitCompiledFunction::visitBlockExpr(const BlockExprCtx &ctx) {
   popScope();
 }
 
-void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
+void JitCompiledFunction::visitTupleExpr(TupleExprCtx &ctx) {
   if (coerceToAny.top()) {
     // Create a new tuple instance, and return the pointer.
     //    auto *object = new Bool(ctx.value);
     //    lastValue = new_constant((void *)object, jit_type_void_ptr);
-    ObjectResolver resolver(interpreter, getCurrentScope());
-    auto *object = gc.make<Tuple>();
-    for (auto &item : ctx.items) {
-      item->accept(resolver);
-      auto result = resolver.getLastObject();
-      if (!result) {
-        interpreter.reportError(item->location,
-                                "Could not resolve every item in this tuple.");
-        lastValue = nullopt;
-        return;
-      } else {
-        object->getItems().push_back(result);
-      }
-    }
-    lastValue = new_constant((void *)object, jit_type_void_ptr);
+
+    // TODO: Obj resolver for any???
+    //    ObjectResolver resolver(interpreter, getCurrentScope());
+    //    auto *object = gc.make<Tuple>();
+    //    for (auto &item : ctx.items) {
+    //      item->accept(resolver);
+    //      auto result = resolver.getLastObject();
+    //      if (!result) {
+    //        interpreter.reportError(item->location,
+    //                                "Could not resolve every item in this
+    //                                tuple.");
+    //        lastValue = nullopt;
+    //        return;
+    //      } else {
+    //        object->getItems().push_back(result);
+    //      }
+    //    }
+    //    lastValue = new_constant((void *)object, jit_type_void_ptr);
   } else {
     // Resolve this item to a tuple type.
     // Then, create a temporary structure value.
@@ -375,7 +377,7 @@ void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
     // Increment by the size of the field.
     TypeResolver resolver(interpreter, getCurrentScope());
     ctx.accept(resolver);
-    auto resultType = resolver.getLastType();
+    auto resultType = ctx.runtimeType;
     if (!resultType) {
       // TODO: This should never happen, so there probably needs to be
       // a good error message here in the case that it does.
@@ -422,14 +424,14 @@ void JitCompiledFunction::visitTupleExpr(const TupleExprCtx &ctx) {
   }
 }
 
-void JitCompiledFunction::visitListExpr(const ListExprCtx &ctx) {
+void JitCompiledFunction::visitListExpr(ListExprCtx &ctx) {
   if (coerceToAny.top()) {
     // TODO: Coerce to any
   } else {
     // Compile Array<T> to: { uint64 size; T* data; }
     TypeResolver resolver(interpreter, getCurrentScope());
     ctx.accept(resolver);
-    auto arrayType = static_pointer_cast<ArrayType>(resolver.getLastType());
+    auto arrayType = static_pointer_cast<ArrayType>(ctx.runtimeType);
     auto jitArrayType = arrayType->toJitType();
     auto variable = new_value(jitArrayType);
 
@@ -438,19 +440,19 @@ void JitCompiledFunction::visitListExpr(const ListExprCtx &ctx) {
     auto sizeType = jit_type_get_field(jitArrayType, 0);
     auto size = new_constant(ctx.items.size(), sizeType);
     insn_store_relative(variable, sizeOffset, size);
-    
+
     // Set data
     auto dataOffset = jit_type_get_offset(jitArrayType, 1);
     auto dataType = jit_type_get_field(jitArrayType, 1);
     // TODO: Provide a pointer here
-    
+
     lastValue = variable;
   }
 }
 
-void JitCompiledFunction::visitCastExpr(const CastExprCtx &ctx) {}
+void JitCompiledFunction::visitCastExpr(CastExprCtx &ctx) {}
 
-void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
+void JitCompiledFunction::visitCallExpr(CallExprCtx &ctx) {
   // Resolve the target first.
   ObjectResolver resolver(interpreter, getCurrentScope());
   ctx.target->accept(resolver);
@@ -498,7 +500,8 @@ void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
       // boxing.
       TypeResolver typeResolver(interpreter, getCurrentScope());
       arg->accept(typeResolver);
-      auto resultType = typeResolver.getLastType();
+      auto resultType = arg->runtimeType;
+      ;
       if (!resultType) {
         // If we couldn't resolve a type, obviously, we can't box a value.
         // TODO: This is a compiler error, so give a good error message.
@@ -524,7 +527,7 @@ void JitCompiledFunction::visitCallExpr(const CallExprCtx &ctx) {
   coerceToAny.pop();
 }
 
-void JitCompiledFunction::visitParenExpr(const ParenExprCtx &ctx) {
+void JitCompiledFunction::visitParenExpr(ParenExprCtx &ctx) {
   ctx.inner->accept(*this);
 }
 
