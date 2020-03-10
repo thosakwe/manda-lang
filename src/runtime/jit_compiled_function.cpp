@@ -68,6 +68,10 @@ jit_value JitCompiledFunction::insn_gc_decref(const jit_value &ptr) {
 }
 
 void JitCompiledFunction::build() {
+  // First, perform any and all static type resolutions.
+  TypeResolver typeResolver(interpreter, getCurrentScope());
+  astFunction.getNode()->body->accept(typeResolver);
+
   // Compile the body, and return it.
   // TODO: Type checking...
   AstPrinter printer(cout);
@@ -453,22 +457,17 @@ void JitCompiledFunction::visitListExpr(ListExprCtx &ctx) {
 void JitCompiledFunction::visitCastExpr(CastExprCtx &ctx) {}
 
 void JitCompiledFunction::visitCallExpr(CallExprCtx &ctx) {
-  // Resolve the target first.
-  ObjectResolver resolver(interpreter, getCurrentScope());
-  ctx.target->accept(resolver);
-  auto target = resolver.getLastObject();
-  if (!target) {
-    // TODO: Better error message here?
-    interpreter.reportError(ctx.target->location,
-                            "Evaluation of this call target failed.");
-    lastValue = nullopt;
-    return;
-  }
+  // TODO: Continue from here. We are trying to replace the ObjectResolver with
+  //  some code that resolves a jit_value instead of a Function.
+  //  It may make sense to do all resolutions in the TypeResolver, and just call
+  //  the function as-is.
 
-  // Ensure that the target is a function.
-  // TODO: What if we are instantiating a type?
-  auto *targetFunction = dynamic_cast<Function *>(target.get());
-  if (!targetFunction) {
+  // The call target's type must be a function type in order to be called.
+  // TODO: Can you call "any"?
+
+  auto *functionType =
+      dynamic_cast<FunctionType *>(ctx.target->runtimeType.get());
+  if (!functionType) {
     // TODO: Better error message here?
     interpreter.reportError(ctx.target->location,
                             "Only functions can be called.");
@@ -479,8 +478,10 @@ void JitCompiledFunction::visitCallExpr(CallExprCtx &ctx) {
   // TODO: Match arguments to parameters
   // TODO: Not everything should be *Any*, only those with
   // unresolved types, or explicitly declared Any.
-  vector<jit_value> arguments;
-  coerceToAny.push(true);
+  vector<jit_value_t> arguments;
+  vector<jit_type_t> parameters;
+
+  //  coerceToAny.push(true);
   for (auto &arg : ctx.arguments) {
     lastValue = nullopt;
     arg->accept(*this);
@@ -488,7 +489,7 @@ void JitCompiledFunction::visitCallExpr(CallExprCtx &ctx) {
       // TODO: Better error message here?
       interpreter.reportError(ctx.target->location,
                               "Could not resolve all arguments for this call.");
-      coerceToAny.pop();
+      //      coerceToAny.pop();
       return;
     }
 
@@ -501,7 +502,6 @@ void JitCompiledFunction::visitCallExpr(CallExprCtx &ctx) {
       TypeResolver typeResolver(interpreter, getCurrentScope());
       arg->accept(typeResolver);
       auto resultType = arg->runtimeType;
-      ;
       if (!resultType) {
         // If we couldn't resolve a type, obviously, we can't box a value.
         // TODO: This is a compiler error, so give a good error message.
@@ -519,11 +519,20 @@ void JitCompiledFunction::visitCallExpr(CallExprCtx &ctx) {
         lastValue = resultType->boxRawValue(*this, *lastValue);
       }
     }
-    arguments.push_back(*lastValue);
+    arguments.push_back(lastValue->raw());
+    parameters.push_back(lastValue->type());
   }
 
   // Compile the function call.
-  lastValue = targetFunction->acceptForJitCall(*this, arguments);
+  // Resolve the target to a JIT value.
+  ctx.target->accept(*this);
+
+  // Create a function signature for the call.
+  auto sig = jit_type_create_signature(
+      jit_abi_cdecl, functionType->getReturnType()->toJitType(),
+      parameters.data(), parameters.size(), 0);
+  lastValue = insn_call_indirect(*lastValue, sig, arguments.data(),
+                                 arguments.size(), JIT_CALL_TAIL);
   coerceToAny.pop();
 }
 
