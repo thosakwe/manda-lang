@@ -11,7 +11,7 @@ class TypeVisitor;
 class TypeCtx {
 public:
   Location location;
-  std::shared_ptr<manda::runtime::Type> runtimeType;
+  std::shared_ptr<manda::analysis::Type> runtimeType;
   TypeCtx() = default;
   TypeCtx(const Location &location) : location(location) {}
   TypeCtx(const TypeCtx &) = default;

@@ -3,7 +3,7 @@
 #include "ast_function.hpp"
 #include "bool_type.hpp"
 #include "char_type.hpp"
-#include "function.hpp"
+#include "function_type.hpp"
 #include "number_type.hpp"
 #include "string_type.hpp"
 #include "tuple_type.hpp"

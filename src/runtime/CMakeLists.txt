@@ -11,7 +11,7 @@ add_library(manda_runtime
     ansi_printer.cpp ansi_printer.hpp
     tuple_type.cpp tuple_type.hpp
     void_type.cpp void_type.hpp
-    function.cpp function.hpp
+    function_type.cpp function_type.hpp
     core_library.cpp core_library.hpp
     bool_type.cpp bool_type.hpp
     string_type.cpp string_type.hpp

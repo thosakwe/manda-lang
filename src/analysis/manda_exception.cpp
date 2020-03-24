@@ -2,7 +2,7 @@
 #include "../runtime/ansi_printer.hpp"
 
 using namespace manda::analysis;
-using namespace manda::runtime;
+using namespace manda::analysis;
 using namespace std;
 
 MandaException::MandaException(MandaException::MandaExceptionType type,
