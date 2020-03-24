@@ -1,7 +1,7 @@
 #include "core_library.hpp"
 #include "builtin_function.hpp"
 #include "interpreter.hpp"
-#include "void.hpp"
+#include "void_type.hpp"
 #include <iostream>
 #include <memory>
 

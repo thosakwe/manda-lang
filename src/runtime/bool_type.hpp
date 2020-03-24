@@ -1,9 +1,9 @@
-#ifndef MANDA_ANY_TYPE_HPP
-#define MANDA_ANY_TYPE_HPP
+#ifndef MANDA_BOOL_TYPE_HPP
+#define MANDA_BOOL_TYPE_HPP
 #include "type.hpp"
 
 namespace manda::runtime {
-class AnyType : public Type {
+class BoolType : public Type {
 public:
   [[nodiscard]] std::string getName() const override;
 };

@@ -2,12 +2,12 @@
 #define MANDA_CORE_LIBRARY_HPP
 #include "../analysis/location.hpp"
 #include "any_type.hpp"
-#include "bool.hpp"
-#include "char.hpp"
-#include "number.hpp"
-#include "string.hpp"
+#include "bool_type.hpp"
+#include "char_type.hpp"
+#include "number_type.hpp"
+#include "string_type.hpp"
 #include "symbol_table.hpp"
-#include "void.hpp"
+#include "void_type.hpp"
 #include <manda_api.h>
 
 namespace manda::runtime {
@@ -23,14 +23,7 @@ public:
   std::shared_ptr<StringType> stringType;
   std::shared_ptr<VoidType> voidType;
 
-  void install(RuntimeScope &scope);
-
-  static void printFn(manda_context_t context);
-
-  //  static std::shared_ptr<Object>
-  //  printFn(manda::runtime::Interpreter &, const manda::analysis::Location &,
-  //          std::shared_ptr<Object> &,
-  //          const std::vector<std::shared_ptr<Object>> &);
+  void install(Scope &scope);
 };
 } // namespace manda::runtime
 

@@ -1,7 +1,7 @@
 #include "ast_function.hpp"
 #include "jit_compiled_function.hpp"
 #include "object_resolver.hpp"
-#include "void.hpp"
+#include "void_type.hpp"
 
 using namespace manda::analysis;
 using namespace manda::runtime;

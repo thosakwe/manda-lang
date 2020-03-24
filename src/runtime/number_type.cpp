@@ -1,4 +1,4 @@
-#include "number.hpp"
+#include "number_type.hpp"
 #include "ansi_printer.hpp"
 #include "interpreter.hpp"
 #include "jit_compiled_function.hpp"

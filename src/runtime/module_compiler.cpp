@@ -1,7 +1,7 @@
 #include "module_compiler.hpp"
 #include "../analysis/ast_printer.hpp"
 #include "ast_function.hpp"
-#include "number.hpp"
+#include "number_type.hpp"
 #include "object_resolver.hpp"
 #include "type_resolver.hpp"
 #include <iostream>

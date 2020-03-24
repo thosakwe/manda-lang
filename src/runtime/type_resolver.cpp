@@ -2,7 +2,7 @@
 #include "array.hpp"
 #include "array_type.hpp"
 #include "function.hpp"
-#include "tuple.hpp"
+#include "tuple_type.hpp"
 #include <iostream>
 #include <sstream>
 #include <utility>
@@ -11,14 +11,14 @@ using namespace manda::analysis;
 using namespace manda::runtime;
 using namespace std;
 
-TypeResolver::TypeResolver(Interpreter &interpreter, const UnifiedScope &scope)
+TypeResolver::TypeResolver(Interpreter &interpreter, const Scope &scope)
     : interpreter(interpreter), BaseResolver(scope) {}
 
 // const shared_ptr<Type> &TypeResolver::getLastType() const { return lastType;
 // }
 
 void TypeResolver::visitTypeRef(TypeRefCtx &ctx) {
-  auto symbol = getRuntimeScope()->resolve(ctx.name);
+  auto symbol = getCurrentScope().resolve(ctx.name);
   if (!symbol) {
     ostringstream oss;
     oss << "The name '";
@@ -175,7 +175,7 @@ void TypeResolver::visitIdExpr(IdExprCtx &ctx) {
     return;
   }
 
-  auto symbol = getRuntimeScope()->resolve(ctx.name);
+  auto symbol = getCurrentScope()->resolve(ctx.name);
   if (!symbol) {
     ostringstream oss;
     oss << "The name \"" << ctx.name << "\" does not exist in this context.";

@@ -6,15 +6,10 @@
 #include "runtime/core_library.hpp"
 #include "runtime/interpreter.hpp"
 #include "runtime/module_compiler.hpp"
-#include "runtime/object_resolver.hpp"
-#include "runtime/vm.hpp"
 #include "runtime/vm_options.hpp"
-#include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <iterator>
-#include <readline/history.h>
-#include <readline/readline.h>
 #include <sstream>
 #include <string>
 #include <sysexits.h>
@@ -83,7 +78,6 @@ int runFile(const VMOptions &options) {
 
   string contents = {istreambuf_iterator<char>(ifs),
                      istreambuf_iterator<char>()};
-  VM vm(options);
   Scanner scanner(filename, contents);
   Parser parser(scanner);
   auto compilationUnit = parser.parseCompilationUnit();
@@ -99,16 +93,5 @@ int runFile(const VMOptions &options) {
       AstPrinter printer(cout);
       compilationUnit->accept(printer);
     }
-
-    // TODO: Proper error handling, etc.
-    auto mainWorker = make_shared<Worker>(options);
-    mainWorker->executeProgram(compilationUnit);
-    vm.addWorker(mainWorker);
-    return vm.run();
   }
 }
-
-// This *must* be global because of the way GNU Readline works. :(
-shared_ptr<Module> replModule;
-char **manda_repl_completer(const char *text, int start, int end);
-char *manda_completion_generator(const char *text, int state);

@@ -1,14 +1,14 @@
 #include "interpreter.hpp"
 #include "ansi_printer.hpp"
 #include "ast_function.hpp"
-#include "bool.hpp"
-#include "char.hpp"
+#include "bool_type.hpp"
+#include "char_type.hpp"
 #include "function.hpp"
-#include "number.hpp"
-#include "string.hpp"
-#include "tuple.hpp"
+#include "number_type.hpp"
+#include "string_type.hpp"
+#include "tuple_type.hpp"
 #include "type_resolver.hpp"
-#include "void.hpp"
+#include "void_type.hpp"
 #include <iostream>
 #include <sstream>
 

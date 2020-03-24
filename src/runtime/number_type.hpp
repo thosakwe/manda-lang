@@ -1,9 +1,9 @@
-#ifndef MANDA_ANY_TYPE_HPP
-#define MANDA_ANY_TYPE_HPP
-#include "type.hpp"
+#ifndef MANDA_NUMBER_TYPE_HPP
+#define MANDA_NUMBER_TYPE_HPP
+#include "object.hpp"
 
 namespace manda::runtime {
-class AnyType : public Type {
+class NumberType : public Type {
 public:
   [[nodiscard]] std::string getName() const override;
 };

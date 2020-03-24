@@ -17,15 +17,15 @@ void BaseResolver::pushScope() {
 
 void BaseResolver::popScope() { scopeStack.pop(); }
 
-std::shared_ptr<GenericScope<std::shared_ptr<Type>>> &
+std::shared_ptr<Scope<std::shared_ptr<Type>>> &
 BaseResolver::getTypeScope() {
   return getCurrentScope().typeScope;
 }
 
-std::shared_ptr<GenericScope<ObjectOrType>> &BaseResolver::getRuntimeScope() {
+std::shared_ptr<Scope<ObjectOrType>> &BaseResolver::getRuntimeScope() {
   return getCurrentScope().runtimeScope;
 }
 
-std::shared_ptr<GenericScope<jit_value>> &BaseResolver::getJitScope() {
+std::shared_ptr<Scope<jit_value>> &BaseResolver::getJitScope() {
   return getCurrentScope().jitScope;
 }

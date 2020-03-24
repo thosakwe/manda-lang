@@ -1,4 +1,4 @@
-#include "bool.hpp"
+#include "bool_type.hpp"
 #include "ansi_printer.hpp"
 #include "interpreter.hpp"
 
