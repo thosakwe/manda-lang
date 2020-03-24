@@ -10,8 +10,18 @@ FunctionType::FunctionType(std::vector<Parameter> parameters,
     : parameters(move(parameters)), returnType(move(returnType)) {}
 
 string FunctionType::getName() const {
-  // TODO: Return "Function(x, y) -> z"
-  return "Function";
+  // Return "fn (x, y) -> z"
+  ostringstream oss;
+  oss << "fn (";
+  for (unsigned long i = 0; i < getParameters().size(); i++) {
+    if (i > 0) {
+      oss << ", ";
+    }
+    oss << getParameters()[i].name;
+  }
+  oss << ") -> ";
+  oss << getReturnType()->getName();
+  return oss.str();
 }
 
 const vector<Parameter> &FunctionType::getParameters() const {
