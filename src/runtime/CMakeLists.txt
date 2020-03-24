@@ -1,5 +1,5 @@
 add_library(manda_runtime
-    vm_options.cpp vm_options.hpp
+    ansi_printer.cpp ansi_printer.hpp
     interpreter.cpp interpreter.hpp
-    ansi_printer.cpp ansi_printer.hpp)
+    vm_options.cpp vm_options.hpp)
 target_include_directories(manda_runtime PUBLIC ${JIT_INCLUDE_DIR})
