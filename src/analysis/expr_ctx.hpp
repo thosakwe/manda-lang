@@ -1,6 +1,6 @@
 #ifndef MANDA_EXPR_CTX_HPP
 #define MANDA_EXPR_CTX_HPP
-#include "../runtime/type.hpp"
+#include "type.hpp"
 #include "location.hpp"
 #include "token.hpp"
 #include "type_ctx.hpp"

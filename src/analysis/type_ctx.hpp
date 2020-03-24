@@ -1,6 +1,6 @@
 #ifndef MANDA_ANALYSIS_TYPE_HPP
 #define MANDA_ANALYSIS_TYPE_HPP
-#include "../runtime/type.hpp"
+#include "type.hpp"
 #include "location.hpp"
 #include "token.hpp"
 #include <string>
