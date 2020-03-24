@@ -3,8 +3,6 @@ find_path(JIT_INCLUDE_DIR jit/jit-plus.h)
 find_library(JIT_LIBRARY jit)
 find_library(JIT_PLUS_LIBRARY jitplus)
 add_subdirectory(analysis)
-add_subdirectory(compiler)
-add_subdirectory(ir)
 add_subdirectory(runtime)
 include_directories(JIT_INCLUDE_DIR)
 
