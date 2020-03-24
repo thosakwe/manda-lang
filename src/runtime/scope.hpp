@@ -1,5 +1,6 @@
 #ifndef MANDA_SCOPE_HPP
 #define MANDA_SCOPE_HPP
+#include "symbol.hpp"
 #include <memory>
 #include <optional>
 #include <string>
@@ -7,14 +8,6 @@
 #include <utility>
 
 namespace manda::runtime {
-enum Visibility { pub, priv };
-
-struct Symbol {
-  std::string name;
-  //  T value;
-  Visibility visibility = priv;
-};
-
 class Scope : public std::enable_shared_from_this<Scope> {
 private:
   std::shared_ptr<const Scope> parent;

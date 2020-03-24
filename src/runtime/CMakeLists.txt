@@ -20,5 +20,5 @@ add_library(manda_runtime
     any_type.cpp any_type.hpp
     scope.hpp scope.cpp
     base_resolver.cpp base_resolver.hpp
-    array_type.cpp array_type.hpp)
+    array_type.cpp array_type.hpp symbol.cpp symbol.hpp)
 target_include_directories(manda_runtime PUBLIC ${JIT_INCLUDE_DIR})
