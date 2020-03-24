@@ -3,11 +3,9 @@
 #include "../analysis/ast.hpp"
 #include "base_resolver.hpp"
 #include "core_library.hpp"
-#include "garbage_collector.hpp"
 #include "module.hpp"
 #include "symbol_table.hpp"
 #include "vm_options.hpp"
-#include <jit/jit-plus.h>
 #include <optional>
 #include <stack>
 
@@ -20,8 +18,6 @@ public:
   std::optional<std::shared_ptr<Object>> &getLastObject();
   [[nodiscard]] const VMOptions &getOptions() const;
   [[nodiscard]] const CoreLibrary &getCoreLibrary() const;
-  jit_context &getJitContext();
-  GarbageCollector &getGarbageCollector();
   bool ensureArgumentCount(const manda::analysis::Location &location,
                            const std::vector<std::shared_ptr<Object>> &args,
                            unsigned long size);
@@ -37,8 +33,6 @@ public:
 
 private:
   CoreLibrary coreLibrary;
-  GarbageCollector garbageCollector;
-  jit_context jitContext;
   std::shared_ptr<Module> module;
   VMOptions options;
   std::optional<std::shared_ptr<Object>> lastObject;

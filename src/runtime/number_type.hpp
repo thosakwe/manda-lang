@@ -1,6 +1,6 @@
 #ifndef MANDA_NUMBER_TYPE_HPP
 #define MANDA_NUMBER_TYPE_HPP
-#include "object.hpp"
+#include "type.hpp"
 
 namespace manda::runtime {
 class NumberType : public Type {

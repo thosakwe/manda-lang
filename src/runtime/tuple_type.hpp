@@ -6,11 +6,11 @@
 namespace manda::runtime {
 class TupleType : public Type {
 public:
-  explicit TupleType(std::vector<std::shared_ptr<Type>> items);
+  explicit TupleType(std::vector<std::shared_ptr<Type>> itemTypes);
   [[nodiscard]] std::string getName() const override;
 
 private:
-  std::vector<std::shared_ptr<Type>> items;
+  std::vector<std::shared_ptr<Type>> itemTypes;
 };
 } // namespace manda::runtime
 
