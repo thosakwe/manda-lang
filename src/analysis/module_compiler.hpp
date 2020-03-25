@@ -1,6 +1,6 @@
 #ifndef MANDA_MODULE_COMPILER_HPP
 #define MANDA_MODULE_COMPILER_HPP
-#include "../analysis/ast.hpp"
+#include "ast.hpp"
 #include "interpreter.hpp"
 #include "module.hpp"
 #include "symbol_table.hpp"

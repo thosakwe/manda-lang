@@ -1,6 +1,6 @@
 #ifndef MANDA_MODULE_HPP
 #define MANDA_MODULE_HPP
-#include "../analysis/expr_ctx.hpp"
+#include "expr_ctx.hpp"
 #include "symbol_table.hpp"
 #include <memory>
 #include <string>

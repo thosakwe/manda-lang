@@ -1,8 +1,9 @@
 #ifndef MANDA_EXPR_CTX_HPP
 #define MANDA_EXPR_CTX_HPP
-#include "type.hpp"
+#include "base_ctx.hpp"
 #include "location.hpp"
 #include "token.hpp"
+#include "type.hpp"
 #include "type_ctx.hpp"
 #include <memory>
 #include <string>
@@ -12,18 +13,17 @@
 namespace manda::analysis {
 class ExprVisitor;
 
-class ExprCtx {
+class ExprCtx : public BaseCtx {
 public:
-  Location location;
   //  std::shared_ptr<manda::analysis::Object> constantValue;
   std::shared_ptr<manda::analysis::Type> runtimeType;
   ExprCtx() = default;
-  explicit ExprCtx(Location location) : location(std::move(location)) {}
+  explicit ExprCtx(const Location &location) : BaseCtx(location) {}
   ExprCtx(const ExprCtx &) = default;
   ExprCtx(ExprCtx &&) = default;
   ExprCtx &operator=(const ExprCtx &) = default;
   ExprCtx &operator=(ExprCtx &&) = default;
-  virtual ~ExprCtx() = default;
+  ~ExprCtx() override = default;
   virtual void accept(ExprVisitor &visitor) = 0;
   virtual ExprCtx *clone() const = 0;
   virtual std::unique_ptr<ExprCtx> cloneToUniquePointer() const;

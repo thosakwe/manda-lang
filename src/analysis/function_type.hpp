@@ -1,7 +1,7 @@
 #ifndef MANDA_FUNCTION_TYPE_HPP
 #define MANDA_FUNCTION_TYPE_HPP
-#include "../analysis/location.hpp"
-#include "interpreter.hpp"
+#include "location.hpp"
+#include "type.hpp"
 #include <string>
 #include <vector>
 

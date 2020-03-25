@@ -1,24 +1,24 @@
 #ifndef MANDA_ANALYSIS_TYPE_HPP
 #define MANDA_ANALYSIS_TYPE_HPP
-#include "type.hpp"
+#include "base_ctx.hpp"
 #include "location.hpp"
 #include "token.hpp"
+#include "type.hpp"
 #include <string>
 
 namespace manda::analysis {
 class TypeVisitor;
 
-class TypeCtx {
+class TypeCtx : public BaseCtx {
 public:
-  Location location;
   std::shared_ptr<manda::analysis::Type> runtimeType;
   TypeCtx() = default;
-  TypeCtx(const Location &location) : location(location) {}
+  explicit TypeCtx(const Location &location) : BaseCtx(location) {}
   TypeCtx(const TypeCtx &) = default;
   TypeCtx(TypeCtx &&) = default;
   TypeCtx &operator=(const TypeCtx &) = default;
   TypeCtx &operator=(TypeCtx &&) = default;
-  virtual ~TypeCtx() = default;
+  ~TypeCtx() override = default;
   virtual void accept(TypeVisitor &visitor) = 0;
   virtual TypeCtx *clone() const = 0;
   virtual std::unique_ptr<TypeCtx> cloneToUniquePointer() const;

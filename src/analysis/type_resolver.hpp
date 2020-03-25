@@ -1,6 +1,6 @@
 #ifndef MANDA_TYPE_RESOLVER_HPP
 #define MANDA_TYPE_RESOLVER_HPP
-#include "../analysis/type_ctx.hpp"
+#include "type_ctx.hpp"
 #include "base_resolver.hpp"
 #include "interpreter.hpp"
 #include "symbol_table.hpp"

@@ -1,5 +1,5 @@
 #include "module_compiler.hpp"
-#include "../analysis/ast_printer.hpp"
+#include "ast_printer.hpp"
 #include "ast_function.hpp"
 #include "number_type.hpp"
 #include "type_resolver.hpp"

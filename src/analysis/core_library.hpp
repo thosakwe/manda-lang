@@ -1,6 +1,6 @@
 #ifndef MANDA_CORE_LIBRARY_HPP
 #define MANDA_CORE_LIBRARY_HPP
-#include "../analysis/location.hpp"
+#include "location.hpp"
 #include "any_type.hpp"
 #include "bool_type.hpp"
 #include "char_type.hpp"
