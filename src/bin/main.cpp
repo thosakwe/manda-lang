@@ -96,6 +96,11 @@ int runFile(const VMOptions &options) {
     ModuleCompiler moduleCompiler(analyzer);
     moduleCompiler.visitCompilationUnit(*compilationUnit);
 
+    // Just dump everything.
+   for (auto &pair : moduleCompiler.module->getSymbolTable()->getSymbols()) {
+     cout << "  * " << pair.first << ": " << pair.second.type->getName() << endl;
+   }
+
     return 0;
   }
 }

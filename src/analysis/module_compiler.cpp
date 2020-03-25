@@ -20,8 +20,6 @@ ModuleCompiler::ModuleCompiler(Analyzer &analyzer,
                                std::shared_ptr<Module> &module)
     : analyzer(analyzer), module(module) {}
 
-shared_ptr<Module> &ModuleCompiler::getModule() { return module; }
-
 void ModuleCompiler::visitCompilationUnit(CompilationUnitCtx &ctx) {
   for (auto &node : ctx.declarations) {
     node->accept(*this);
