@@ -1,7 +1,6 @@
 #include "type_resolver.hpp"
-#include "array.hpp"
 #include "array_type.hpp"
-#include "function.hpp"
+#include "function_type.hpp"
 #include "tuple_type.hpp"
 #include <iostream>
 #include <sstream>
@@ -11,30 +10,26 @@ using namespace manda::analysis;
 using namespace manda::analysis;
 using namespace std;
 
-TypeResolver::TypeResolver(Interpreter &interpreter, const Scope &scope)
-    : interpreter(interpreter), BaseResolver(scope) {}
-
-// const shared_ptr<Type> &TypeResolver::getLastType() const { return lastType;
-// }
+TypeResolver::TypeResolver(Analyzer &analyzer,
+                           const std::shared_ptr<Scope> &scope)
+    : analyzer(analyzer), BaseResolver(scope) {}
 
 void TypeResolver::visitTypeRef(TypeRefCtx &ctx) {
-  auto symbol = getCurrentScope().resolve(ctx.name);
+  auto symbol = getCurrentScope()->resolve(ctx.name);
   if (!symbol) {
     ostringstream oss;
     oss << "The name '";
     oss << ctx.name << "' does not exist in this context.";
-    interpreter.reportError(ctx.location, oss.str());
+    analyzer.errorReporter.reportError(ctx.location, oss.str());
     ctx.runtimeType = nullptr;
-  } else if (holds_alternative<shared_ptr<Object>>(*symbol)) {
+  } else if (!symbol->typeValue) {
     ostringstream oss;
     oss << "The value of symbol '";
-    oss << ctx.name << "' is a value, not a type.";
-    interpreter.reportError(ctx.location, oss.str());
+    oss << ctx.name << "' is not a type.";
+    analyzer.errorReporter.reportError(ctx.location, oss.str());
     ctx.runtimeType = nullptr;
-  } else if (holds_alternative<shared_ptr<Type>>(*symbol)) {
-    ctx.runtimeType = get<shared_ptr<Type>>(*symbol);
   } else {
-    ctx.runtimeType = nullptr;
+    ctx.runtimeType = symbol->typeValue;
   }
 }
 
@@ -45,13 +40,13 @@ void TypeResolver::visitVarExpr(VarExprCtx &ctx) {
   if (!ctx.value->runtimeType) {
     ostringstream oss;
     oss << "The name \"" << ctx.name << "\" does not exist in this context.";
-    interpreter.reportError(ctx.location, oss.str());
+    analyzer.errorReporter.reportError(ctx.location, oss.str());
   } else {
-    if (interpreter.getOptions().developerMode) {
+    if (analyzer.vmOptions.developerMode) {
       cout << "TypeResolver found var " << ctx.name << ": "
            << ctx.value->runtimeType->getName() << endl;
     }
-    getCurrentScope().addType(ctx.name, ctx.value->runtimeType);
+    getCurrentScope()->add(ctx.name, {ctx.location, ctx.value->runtimeType});
   }
 }
 
@@ -62,17 +57,17 @@ std::shared_ptr<Type> TypeResolver::visitIfClause(IfClauseCtx &ctx) {
   // TODO: Support Any in bool expression
   ctx.condition->accept(*this);
   if (!ctx.condition->runtimeType) {
-    interpreter.reportError(
+    analyzer.errorReporter.reportError(
         ctx.body->location,
         "Could not determine the type of the condition for this if clause.");
     return nullptr;
   } else if (!ctx.condition->runtimeType->isAssignableTo(
-                 interpreter.getCoreLibrary().boolType)) {
+                 analyzer.coreLibrary.boolType)) {
     ostringstream oss;
     oss << "This expression produces ";
     oss << ctx.condition->runtimeType->getName();
     oss << ", but if conditions can only produce bool.";
-    interpreter.reportError(ctx.body->location, oss.str());
+    analyzer.errorReporter.reportError(ctx.body->location, oss.str());
   }
 
   ctx.body->accept(*this);
@@ -97,7 +92,7 @@ TypeResolver::findCommonAncestor(const shared_ptr<Type> &left,
       j++;
     }
   }
-  return interpreter.getCoreLibrary().anyType;
+  return analyzer.coreLibrary.anyType;
 }
 
 vector<shared_ptr<Type>>
@@ -134,20 +129,19 @@ void TypeResolver::visitIfExpr(IfExprCtx &ctx) {
 
   // If there is no else, the if must return void.
   if (!ctx.elseClause) {
-    if (!ifClauseType->isAssignableTo(interpreter.getCoreLibrary().voidType)) {
-      interpreter.reportError(ctx.location,
-                              "If there is no 'else' clause, then an 'if' "
-                              "expression must resolve to the void type.");
+    if (!ifClauseType->isAssignableTo(analyzer.coreLibrary.voidType)) {
+      analyzer.errorReporter.reportError(
+          ctx.location, "If there is no 'else' clause, then an 'if' "
+                        "expression must resolve to the void type.");
       ctx.runtimeType = nullptr;
       return;
     }
   } else {
     // Reduce to common denominator type, once more.
-    TypeResolver elseClauseResolver(interpreter,
-                                    getCurrentScope().createChild());
+    TypeResolver elseClauseResolver(analyzer, getCurrentScope()->createChild());
     ctx.elseClause->accept(elseClauseResolver);
     if (ctx.elseClause->runtimeType) {
-      interpreter.reportError(
+      analyzer.errorReporter.reportError(
           ctx.elseClause->location,
           "Could not resolve the return type of the 'else' clause, so "
           "resolution of the entire 'if' expression failed.");
@@ -164,68 +158,54 @@ void TypeResolver::visitIfExpr(IfExprCtx &ctx) {
 }
 
 void TypeResolver::visitVoidLiteral(VoidLiteralCtx &ctx) {
-  ctx.runtimeType = interpreter.getCoreLibrary().voidType;
+  ctx.runtimeType = analyzer.coreLibrary.voidType;
 }
 
 void TypeResolver::visitIdExpr(IdExprCtx &ctx) {
-  // TODO: Probably only use the type stack?
-  auto typeSymbol = getTypeScope()->resolve(ctx.name);
-  if (typeSymbol) {
-    ctx.runtimeType = *typeSymbol;
-    return;
-  }
-
   auto symbol = getCurrentScope()->resolve(ctx.name);
   if (!symbol) {
     ostringstream oss;
     oss << "The name \"" << ctx.name << "\" does not exist in this context.";
-    interpreter.reportError(ctx.location, oss.str());
+    analyzer.errorReporter.reportError(ctx.location, oss.str());
     ctx.runtimeType = nullptr;
-  } else if (holds_alternative<shared_ptr<Type>>(*symbol)) {
+  } else if (!symbol->typeValue) {
     // TODO: Reify types?
     ostringstream oss;
-    oss << "The symbol \"" << ctx.name
-        << "\" resolves to a type, not an object.";
-    interpreter.reportError(ctx.location, oss.str());
+    oss << "The symbol \"" << ctx.name << "\" does not resolve to a type.";
+    analyzer.errorReporter.reportError(ctx.location, oss.str());
     ctx.runtimeType = nullptr;
-  } else if (holds_alternative<shared_ptr<Object>>(*symbol)) {
-    ctx.runtimeType = get<shared_ptr<Object>>(*symbol)->getType(interpreter);
   } else {
-    // TODO: Throw an error here, since it should never be reached?
-    ostringstream oss;
-    oss << "Compiler error on variable \"" << ctx.name
-        << "\". Please file a bug report.";
-    interpreter.reportError(ctx.location, oss.str());
-    ctx.runtimeType = nullptr;
+    symbol->usages.push_back({ctx.location, SymbolUsage::get});
+    ctx.runtimeType = symbol->typeValue;
   }
 }
 
 void TypeResolver::visitNumberLiteral(NumberLiteralCtx &ctx) {
-  ctx.runtimeType = interpreter.getCoreLibrary().numberType;
+  ctx.runtimeType = analyzer.coreLibrary.numberType;
 }
 
 void TypeResolver::visitStringLiteral(StringLiteralCtx &ctx) {
   if (ctx.isChar()) {
-    ctx.runtimeType = interpreter.getCoreLibrary().charType;
+    ctx.runtimeType = analyzer.coreLibrary.charType;
   } else {
-    ctx.runtimeType = interpreter.getCoreLibrary().stringType;
+    ctx.runtimeType = analyzer.coreLibrary.stringType;
   }
 }
 
 void TypeResolver::visitBoolLiteral(BoolLiteralCtx &ctx) {
-  ctx.runtimeType = interpreter.getCoreLibrary().boolType;
+  ctx.runtimeType = analyzer.coreLibrary.boolType;
 }
 
 void TypeResolver::visitBlockExpr(BlockExprCtx &ctx) {
   if (ctx.body.empty()) {
-    ctx.runtimeType = interpreter.getCoreLibrary().voidType;
+    ctx.runtimeType = analyzer.coreLibrary.voidType;
   } else {
     // TODO: Should *all* nodes be visited, or just the last?
     for (auto &node : ctx.body) {
       ctx.runtimeType = nullptr;
       node->accept(*this);
       if (!ctx.runtimeType) {
-        interpreter.reportError(
+        analyzer.errorReporter.reportError(
             node->location,
             "Could not resolve the types of all items in this block.");
         return;
@@ -241,7 +221,7 @@ void TypeResolver::visitTupleExpr(TupleExprCtx &ctx) {
     if (!item->runtimeType) {
       // TODO: Allow passing as Any
       // TODO: Should any errors be in the TypeResolver at all?
-      interpreter.reportError(
+      analyzer.errorReporter.reportError(
           item->location,
           "Could not resolve the types of all items in this tuple.");
       return;
@@ -260,7 +240,7 @@ void TypeResolver::visitListExpr(ListExprCtx &ctx) {
     if (!item->runtimeType) {
       // TODO: Allow passing as Any
       // TODO: Should any errors be in the TypeResolver at all?
-      interpreter.reportError(
+      analyzer.errorReporter.reportError(
           item->location,
           "Could not resolve the types of all items in this list.");
       return;
@@ -281,7 +261,7 @@ void TypeResolver::visitCastExpr(CastExprCtx &ctx) {}
 
 void TypeResolver::visitCallExpr(CallExprCtx &ctx) {
   // TODO: Is there a need to resolve parameter types?
-  TypeResolver functionTypeResolver(interpreter, getCurrentScope());
+  TypeResolver functionTypeResolver(analyzer, getCurrentScope());
   ctx.target->accept(functionTypeResolver);
   auto targetType = ctx.target->runtimeType;
   if (!targetType) {

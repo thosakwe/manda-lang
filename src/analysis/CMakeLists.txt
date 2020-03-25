@@ -32,9 +32,10 @@ add_library(manda_analysis
     string_type.cpp string_type.hpp
     symbol.cpp symbol.hpp
     token.cpp token.hpp
+    tuple_type.cpp tuple_type.hpp
     type.cpp type.hpp
     type_ctx.cpp type_ctx.hpp
     type_resolver.cpp type_resolver.hpp
-    void_type.cpp void_type.hpp base_ctx.cpp base_ctx.hpp)
+    void_type.cpp void_type.hpp base_ctx.cpp base_ctx.hpp analyzer.cpp analyzer.hpp)
 
 target_include_directories(manda_analysis PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")

@@ -1,10 +1,10 @@
 #ifndef MANDA_TYPE_RESOLVER_HPP
 #define MANDA_TYPE_RESOLVER_HPP
-#include "type_ctx.hpp"
+#include "analyzer.hpp"
 #include "base_resolver.hpp"
-#include "interpreter.hpp"
-#include "symbol_table.hpp"
+#include "scope.hpp"
 #include "type.hpp"
+#include "type_ctx.hpp"
 #include <memory>
 #include <vector>
 
@@ -13,8 +13,8 @@ class TypeResolver : public manda::analysis::TypeVisitor,
                      public manda::analysis::ExprVisitor,
                      public BaseResolver {
 public:
-  TypeResolver(Interpreter &interpreter, const Scope &scope);
-//  [[nodiscard]] const std::shared_ptr<Type> &getLastType() const;
+  TypeResolver(Analyzer &analyzer, const std::shared_ptr<Scope> &scope);
+  //  [[nodiscard]] const std::shared_ptr<Type> &getLastType() const;
   void visitTypeRef(analysis::TypeRefCtx &ctx) override;
   void visitVarExpr(analysis::VarExprCtx &ctx) override;
   void visitFnDeclExpr(analysis::FnDeclExprCtx &ctx) override;
@@ -48,15 +48,17 @@ public:
   /**
    * Computes the type hierarchy, up to a given type.
    * @param type
-   * @return Returns a vector containing the given type and all of its parents, in order. The last will be the root type.
+   * @return Returns a vector containing the given type and all of its parents,
+   * in order. The last will be the root type.
    */
-  std::vector<std::shared_ptr<Type>> findPathToRoot(const std::shared_ptr<Type> &type);
+  std::vector<std::shared_ptr<Type>>
+  findPathToRoot(const std::shared_ptr<Type> &type);
 
 private:
-  Interpreter &interpreter;
+  Analyzer &analyzer;
   //  std::shared_ptr<RuntimeScope> scope;
   //  std::stack<std::shared_ptr<TypeScope>> typeScopeStack;
-//  std::shared_ptr<Type> lastType;
+  //  std::shared_ptr<Type> lastType;
 };
 } // namespace manda::analysis
 

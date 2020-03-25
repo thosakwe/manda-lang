@@ -74,7 +74,8 @@ void Interpreter::visitTypeDecl(TypeDeclCtx &ctx) {
   } else {
     // TODO: Handle type parameters for generic types
     // TODO: Handle redefined symbols in non-REPL mode
-    getCurrentScope().addType(ctx.name, ctx.type->runtimeType, options.isREPL());
+    getCurrentScope().addType(ctx.name, ctx.type->runtimeType,
+                              options.isREPL());
   }
 }
 

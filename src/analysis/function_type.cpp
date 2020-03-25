@@ -1,5 +1,4 @@
 #include "function_type.hpp"
-#include "ansi_printer.hpp"
 #include <sstream>
 
 using namespace manda::analysis;

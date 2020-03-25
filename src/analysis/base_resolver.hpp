@@ -7,11 +7,11 @@ namespace manda::analysis {
 class BaseResolver {
 public:
   BaseResolver();
-  explicit BaseResolver(const Scope &existingScope);
+  explicit BaseResolver(const std::shared_ptr<Scope> &existingScope);
 
 protected:
-  std::stack<Scope> scopeStack;
-  Scope &getCurrentScope();
+  std::stack<std::shared_ptr<Scope>> scopeStack;
+  std::shared_ptr<Scope> &getCurrentScope();
   void pushScope();
   void popScope();
 };

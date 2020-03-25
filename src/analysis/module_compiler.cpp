@@ -1,6 +1,6 @@
 #include "module_compiler.hpp"
 #include "ast_printer.hpp"
-#include "ast_function.hpp"
+#include "function_type.hpp"
 #include "number_type.hpp"
 #include "type_resolver.hpp"
 #include <iostream>
@@ -10,18 +10,15 @@ using namespace manda::analysis;
 using namespace manda::analysis;
 using namespace std;
 
-ModuleCompiler::ModuleCompiler(Interpreter &interpreter)
-    : interpreter(interpreter) {
+ModuleCompiler::ModuleCompiler(Analyzer &analyzer)
+    : analyzer(analyzer) {
   // TODO: Use C++17 fs::path::filename
-  module = make_shared<Module>(interpreter.getOptions().inputFile);
-  scopeStack.push(module->getSymbolTable());
+  module = make_shared<Module>(analyzer.vmOptions.inputFile);
 }
 
-ModuleCompiler::ModuleCompiler(Interpreter &interpreter,
+ModuleCompiler::ModuleCompiler(Analyzer &analyzer,
                                std::shared_ptr<Module> &module)
-    : interpreter(interpreter), module(module) {
-  scopeStack.push(module->getSymbolTable());
-}
+    : analyzer(analyzer), module(module) {}
 
 shared_ptr<Module> &ModuleCompiler::getModule() { return module; }
 
@@ -35,24 +32,20 @@ void ModuleCompiler::visitExprDecl(ExprDeclCtx &ctx) {
   using namespace manda::analysis;
   auto *topLevel = dynamic_cast<TopLevelExprCtx *>(ctx.value.get());
   if (!topLevel) {
-    if (interpreter.getOptions().isREPL()) {
+    if (analyzer.vmOptions.isREPL()) {
       // The REPL will evaluate any top-level expressions.
       module->getTopLevelExpressions().push_back(
           ctx.value->cloneToUniquePointer());
     } else {
       // Disallow top-level evaluations in regular mode.
-      interpreter.reportError(
+      analyzer.errorReporter.reportError(
           ctx.location,
           "This expression is not allowed in the top-level context.");
     }
   } else {
-    // Visit top-level
-    UnifiedScope scope;
-    scope.runtimeScope = module->getSymbolTable();
-
     // Try to visit functions
     if (auto *fnDecl = dynamic_cast<FnDeclExprCtx *>(topLevel)) {
-      visitFnDecl(*fnDecl, scope);
+      visitFnDecl(*fnDecl, module->getSymbolTable());
     }
 
     //    ObjectResolver resolver(interpreter, scope);
@@ -62,7 +55,7 @@ void ModuleCompiler::visitExprDecl(ExprDeclCtx &ctx) {
 
 void ModuleCompiler::visitTypeDecl(TypeDeclCtx &ctx) {}
 
-void ModuleCompiler::visitFnDecl(FnDeclExprCtx &ctx, UnifiedScope &scope) {
+void ModuleCompiler::visitFnDecl(FnDeclExprCtx &ctx, const std::shared_ptr<Scope> &scope) {
   // Determine the function's return type.
   // If none is given, default to `Any`.
   //
@@ -70,11 +63,11 @@ void ModuleCompiler::visitFnDecl(FnDeclExprCtx &ctx, UnifiedScope &scope) {
   shared_ptr<Type> returnType;
 
   if (!ctx.returnType) {
-    TypeResolver typeResolver(interpreter, scope);
+    TypeResolver typeResolver(analyzer, scope);
     ctx.body->accept(typeResolver);
     returnType = ctx.body->runtimeType;
   } else {
-    TypeResolver typeResolver(interpreter, scope);
+    TypeResolver typeResolver(analyzer, scope);
     ctx.returnType->accept(typeResolver);
     returnType = ctx.returnType->runtimeType;
   }
@@ -87,17 +80,16 @@ void ModuleCompiler::visitFnDecl(FnDeclExprCtx &ctx, UnifiedScope &scope) {
       oss << ctx.name << "\"";
     }
     oss << ".";
-    interpreter.reportError(ctx.location, oss.str());
-    lastObject = nullptr;
+    analyzer.errorReporter.reportError(ctx.location, oss.str());
     // Default to returning Any.
-    returnType = interpreter.getCoreLibrary().anyType;
+    returnType = analyzer.coreLibrary.anyType;
     return;
   }
 
   // Build the list of parameters.
   // TODO: Handle default symbols on parameters
   vector<Parameter> params;
-  if (interpreter.getOptions().developerMode) {
+  if (analyzer.vmOptions.developerMode) {
     // TODO: Print param types
     cout << "Total params: " << ctx.params.size() << endl;
   }
@@ -105,9 +97,9 @@ void ModuleCompiler::visitFnDecl(FnDeclExprCtx &ctx, UnifiedScope &scope) {
   for (auto &node : ctx.params) {
     shared_ptr<Type> type;
     if (!node->type) {
-      type = interpreter.getCoreLibrary().anyType;
+      type = analyzer.coreLibrary.anyType;
     } else {
-      TypeResolver typeResolver(interpreter, scope);
+      TypeResolver typeResolver(analyzer, scope);
       node->type->accept(typeResolver);
       type = node->type->runtimeType;
     }
@@ -116,11 +108,10 @@ void ModuleCompiler::visitFnDecl(FnDeclExprCtx &ctx, UnifiedScope &scope) {
       ostringstream oss;
       oss << "Failed to resolve a type for parameter \"";
       oss << node->name << "\".";
-      interpreter.reportError(node->location, oss.str());
-      lastObject = nullptr;
+      analyzer.errorReporter.reportError(node->location, oss.str());
       return;
     } else {
-      if (interpreter.getOptions().developerMode) {
+      if (analyzer.vmOptions.developerMode) {
         // TODO: Print param types
         cout << "Found param \"" << node->name << "\"";
       }
@@ -129,15 +120,14 @@ void ModuleCompiler::visitFnDecl(FnDeclExprCtx &ctx, UnifiedScope &scope) {
   }
 
   // Build the function object, AND its type.
-  auto value = make_shared<AstFunction>(ctx, scope, params, returnType);
-  ctx.runtimeType = value->getType(interpreter);
-  lastObject = value;
+  auto functionType = make_shared<FunctionType>(params, returnType);
+  ctx.runtimeType = functionType;
 
   if (!ctx.name.empty()) {
     // TODO: Handle redefined names
-    if (interpreter.getOptions().developerMode) {
+    if (analyzer.vmOptions.developerMode) {
       cout << "Defining " << ctx.name << " in current scope." << endl;
     }
-    scope.runtimeScope->add(ctx.name, value, interpreter.getOptions().isREPL());
+    scope->add(ctx.name, {ctx.location, functionType}, analyzer.vmOptions.isREPL());
   }
 }

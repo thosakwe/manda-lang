@@ -7,20 +7,25 @@
 namespace manda::analysis {
 enum Visibility { pub, priv };
 
+struct SymbolUsage {
+  enum SymbolUsageType { get, set };
+  Location location;
+  SymbolUsageType type = get;
+};
+
 struct Symbol {
-  std::shared_ptr<manda::analysis::BaseCtx> node;
+  Location location;
   std::shared_ptr<Type> type;
 
   Visibility visibility = priv;
+
+  std::vector<SymbolUsage> usages;
 
   std::optional<bool> boolValue;
   std::optional<char> charValue;
   std::optional<int64_t> intValue;
   std::optional<std::string> stringValue;
   std::shared_ptr<Type> typeValue;
-
-  [[nodiscard]] std::shared_ptr<manda::analysis::ExprCtx> nodeAsExpr() const;
-  [[nodiscard]] std::shared_ptr<manda::analysis::TypeCtx> nodeAsType() const;
 };
 } // namespace manda::analysis
 

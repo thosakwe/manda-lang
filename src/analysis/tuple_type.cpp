@@ -1,6 +1,5 @@
 #include "tuple_type.hpp"
 #include <exception>
-#include <iostream>
 #include <sstream>
 
 using namespace manda::analysis;
