@@ -1,12 +1,9 @@
 #include "../analysis/ast_printer.hpp"
+#include "../analysis/module_compiler.hpp"
 #include "../analysis/parser.hpp"
 #include "../analysis/scanner.hpp"
 #include "../runtime/ansi_printer.hpp"
-#include "../runtime/interpreter.hpp"
-#include "../runtime/vm_options.hpp"
 #include "defs.hpp"
-#include "runtime/core_library.hpp"
-#include "runtime/module_compiler.hpp"
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -93,5 +90,12 @@ int runFile(const VMOptions &options) {
       AstPrinter printer(cout);
       compilationUnit->accept(printer);
     }
+
+    // Analyze everything.
+    Analyzer analyzer(options);
+    ModuleCompiler moduleCompiler(analyzer);
+    moduleCompiler.visitCompilationUnit(*compilationUnit);
+
+    return 0;
   }
 }
