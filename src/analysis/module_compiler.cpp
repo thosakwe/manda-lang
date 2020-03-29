@@ -10,8 +10,7 @@ using namespace manda::analysis;
 using namespace manda::analysis;
 using namespace std;
 
-ModuleCompiler::ModuleCompiler(Analyzer &analyzer)
-    : analyzer(analyzer) {
+ModuleCompiler::ModuleCompiler(Analyzer &analyzer) : analyzer(analyzer) {
   // TODO: Use C++17 fs::path::filename
   module = make_shared<Module>(analyzer.vmOptions.inputFile);
 }
@@ -32,8 +31,7 @@ void ModuleCompiler::visitExprDecl(ExprDeclCtx &ctx) {
   if (!topLevel) {
     if (analyzer.vmOptions.isREPL()) {
       // The REPL will evaluate any top-level expressions.
-      module->getTopLevelExpressions().push_back(
-          ctx.value->cloneToUniquePointer());
+      module->getTopLevelExpressions().push_back(ctx.value);
     } else {
       // Disallow top-level evaluations in regular mode.
       analyzer.errorReporter.reportError(
@@ -53,7 +51,8 @@ void ModuleCompiler::visitExprDecl(ExprDeclCtx &ctx) {
 
 void ModuleCompiler::visitTypeDecl(TypeDeclCtx &ctx) {}
 
-void ModuleCompiler::visitFnDecl(FnDeclExprCtx &ctx, const std::shared_ptr<Scope> &scope) {
+void ModuleCompiler::visitFnDecl(FnDeclExprCtx &ctx,
+                                 const std::shared_ptr<Scope> &scope) {
   // Determine the function's return type.
   // If none is given, default to `Any`.
   //
@@ -126,6 +125,7 @@ void ModuleCompiler::visitFnDecl(FnDeclExprCtx &ctx, const std::shared_ptr<Scope
     if (analyzer.vmOptions.developerMode) {
       cout << "Defining " << ctx.name << " in current scope." << endl;
     }
-    scope->add(ctx.name, {ctx.location, functionType}, analyzer.vmOptions.isREPL());
+    scope->add(ctx.name, {ctx.location, functionType},
+               analyzer.vmOptions.isREPL());
   }
 }

@@ -79,29 +79,29 @@ bool Parser::next(Token::TokenType type) {
   }
 }
 
-unique_ptr<DeclCtx> Parser::parseDecl() {
+shared_ptr<DeclCtx> Parser::parseDecl() {
   auto expr = parseExprDecl();
   if (expr)
     return expr;
   return parseTypeDecl();
 }
 
-unique_ptr<ExprDeclCtx> Parser::parseExprDecl() {
+shared_ptr<ExprDeclCtx> Parser::parseExprDecl() {
   auto expr = parseExpr();
   if (!expr)
     return nullptr;
-  return make_unique<ExprDeclCtx>(expr);
+  return make_shared<ExprDeclCtx>(expr);
 }
 
-unique_ptr<TypeDeclCtx> Parser::parseTypeDecl() { return nullptr; }
+shared_ptr<TypeDeclCtx> Parser::parseTypeDecl() { return nullptr; }
 
-unique_ptr<ExprCtx> Parser::parseExpr() {
+shared_ptr<ExprCtx> Parser::parseExpr() {
   auto lhs = parsePrimaryExpr();
   if (!lhs) {
     return nullptr;
   } else if (next(Token::LPAREN)) {
     auto lastLocation = current.location;
-    auto ptr = make_unique<CallExprCtx>(lhs);
+    auto ptr = make_shared<CallExprCtx>(lhs);
     auto arg = parseExpr();
     while (arg) {
       lastLocation = arg->location;
@@ -122,19 +122,19 @@ unique_ptr<ExprCtx> Parser::parseExpr() {
   }
 }
 
-unique_ptr<ExprCtx> Parser::parsePrimaryExpr() {
+shared_ptr<ExprCtx> Parser::parsePrimaryExpr() {
   if (next(Token::ID)) {
-    return make_unique<IdExprCtx>(current);
+    return make_shared<IdExprCtx>(current);
   } else if (next(Token::NUMBER)) {
-    return make_unique<NumberLiteralCtx>(current);
+    return make_shared<NumberLiteralCtx>(current);
   } else if (next(Token::TRUE) || next(Token::FALSE)) {
-    return make_unique<BoolLiteralCtx>(current);
+    return make_shared<BoolLiteralCtx>(current);
   } else if (next(Token::SINGLE_QUOTE)) {
     return parseStringLiteral(current, true);
   } else if (next(Token::DOUBLE_QUOTE)) {
     return parseStringLiteral(current, false);
   } else if (next(Token::VOID)) {
-    return make_unique<VoidLiteralCtx>();
+    return make_shared<VoidLiteralCtx>();
   } else if (next(Token::VAR) || next(Token::FINAL)) {
     return parseVarExpr(current);
   } else if (next(Token::FN)) {
@@ -159,7 +159,7 @@ unique_ptr<ExprCtx> Parser::parsePrimaryExpr() {
   }
 }
 
-unique_ptr<ExprCtx> Parser::parseClimbingExpr(unique_ptr<ExprCtx> &lhs,
+shared_ptr<ExprCtx> Parser::parseClimbingExpr(shared_ptr<ExprCtx> &lhs,
                                               int minPrecedence) {
   if (!lhs)
     return nullptr;
@@ -193,8 +193,8 @@ unique_ptr<ExprCtx> Parser::parseClimbingExpr(unique_ptr<ExprCtx> &lhs,
   return move(lhs);
 }
 
-unique_ptr<BlockExprCtx> Parser::parseBlockExpr(const Token &token) {
-  auto ptr = make_unique<BlockExprCtx>(token.location);
+shared_ptr<BlockExprCtx> Parser::parseBlockExpr(const Token &token) {
+  auto ptr = make_shared<BlockExprCtx>(token.location);
   auto lastLocation = token.location;
   auto expr = parseExpr();
   while (expr) {
@@ -209,8 +209,8 @@ unique_ptr<BlockExprCtx> Parser::parseBlockExpr(const Token &token) {
   return ptr;
 }
 
-unique_ptr<ListExprCtx> Parser::parseListExpr(const Token &token) {
-  auto ptr = make_unique<ListExprCtx>(token.location);
+shared_ptr<ListExprCtx> Parser::parseListExpr(const Token &token) {
+  auto ptr = make_shared<ListExprCtx>(token.location);
   auto lastLocation = token.location;
   auto expr = parseExpr();
   while (expr) {
@@ -229,8 +229,8 @@ unique_ptr<ListExprCtx> Parser::parseListExpr(const Token &token) {
   return ptr;
 }
 
-unique_ptr<ExprCtx> Parser::parseParenExpr(const Token &token) {
-  auto ptr = make_unique<ParenExprCtx>(token.location);
+shared_ptr<ExprCtx> Parser::parseParenExpr(const Token &token) {
+  auto ptr = make_shared<ParenExprCtx>(token.location);
   auto lastLocation = token.location;
   auto expr = parseExpr();
   if (!expr) {
@@ -245,7 +245,7 @@ unique_ptr<ExprCtx> Parser::parseParenExpr(const Token &token) {
     }
     return ptr;
   } else {
-    auto tuple = make_unique<TupleExprCtx>(token.location);
+    auto tuple = make_shared<TupleExprCtx>(token.location);
     tuple->items.push_back(move(expr));
     expr = parseExpr();
     while (expr) {
@@ -266,9 +266,9 @@ unique_ptr<ExprCtx> Parser::parseParenExpr(const Token &token) {
   }
 }
 
-unique_ptr<VarExprCtx> Parser::parseVarExpr(const Token &token) {
+shared_ptr<VarExprCtx> Parser::parseVarExpr(const Token &token) {
   auto ptr =
-      make_unique<VarExprCtx>(token.location, token.type == Token::FINAL);
+      make_shared<VarExprCtx>(token.location, token.type == Token::FINAL);
   auto lastLocation = token.location;
   auto name = parseIdentifier();
   if (!name) {
@@ -291,8 +291,8 @@ unique_ptr<VarExprCtx> Parser::parseVarExpr(const Token &token) {
   return ptr;
 }
 
-unique_ptr<FnDeclExprCtx> Parser::parseFnDeclExpr(const Token &token) {
-  auto ptr = make_unique<FnDeclExprCtx>(token.location);
+shared_ptr<FnDeclExprCtx> Parser::parseFnDeclExpr(const Token &token) {
+  auto ptr = make_shared<FnDeclExprCtx>(token.location);
   auto lastLocation = ptr->location;
   // TODO: Make name optional
   if (!next(Token::ID)) {
@@ -335,7 +335,7 @@ unique_ptr<FnDeclExprCtx> Parser::parseFnDeclExpr(const Token &token) {
   return ptr;
 }
 
-unique_ptr<IfClauseCtx> Parser::parseIfClause(const Token &token) {
+shared_ptr<IfClauseCtx> Parser::parseIfClause(const Token &token) {
   auto location = token.location, lastLocation = location;
   auto condition = parseExpr();
   if (!condition) {
@@ -352,10 +352,10 @@ unique_ptr<IfClauseCtx> Parser::parseIfClause(const Token &token) {
     return nullptr;
   }
   auto *ptr = new IfClauseCtx{location, move(condition), move(body)};
-  return unique_ptr<IfClauseCtx>(ptr);
+  return shared_ptr<IfClauseCtx>(ptr);
 }
 
-unique_ptr<IfExprCtx> Parser::parseIfExpr(const Token &token) {
+shared_ptr<IfExprCtx> Parser::parseIfExpr(const Token &token) {
   auto ifClause = parseIfClause(token);
   if (!ifClause) {
     // An error was already reported, don't report another.
@@ -363,7 +363,7 @@ unique_ptr<IfExprCtx> Parser::parseIfExpr(const Token &token) {
   }
 
   auto lastLocation = ifClause->location;
-  auto ptr = make_unique<IfExprCtx>(move(ifClause));
+  auto ptr = make_shared<IfExprCtx>(move(ifClause));
   while (next(Token::ELSE)) {
     lastLocation = current.location;
     if (next(Token::IF)) {
@@ -387,8 +387,8 @@ unique_ptr<IfExprCtx> Parser::parseIfExpr(const Token &token) {
   return ptr;
 }
 
-unique_ptr<ParamCtx> Parser::parseParam() {
-  auto ptr = make_unique<ParamCtx>();
+shared_ptr<ParamCtx> Parser::parseParam() {
+  auto ptr = make_shared<ParamCtx>();
   auto name = parseIdentifier();
   if (!name) {
     return nullptr;
@@ -405,9 +405,9 @@ unique_ptr<ParamCtx> Parser::parseParam() {
   return ptr;
 }
 
-unique_ptr<StringLiteralCtx> Parser::parseStringLiteral(const Token &token,
+shared_ptr<StringLiteralCtx> Parser::parseStringLiteral(const Token &token,
                                                         bool isSingleQuote) {
-  auto ptr = make_unique<StringLiteralCtx>(token);
+  auto ptr = make_shared<StringLiteralCtx>(token);
   auto part = parseStringPart(isSingleQuote);
   auto lastLocation = ptr->location;
   auto closingType = isSingleQuote ? Token::SINGLE_QUOTE : Token::DOUBLE_QUOTE;
@@ -436,31 +436,31 @@ unique_ptr<StringLiteralCtx> Parser::parseStringLiteral(const Token &token,
   return ptr;
 }
 
-unique_ptr<StringPartCtx> Parser::parseStringPart(bool isSingleQuote) {
+shared_ptr<StringPartCtx> Parser::parseStringPart(bool isSingleQuote) {
   if (next(Token::TEXT)) {
-    return make_unique<TextStringPartCtx>(current);
+    return make_shared<TextStringPartCtx>(current);
   } else if (next(Token::HEX_ESCAPE)) {
-    return make_unique<HexEscapeStringPartCtx>(current);
+    return make_shared<HexEscapeStringPartCtx>(current);
   } else if (isSingleQuote && next(Token::SINGLE_QUOTE_ESCAPE)) {
-    return make_unique<QuoteEscapeStringPartCtx>(current.location);
+    return make_shared<QuoteEscapeStringPartCtx>(current.location);
   } else if (!isSingleQuote && next(Token::DOUBLE_QUOTE_ESCAPE)) {
-    return make_unique<QuoteEscapeStringPartCtx>(current.location);
+    return make_shared<QuoteEscapeStringPartCtx>(current.location);
   }
   return nullptr;
 }
 
-unique_ptr<TypeCtx> Parser::parseType() {
+shared_ptr<TypeCtx> Parser::parseType() {
   if (next(Token::ID)) {
-    return make_unique<TypeRefCtx>(current);
+    return make_shared<TypeRefCtx>(current);
   } else {
     return nullptr;
   }
 }
 
-unique_ptr<IdExprCtx> Parser::parseIdentifier() {
+shared_ptr<IdExprCtx> Parser::parseIdentifier() {
   if (!next(Token::ID)) {
     return nullptr;
   } else {
-    return make_unique<IdExprCtx>(current);
+    return make_shared<IdExprCtx>(current);
   }
 }

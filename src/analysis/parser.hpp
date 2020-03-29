@@ -14,28 +14,28 @@ public:
   explicit Parser(Scanner &scanner);
   bool next(Token::TokenType type);
   std::shared_ptr<CompilationUnitCtx> parseCompilationUnit();
-  std::unique_ptr<DeclCtx> parseDecl();
-  std::unique_ptr<TypeDeclCtx> parseTypeDecl();
+  std::shared_ptr<DeclCtx> parseDecl();
+  std::shared_ptr<TypeDeclCtx> parseTypeDecl();
 
-  std::unique_ptr<ExprDeclCtx> parseExprDecl();
-  std::unique_ptr<ExprCtx> parseExpr();
-  std::unique_ptr<ExprCtx> parsePrimaryExpr();
-  std::unique_ptr<ExprCtx> parseClimbingExpr(std::unique_ptr<ExprCtx> &lhs,
+  std::shared_ptr<ExprDeclCtx> parseExprDecl();
+  std::shared_ptr<ExprCtx> parseExpr();
+  std::shared_ptr<ExprCtx> parsePrimaryExpr();
+  std::shared_ptr<ExprCtx> parseClimbingExpr(std::shared_ptr<ExprCtx> &lhs,
                                              int minPrecedence);
-  std::unique_ptr<VarExprCtx> parseVarExpr(const Token &token);
-  std::unique_ptr<FnDeclExprCtx> parseFnDeclExpr(const Token &token);
-  std::unique_ptr<ParamCtx> parseParam();
-  std::unique_ptr<StringLiteralCtx> parseStringLiteral(const Token &token, bool isSingleQuote);
-  std::unique_ptr<BlockExprCtx> parseBlockExpr(const Token &token);
-  std::unique_ptr<ListExprCtx> parseListExpr(const Token &token);
-  std::unique_ptr<ExprCtx> parseParenExpr(const Token &token);
-  std::unique_ptr<IfExprCtx> parseIfExpr(const Token &token);
-  std::unique_ptr<IfClauseCtx> parseIfClause(const Token &token);
+  std::shared_ptr<VarExprCtx> parseVarExpr(const Token &token);
+  std::shared_ptr<FnDeclExprCtx> parseFnDeclExpr(const Token &token);
+  std::shared_ptr<ParamCtx> parseParam();
+  std::shared_ptr<StringLiteralCtx> parseStringLiteral(const Token &token, bool isSingleQuote);
+  std::shared_ptr<BlockExprCtx> parseBlockExpr(const Token &token);
+  std::shared_ptr<ListExprCtx> parseListExpr(const Token &token);
+  std::shared_ptr<ExprCtx> parseParenExpr(const Token &token);
+  std::shared_ptr<IfExprCtx> parseIfExpr(const Token &token);
+  std::shared_ptr<IfClauseCtx> parseIfClause(const Token &token);
 
-  std::unique_ptr<TypeCtx> parseType();
+  std::shared_ptr<TypeCtx> parseType();
 
-  std::unique_ptr<IdExprCtx> parseIdentifier();
-  std::unique_ptr<StringPartCtx> parseStringPart(bool isSingleQuote);
+  std::shared_ptr<IdExprCtx> parseIdentifier();
+  std::shared_ptr<StringPartCtx> parseStringPart(bool isSingleQuote);
   Token peek();
 
 private:

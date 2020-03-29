@@ -4,9 +4,7 @@
 #include "tuple_type.hpp"
 #include <iostream>
 #include <sstream>
-#include <utility>
 
-using namespace manda::analysis;
 using namespace manda::analysis;
 using namespace std;
 

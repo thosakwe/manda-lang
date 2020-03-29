@@ -15,7 +15,7 @@ public:
   //  void setName(std::string value);
   std::shared_ptr<Scope> getSymbolTable();
   [[nodiscard]] const std::string &getName() const;
-  std::vector<std::unique_ptr<manda::analysis::ExprCtx>> &
+  std::vector<std::shared_ptr<manda::analysis::ExprCtx>> &
   getTopLevelExpressions();
   //  std::shared_ptr<const RuntimeScope> getSymbolTable() const;
   //  void addChild(std::shared_ptr<Module> &child);
@@ -24,7 +24,7 @@ public:
 private:
   std::string name;
   std::shared_ptr<Scope> symbolTable;
-  std::vector<std::unique_ptr<manda::analysis::ExprCtx>> topLevelExpressions;
+  std::vector<std::shared_ptr<manda::analysis::ExprCtx>> topLevelExpressions;
   //  std::unordered_map<std::string, std::shared_ptr<Module>> children;
 };
 } // namespace manda::analysis

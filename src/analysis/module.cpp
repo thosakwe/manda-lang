@@ -16,7 +16,7 @@ Module::Module(string name) : name(move(name)) {
 
 shared_ptr<Scope> Module::getSymbolTable() { return symbolTable; }
 
-vector<unique_ptr<ExprCtx>> &Module::getTopLevelExpressions() {
+vector<shared_ptr<ExprCtx>> &Module::getTopLevelExpressions() {
   return topLevelExpressions;
 }
 

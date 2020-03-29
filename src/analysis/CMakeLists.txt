@@ -36,6 +36,6 @@ add_library(manda_analysis
     type.cpp type.hpp
     type_ctx.cpp type_ctx.hpp
     type_resolver.cpp type_resolver.hpp
-    void_type.cpp void_type.hpp base_ctx.cpp base_ctx.hpp analyzer.cpp analyzer.hpp)
+    void_type.cpp void_type.hpp base_ctx.cpp base_ctx.hpp analyzer.cpp analyzer.hpp unresolved.cpp unresolved.hpp)
 
 target_include_directories(manda_analysis PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")

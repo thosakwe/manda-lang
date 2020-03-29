@@ -21,7 +21,7 @@ public:
   ~TypeCtx() override = default;
   virtual void accept(TypeVisitor &visitor) = 0;
   virtual TypeCtx *clone() const = 0;
-  virtual std::unique_ptr<TypeCtx> cloneToUniquePointer() const;
+  virtual std::shared_ptr<TypeCtx> cloneToUniquePointer() const;
 };
 
 struct TypeRefCtx : public TypeCtx {

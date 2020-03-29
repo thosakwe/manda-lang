@@ -179,9 +179,9 @@ expr:
       // TODO: Delete unused stuff
       @$ = @2;
       auto *v = new FnDeclExprCtx;
-      v->body = unique_ptr<ExprCtx>($8);
+      v->body = shared_ptr<ExprCtx>($8);
       if ($2) v->name = $2->name;
-      if ($6) v->returnType = unique_ptr<TypeCtx>($6);
+      if ($6) v->returnType = shared_ptr<TypeCtx>($6);
       toVector($4, v->params);
       $$ = v;
       delete $2;
@@ -192,9 +192,9 @@ expr:
       // TODO: Delete unused stuff
       @$ = @2;
       auto *v = new FnDeclExprCtx;
-      v->body = unique_ptr<ExprCtx>($5);
+      v->body = shared_ptr<ExprCtx>($5);
       if ($2) v->name = $2->name;
-      if ($3) v->returnType = unique_ptr<TypeCtx>($3);
+      if ($3) v->returnType = shared_ptr<TypeCtx>($3);
       $$ = v;
       delete $2;
     }
@@ -297,22 +297,22 @@ param:
     {
       @$ = @1;
       $$ = new ParamCtx{$1->location, $1->name,
-        unique_ptr<TypeCtx>($3), nullptr};
+        shared_ptr<TypeCtx>($3), nullptr};
       delete $1;
     }
   | id EQUALS expr
     {
       @$ = @1;
       $$ = new ParamCtx{$1->location, $1->name, nullptr,
-        unique_ptr<ExprCtx>($3)};
+        shared_ptr<ExprCtx>($3)};
       delete $1;
     }
   | id COLON type EQUALS expr
     {
       @$ = @1;
       $$ = new ParamCtx{$1->location, $1->name,
-        unique_ptr<TypeCtx>($3),
-        unique_ptr<ExprCtx>($5)};
+        shared_ptr<TypeCtx>($3),
+        shared_ptr<ExprCtx>($5)};
       delete $1;
     }
 ;

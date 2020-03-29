@@ -15,26 +15,22 @@ struct DeclCtx {
   DeclCtx &operator=(DeclCtx &&) = default;
   virtual ~DeclCtx() = default;
   virtual void accept(DeclVisitor &visitor) = 0;
-  virtual DeclCtx *clone() const = 0;
-  std::unique_ptr<DeclCtx> cloneToUniquePointer() const;
 };
 
 struct ExprDeclCtx : public DeclCtx {
-  std::unique_ptr<ExprCtx> value;
+  std::shared_ptr<ExprCtx> value;
   ExprDeclCtx() = default;
-  explicit ExprDeclCtx(std::unique_ptr<ExprCtx> &v);
+  explicit ExprDeclCtx(std::shared_ptr<ExprCtx> &v);
   void accept(DeclVisitor &visitor) override;
-  ExprDeclCtx *clone() const override;
 };
 
 struct TypeDeclCtx : public DeclCtx {
   std::string name;
   std::vector<std::string> typeParameters;
-  std::unique_ptr<TypeCtx> type;
+  std::shared_ptr<TypeCtx> type;
   TypeDeclCtx() = default;
   TypeDeclCtx(std::string n, TypeCtx *v);
   void accept(DeclVisitor &visitor) override;
-  TypeDeclCtx *clone() const override;
 };
 
 class DeclVisitor {
@@ -46,10 +42,8 @@ public:
 struct CompilationUnitCtx {
   // TODO: Location
   Location location;
-  std::vector<std::unique_ptr<DeclCtx>> declarations;
+  std::vector<std::shared_ptr<DeclCtx>> declarations;
   void accept(CompilationUnitVisitor &visitor);
-  CompilationUnitCtx *clone() const;
-  std::unique_ptr<CompilationUnitCtx> cloneToUniquePointer() const;
 };
 
 class CompilationUnitVisitor {
