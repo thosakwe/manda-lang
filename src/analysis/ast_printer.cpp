@@ -62,7 +62,6 @@ void AstPrinter::visitIfExpr(IfExprCtx &ctx) {
 }
 
 void AstPrinter::visitFnDeclExpr(FnDeclExprCtx &ctx) {
-  // TODO: Print
   print() << "FnDeclExpr(" << (ctx.name.empty() ? "<anonymous>" : ctx.name)
           << ")" << endl;
   indent();

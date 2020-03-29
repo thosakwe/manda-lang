@@ -40,7 +40,6 @@ public:
 };
 
 struct VarExprCtx : public TopLevelExprCtx {
-  // TODO: Set location
   bool isFinal = false;
   std::string name;
   std::shared_ptr<ExprCtx> value;
@@ -80,7 +79,7 @@ struct IfExprCtx : public ExprCtx {
 };
 
 struct VoidLiteralCtx : public ExprCtx {
-  // TODO: Set location
+  explicit VoidLiteralCtx(const Location &location) : ExprCtx(location) {}
   void accept(ExprVisitor &visitor) override;
 };
 

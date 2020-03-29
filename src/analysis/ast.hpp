@@ -40,7 +40,6 @@ public:
 };
 
 struct CompilationUnitCtx {
-  // TODO: Location
   Location location;
   std::vector<std::shared_ptr<DeclCtx>> declarations;
   void accept(CompilationUnitVisitor &visitor);
