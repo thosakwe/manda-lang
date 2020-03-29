@@ -85,7 +85,6 @@ struct VoidLiteralCtx : public ExprCtx {
 
 struct IdExprCtx : public ExprCtx {
   std::string name;
-  // TODO: Set location
   IdExprCtx(const Location &location, std::string name);
   explicit IdExprCtx(const Token &token)
       : name(token.text), ExprCtx(token.location) {}
@@ -94,7 +93,6 @@ struct IdExprCtx : public ExprCtx {
 
 class NumberLiteralCtx : public ExprCtx {
 public:
-  // TODO: Set location
   double value = 0.0;
   NumberLiteralCtx(const Location &location, double value);
   explicit NumberLiteralCtx(const Token &token)
@@ -104,7 +102,6 @@ public:
 
 class StringPartCtx {
 public:
-  // TODO: Set location
   Location location;
   [[nodiscard]] virtual std::string convert(bool singleQuote) const = 0;
   StringPartCtx() = default;
@@ -148,7 +145,6 @@ public:
 
 class StringLiteralCtx : public ExprCtx {
 public:
-  // TODO: Location
   StringLiteralCtx() = default;
   StringLiteralCtx(const Location &location, bool sq)
       : singleQuote(sq), ExprCtx(location) {}
@@ -166,7 +162,6 @@ public:
 };
 
 struct BoolLiteralCtx : public ExprCtx {
-  // TODO: Set location
   bool value = false;
   BoolLiteralCtx() = default;
   explicit BoolLiteralCtx(const Token &token)
