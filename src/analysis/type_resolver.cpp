@@ -370,7 +370,7 @@ void TypeResolver::visitCallExpr(CallExprCtx &ctx) {
     auto *functionType = dynamic_cast<FunctionType *>(targetType.get());
     if (!functionType) {
       // TODO: Should an error be thrown when trying to call something other
-      // than a function?
+      //  than a function?
       // TODO: What if this is an instantiation of some type?
     } else {
       ctx.runtimeType = functionType->getReturnType();
