@@ -16,8 +16,11 @@ struct SymbolUsage {
 struct Symbol {
   Location location;
   std::shared_ptr<Type> type;
-
   Visibility visibility = priv;
+
+  std::shared_ptr<ExprCtx> exprCtx;
+
+  std::shared_ptr<TypeCtx> typeCtx;
 
   std::vector<SymbolUsage> usages;
 

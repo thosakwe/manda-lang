@@ -13,7 +13,7 @@
 namespace manda::analysis {
 class ExprVisitor;
 
-class ExprCtx : public BaseCtx {
+class ExprCtx : public BaseCtx, public std::enable_shared_from_this<ExprCtx> {
 public:
   //  std::shared_ptr<manda::analysis::Object> constantValue;
   std::shared_ptr<manda::analysis::Type> runtimeType;

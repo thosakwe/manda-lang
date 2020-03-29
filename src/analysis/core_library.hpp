@@ -7,6 +7,7 @@
 #include "number_type.hpp"
 #include "scope.hpp"
 #include "string_type.hpp"
+#include "unresolved.hpp"
 #include "void_type.hpp"
 #include <manda_api.h>
 
@@ -20,6 +21,7 @@ public:
   std::shared_ptr<CharType> charType;
   std::shared_ptr<NumberType> numberType;
   std::shared_ptr<StringType> stringType;
+  std::shared_ptr<UnresolvedType> unresolvedType;
   std::shared_ptr<VoidType> voidType;
 
   void install(Scope &scope);

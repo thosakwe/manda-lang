@@ -12,6 +12,7 @@ CoreLibrary::CoreLibrary() {
   charType = make_shared<CharType>();
   numberType = make_shared<NumberType>();
   stringType = make_shared<StringType>();
+  unresolvedType = make_shared<UnresolvedType>();
   voidType = make_shared<VoidType>();
 }
 

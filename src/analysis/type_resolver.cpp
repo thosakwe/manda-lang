@@ -44,11 +44,78 @@ void TypeResolver::visitVarExpr(VarExprCtx &ctx) {
       cout << "TypeResolver found var " << ctx.name << ": "
            << ctx.value->runtimeType->getName() << endl;
     }
-    getCurrentScope()->add(ctx.name, {ctx.location, ctx.value->runtimeType});
+    Symbol sym;
+    sym.location = ctx.location;
+    sym.type = ctx.value->runtimeType;
+    sym.exprCtx = ctx.shared_from_this();
+    getCurrentScope()->add(ctx.name, sym);
   }
 }
 
-void TypeResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {}
+void TypeResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {
+  // Determine the function's return type.
+  // If none is given, default to `Any`.
+  //
+  // TODO: Compare the declared return type to the actual return type.
+  shared_ptr<Type> returnType;
+
+  if (!ctx.returnType) {
+    TypeResolver typeResolver(analyzer, getCurrentScope());
+    ctx.body->accept(typeResolver);
+    returnType = ctx.body->runtimeType;
+  } else {
+    TypeResolver typeResolver(analyzer, getCurrentScope());
+    ctx.returnType->accept(typeResolver);
+    returnType = ctx.returnType->runtimeType;
+  }
+
+  if (!returnType) {
+    ostringstream oss;
+    oss << "Failed to resolve the return type";
+    if (!ctx.name.empty()) {
+      oss << " of function \"";
+      oss << ctx.name << "\"";
+    }
+    oss << ".";
+    analyzer.errorReporter.reportError(ctx.location, oss.str());
+    // Default to returning Any.
+    returnType = analyzer.coreLibrary.anyType;
+    return;
+  }
+
+  // Build the list of parameters.
+  // TODO: Handle default symbols on parameters
+  vector<Parameter> params;
+
+  for (auto &node : ctx.params) {
+    shared_ptr<Type> type;
+    if (!node->type) {
+      type = analyzer.coreLibrary.anyType;
+    } else {
+      TypeResolver typeResolver(analyzer, getCurrentScope());
+      node->type->accept(typeResolver);
+      type = node->type->runtimeType;
+    }
+
+    if (!type) {
+      ostringstream oss;
+      oss << "Failed to resolve a type for parameter \"";
+      oss << node->name << "\".";
+      analyzer.errorReporter.reportError(node->location, oss.str());
+      return;
+    } else {
+      if (analyzer.vmOptions.developerMode) {
+        // TODO: Print param types
+        cout << "Found param \"" << node->name << "\"";
+      }
+      params.push_back({node->location, node->name, type});
+    }
+  }
+
+  // Build the function object, AND its type.
+  auto functionType = make_shared<FunctionType>(params, returnType);
+  ctx.runtimeType = functionType;
+}
 
 std::shared_ptr<Type> TypeResolver::visitIfClause(IfClauseCtx &ctx) {
   // Resolve the condition, and make sure it is a bool.
