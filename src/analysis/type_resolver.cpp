@@ -48,6 +48,7 @@ void TypeResolver::visitVarExpr(VarExprCtx &ctx) {
     sym.location = ctx.location;
     sym.type = ctx.value->runtimeType;
     sym.exprCtx = ctx.shared_from_this();
+    sym.scope = getCurrentScope();
     getCurrentScope()->add(ctx.name, sym);
   }
 }
@@ -64,27 +65,6 @@ void TypeResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {
     TypeResolver typeResolver(analyzer, getCurrentScope());
     ctx.returnType->accept(typeResolver);
     returnType = ctx.returnType->runtimeType;
-  } else {
-    // Otherwise, we must eventually manually figure out the return type.
-    // TODO: Should everything just default to Any?
-    returnType = analyzer.coreLibrary.anyType;
-//    TypeResolver typeResolver(analyzer, getCurrentScope());
-//    ctx.returnType->accept(typeResolver);
-//    returnType = ctx.returnType->runtimeType;
-  }
-
-  if (!returnType) {
-    ostringstream oss;
-    oss << "Failed to resolve the return type";
-    if (!ctx.name.empty()) {
-      oss << " of function \"";
-      oss << ctx.name << "\"";
-    }
-    oss << ".";
-    analyzer.errorReporter.reportError(ctx.location, oss.str());
-    // Default to returning Any.
-    returnType = analyzer.coreLibrary.anyType;
-    return;
   }
 
   // Build the list of parameters.
@@ -114,6 +94,37 @@ void TypeResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {
       }
       params.push_back({node->location, node->name, type});
     }
+  }
+
+  // If the author didn't declare the type, we must eventually
+  // manually figure out the return type.
+  if (!returnType) {
+    // Of course, we must inject parameters into a child scope to try to infer
+    // the return type.
+    auto childScope = getCurrentScope()->createChild();
+    for (auto &param : params) {
+      // TODO: Should params just be symbols directly, instead of a separate
+      //  class?
+      childScope->add(param.name, {param.location, param.type}, true);
+    }
+
+    TypeResolver typeResolver(analyzer, childScope);
+    ctx.body->accept(typeResolver);
+    returnType = ctx.body->runtimeType;
+  }
+
+  if (!returnType) {
+    ostringstream oss;
+    oss << "Failed to resolve the return type";
+    if (!ctx.name.empty()) {
+      oss << " of function \"";
+      oss << ctx.name << "\"";
+    }
+    oss << ".";
+    analyzer.errorReporter.reportError(ctx.location, oss.str());
+    // Default to returning Any.
+    returnType = analyzer.coreLibrary.anyType;
+    return;
   }
 
   // Build the function object, AND its type.
@@ -232,17 +243,31 @@ void TypeResolver::visitVoidLiteral(VoidLiteralCtx &ctx) {
 
 void TypeResolver::visitIdExpr(IdExprCtx &ctx) {
   auto symbol = getCurrentScope()->resolve(ctx.name);
+
   if (!symbol) {
     ostringstream oss;
     oss << "The name \"" << ctx.name << "\" does not exist in this context.";
     analyzer.errorReporter.reportError(ctx.location, oss.str());
     ctx.runtimeType = nullptr;
-  } else if (!symbol->typeValue) {
-    // TODO: Reify types?
-    ostringstream oss;
-    oss << "The symbol \"" << ctx.name << "\" does not resolve to a type.";
-    analyzer.errorReporter.reportError(ctx.location, oss.str());
-    ctx.runtimeType = nullptr;
+    return;
+  }
+
+  // If this is an unresolved, then fix that.
+  if (dynamic_cast<UnresolvedType *>(symbol->type.get())) {
+    if (symbol->exprCtx) {
+      TypeResolver childResolver(analyzer, symbol->scope);
+      symbol->exprCtx->accept(childResolver);
+      symbol->type = symbol->exprCtx->runtimeType;
+    }
+  }
+
+  if (!symbol->typeValue) {
+    //    // TODO: Reify types?
+    //    ostringstream oss;
+    //    oss << "The symbol \"" << ctx.name << "\" does not resolve to a
+    //    type."; analyzer.errorReporter.reportError(ctx.location, oss.str());
+    //    ctx.runtimeType = nullptr;
+    ctx.runtimeType = symbol->type;
   } else {
     symbol->usages.push_back({ctx.location, SymbolUsage::get});
     ctx.runtimeType = symbol->typeValue;

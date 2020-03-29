@@ -13,9 +13,12 @@ struct SymbolUsage {
   SymbolUsageType type = get;
 };
 
+class Scope;
+
 struct Symbol {
   Location location;
   std::shared_ptr<Type> type;
+  std::shared_ptr<Scope> scope;
   Visibility visibility = priv;
 
   std::shared_ptr<ExprCtx> exprCtx;

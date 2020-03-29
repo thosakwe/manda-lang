@@ -63,6 +63,7 @@ void ModuleCompiler::visitFnDecl(FnDeclExprCtx &ctx,
     sym.location = ctx.location;
     sym.type = ctx.runtimeType = analyzer.coreLibrary.unresolvedType;
     sym.exprCtx = ctx.shared_from_this();
+    sym.scope = scope;
     scope->add(ctx.name, sym, analyzer.vmOptions.isREPL());
   }
 }
