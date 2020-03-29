@@ -59,14 +59,18 @@ void TypeResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {
   // TODO: Compare the declared return type to the actual return type.
   shared_ptr<Type> returnType;
 
-  if (!ctx.returnType) {
-    TypeResolver typeResolver(analyzer, getCurrentScope());
-    ctx.body->accept(typeResolver);
-    returnType = ctx.body->runtimeType;
-  } else {
+  if (ctx.returnType) {
+    // If the function explicitly declares its return type, then trust it.
     TypeResolver typeResolver(analyzer, getCurrentScope());
     ctx.returnType->accept(typeResolver);
     returnType = ctx.returnType->runtimeType;
+  } else {
+    // Otherwise, we must eventually manually figure out the return type.
+    // TODO: Should everything just default to Any?
+    returnType = analyzer.coreLibrary.anyType;
+//    TypeResolver typeResolver(analyzer, getCurrentScope());
+//    ctx.returnType->accept(typeResolver);
+//    returnType = ctx.returnType->runtimeType;
   }
 
   if (!returnType) {

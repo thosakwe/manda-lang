@@ -5,21 +5,21 @@ using namespace std;
 
 Scope::Scope(shared_ptr<const Scope> parent) : parent(move(parent)){};
 
-const unordered_map<string, Symbol> &Scope::getSymbols() const {
+const unordered_map<string, std::shared_ptr<Symbol>> &Scope::getSymbols() const {
   return symbols;
 }
 
-Symbol &Scope::add(const string &name, const Symbol &symbol,
+shared_ptr<Symbol> &Scope::add(const string &name, const Symbol &symbol,
                    bool allowRedefine) {
   auto it = symbols.find(name);
   if ((it != symbols.end()) && !allowRedefine) {
     return it->second;
   } else {
-    return symbols[name] = symbol;
+    return symbols[name] = make_shared<Symbol>(symbol);
   }
 }
 
-optional<Symbol> Scope::resolve(const string &name) const {
+shared_ptr<Symbol> Scope::resolve(const string &name) const {
   for (auto &p : symbols) {
     if (p.first == name) {
       return p.second;
@@ -29,7 +29,7 @@ optional<Symbol> Scope::resolve(const string &name) const {
   if (parent) {
     return parent->resolve(name);
   } else {
-    return nullopt;
+    return nullptr;
   }
 }
 

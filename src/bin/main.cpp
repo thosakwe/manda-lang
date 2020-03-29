@@ -1,5 +1,6 @@
 #include "../analysis/ast_printer.hpp"
 #include "../analysis/module_compiler.hpp"
+#include "../analysis/type_resolver.hpp"
 #include "../analysis/parser.hpp"
 #include "../analysis/scanner.hpp"
 #include "../runtime/ansi_printer.hpp"
@@ -91,14 +92,34 @@ int runFile(const VMOptions &options) {
       compilationUnit->accept(printer);
     }
 
-    // Analyze everything.
+    // The ModuleCompiler will initialize all symbols to "unresolved."
     Analyzer analyzer(options);
     ModuleCompiler moduleCompiler(analyzer);
     moduleCompiler.visitCompilationUnit(*compilationUnit);
 
+    // Once we have collected all names, it is now time to find "main," and analyze it,
+    // so that it can be executed.
+    auto &module = moduleCompiler.module;
+    auto main = module->getSymbolTable()->resolve("main");
+    if (!main) {
+      ostringstream oss;
+      oss << "Error: File \"" << filename << R"(" does not expose a "main" function.)";
+      cerr << red(oss.str()) << endl;
+      return 1;
+    } else if (!main->exprCtx) {
+      ostringstream oss;
+      oss << "The top-level \"main\" symbol must be an expression.";
+      cerr << red(oss.str()) << endl;
+      return 1;
+    }
+
+    TypeResolver mainResolver(analyzer, module->getSymbolTable());
+    main->exprCtx->accept(mainResolver);
+    main->type = main->exprCtx->runtimeType;
+
     // Just dump everything.
-   for (auto &pair : moduleCompiler.module->getSymbolTable()->getSymbols()) {
-     cout << "  * " << pair.first << ": " << pair.second.type->getName() << endl;
+   for (auto &pair : module->getSymbolTable()->getSymbols()) {
+     cout << "  * " << pair.first << ": " << pair.second->type->getName() << endl;
    }
 
     return 0;
