@@ -140,7 +140,7 @@ void TypeResolver::visitIfExpr(IfExprCtx &ctx) {
     // Reduce to common denominator type, once more.
     TypeResolver elseClauseResolver(analyzer, getCurrentScope()->createChild());
     ctx.elseClause->accept(elseClauseResolver);
-    if (ctx.elseClause->runtimeType) {
+    if (!ctx.elseClause->runtimeType) {
       analyzer.errorReporter.reportError(
           ctx.elseClause->location,
           "Could not resolve the return type of the 'else' clause, so "
