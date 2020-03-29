@@ -348,6 +348,10 @@ void TypeResolver::visitListExpr(ListExprCtx &ctx) {
     }
   }
 
+  if (!innerType) {
+    innerType = analyzer.coreLibrary.anyType;
+  }
+
   ctx.runtimeType = make_shared<ArrayType>(innerType);
 }
 
