@@ -145,7 +145,7 @@ shared_ptr<ExprCtx> Parser::parsePrimaryExpr() {
     return parseBlockExpr(current);
   } else if (next(Token::LBRACKET)) {
     return parseListExpr(current);
-  } 
+  }
 
   // Keep this last...
   else if (next(Token::LPAREN)) {
@@ -398,10 +398,29 @@ shared_ptr<ParamCtx> Parser::parseParam() {
   ptr->name = name->name;
 
   if (next(Token::COLON)) {
-    // TODO: Parse type associated with a param
+    // Parse type associated with a param
+    auto colonLoc = current.location;
+    auto type = parseType();
+    if (!type) {
+      emitError(colonLoc, "Expected a type after ':'.");
+      return nullptr;
+    }
+
+    ptr->type = type;
   }
 
-  // TODO: Parse default values
+  // Parse default values
+  if (next(Token::EQUALS)) {
+    auto equalsLoc = current.location;
+    auto defaultValue = parseExpr();
+    if (!defaultValue) {
+      emitError(equalsLoc, "Expected an expression after '='.");
+      return nullptr;
+    }
+
+    ptr->defaultValue = defaultValue;
+  }
+
   return ptr;
 }
 
