@@ -55,9 +55,6 @@ void TypeResolver::visitVarExpr(VarExprCtx &ctx) {
 
 void TypeResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {
   // Determine the function's return type.
-  // If none is given, default to `Any`.
-  //
-  // TODO: Compare the declared return type to the actual return type.
   shared_ptr<Type> returnType;
 
   if (ctx.returnType) {
@@ -68,7 +65,6 @@ void TypeResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {
   }
 
   // Build the list of parameters.
-  // TODO: Handle default symbols on parameters
   vector<Parameter> params;
 
   for (auto &node : ctx.params) {
@@ -97,8 +93,7 @@ void TypeResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {
     }
 
     if (analyzer.vmOptions.developerMode) {
-      // TODO: Print param types
-      cout << "Found param \"" << node->name << "\"";
+      cout << "Found param \"" << node->name << "\": " << type->getName();
     }
 
     params.push_back({node->location, node->name, type, defaultValue});
@@ -106,22 +101,28 @@ void TypeResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {
 
   // If the author didn't declare the type, we must eventually
   // manually figure out the return type.
-  if (!returnType) {
-    // Of course, we must inject parameters into a child scope to try to infer
-    // the return type.
-    auto childScope = getCurrentScope()->createChild();
-    for (auto &param : params) {
-      // TODO: Should params just be symbols directly, instead of a separate
-      //  class?
-      childScope->add(param.name, {param.location, param.type}, true);
-    }
-
-    TypeResolver typeResolver(analyzer, childScope);
-    ctx.body->accept(typeResolver);
-    returnType = ctx.body->runtimeType;
+  //
+  // Even if the author declared a type, we must ensure that it is consistent
+  // with the actual code they wrote. Therefore, we must evaluate the function
+  // body.
+  //
+  // Of course, we must inject parameters into a child scope to try to infer
+  // the return type.
+  auto childScope = getCurrentScope()->createChild();
+  for (auto &param : params) {
+    // TODO: Should params just be symbols directly, instead of a separate
+    //  class?
+    childScope->add(param.name, {param.location, param.type}, true);
   }
 
-  if (!returnType) {
+  TypeResolver typeResolver(analyzer, childScope);
+  ctx.body->accept(typeResolver);
+
+  // If the user declared an explicit return type, compare the two, and report
+  // an error if something is amiss.
+  //
+  // Otherwise, just take the evaluated result.
+  if (!ctx.body->runtimeType) {
     ostringstream oss;
     oss << "Failed to resolve the return type";
     if (!ctx.name.empty()) {
@@ -130,9 +131,21 @@ void TypeResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {
     }
     oss << ".";
     analyzer.errorReporter.reportError(ctx.location, oss.str());
-    // Default to returning Any.
-    returnType = analyzer.coreLibrary.anyType;
+    returnType = analyzer.coreLibrary.unresolvedType;
     return;
+  } else if (returnType) {
+    if (!ctx.body->runtimeType->isAssignableTo(*returnType)) {
+      ostringstream oss;
+      oss << "The function \"" << ctx.name;
+      oss << "\" is declared to return ";
+      oss << returnType->getName() << ", but actually returns ";
+      oss << ctx.body->runtimeType->getName() << ".";
+      analyzer.errorReporter.reportError(ctx.location, oss.str());
+      returnType = analyzer.coreLibrary.unresolvedType;
+      return;
+    }
+  } else {
+    returnType = ctx.body->runtimeType;
   }
 
   // Build the function object, AND its type.
@@ -142,7 +155,6 @@ void TypeResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {
 
 std::shared_ptr<Type> TypeResolver::visitIfClause(IfClauseCtx &ctx) {
   // Resolve the condition, and make sure it is a bool.
-  // TODO: Support Any in bool expression
   ctx.condition->accept(*this);
   if (!ctx.condition->runtimeType) {
     analyzer.errorReporter.reportError(
@@ -385,8 +397,7 @@ void TypeResolver::visitCallExpr(CallExprCtx &ctx) {
       // TODO: What if this is an instantiation of some type?
       ctx.runtimeType = analyzer.coreLibrary.unresolvedType;
       analyzer.errorReporter.reportError(
-          ctx.target->location,
-          "The object being called is not a function.");
+          ctx.target->location, "The object being called is not a function.");
     } else {
       ctx.runtimeType = functionType->getReturnType();
     }
