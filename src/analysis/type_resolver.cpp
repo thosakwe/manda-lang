@@ -328,8 +328,6 @@ void TypeResolver::visitTupleExpr(TupleExprCtx &ctx) {
   for (auto &item : ctx.items) {
     item->accept(*this);
     if (!item->runtimeType) {
-      // TODO: Allow passing as Any
-      // TODO: Should any errors be in the TypeResolver at all?
       analyzer.errorReporter.reportError(
           item->location,
           "Could not resolve the types of all items in this tuple.");
@@ -347,8 +345,6 @@ void TypeResolver::visitListExpr(ListExprCtx &ctx) {
   for (auto &item : ctx.items) {
     item->accept(*this);
     if (!item->runtimeType) {
-      // TODO: Allow passing as Any
-      // TODO: Should any errors be in the TypeResolver at all?
       analyzer.errorReporter.reportError(
           item->location,
           "Could not resolve the types of all items in this list.");
@@ -378,15 +374,19 @@ void TypeResolver::visitCallExpr(CallExprCtx &ctx) {
   ctx.target->accept(functionTypeResolver);
   auto targetType = ctx.target->runtimeType;
   if (!targetType) {
-    // TODO: Should an error be thrown here?
-    ctx.runtimeType = nullptr;
+    ctx.runtimeType = analyzer.coreLibrary.unresolvedType;
+    analyzer.errorReporter.reportError(
+        ctx.target->location,
+        "Could not resolve the type of the object being called.");
   } else {
     // See if this is a function.
     auto *functionType = dynamic_cast<FunctionType *>(targetType.get());
     if (!functionType) {
-      // TODO: Should an error be thrown when trying to call something other
-      //  than a function?
       // TODO: What if this is an instantiation of some type?
+      ctx.runtimeType = analyzer.coreLibrary.unresolvedType;
+      analyzer.errorReporter.reportError(
+          ctx.target->location,
+          "The object being called is not a function.");
     } else {
       ctx.runtimeType = functionType->getReturnType();
     }

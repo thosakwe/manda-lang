@@ -134,7 +134,7 @@ shared_ptr<ExprCtx> Parser::parsePrimaryExpr() {
   } else if (next(Token::DOUBLE_QUOTE)) {
     return parseStringLiteral(current, false);
   } else if (next(Token::VOID)) {
-    return make_shared<VoidLiteralCtx>();
+    return make_shared<VoidLiteralCtx>(current.location);
   } else if (next(Token::VAR) || next(Token::FINAL)) {
     return parseVarExpr(current);
   } else if (next(Token::FN)) {
