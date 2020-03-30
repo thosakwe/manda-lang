@@ -294,16 +294,21 @@ void TypeResolver::visitBlockExpr(BlockExprCtx &ctx) {
   if (ctx.body.empty()) {
     ctx.runtimeType = analyzer.coreLibrary.voidType;
   } else {
-    // TODO: Should *all* nodes be visited, or just the last?
+    // Each statement should be evaluated in a new scope, because they are
+    // linearly dependent.
+    auto scope = getCurrentScope()->createChild();
+
     for (auto &node : ctx.body) {
-      ctx.runtimeType = nullptr;
-      node->accept(*this);
-      if (!ctx.runtimeType) {
-        analyzer.errorReporter.reportError(
-            node->location,
-            "Could not resolve the types of all items in this block.");
-        return;
-      }
+      TypeResolver childResolver(analyzer, scope);
+      node->accept(childResolver);
+      scope = scope->createChild();
+    }
+
+    if (!ctx.runtimeType) {
+      analyzer.errorReporter.reportError(
+          ctx.location,
+          "Could not resolve the types of all items in this block.");
+      return;
     }
   }
 }
