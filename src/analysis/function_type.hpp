@@ -1,6 +1,7 @@
 #ifndef MANDA_FUNCTION_TYPE_HPP
 #define MANDA_FUNCTION_TYPE_HPP
 #include "location.hpp"
+#include "symbol.hpp"
 #include "type.hpp"
 #include <string>
 #include <vector>
@@ -10,6 +11,7 @@ struct Parameter {
   manda::analysis::Location location;
   std::string name;
   std::shared_ptr<Type> type;
+  std::optional<Symbol> defaultValue;
 };
 
 class FunctionType : public Type {

@@ -87,13 +87,21 @@ void TypeResolver::visitFnDeclExpr(FnDeclExprCtx &ctx) {
       oss << node->name << "\".";
       analyzer.errorReporter.reportError(node->location, oss.str());
       return;
-    } else {
-      if (analyzer.vmOptions.developerMode) {
-        // TODO: Print param types
-        cout << "Found param \"" << node->name << "\"";
-      }
-      params.push_back({node->location, node->name, type});
     }
+
+    // Handle default values.
+    std::optional<Symbol> defaultValue;
+    if (node->defaultValue) {
+      // TODO: Have a ValueResolver that can resolve constant values.
+      // TODO: Compare the declared type to the constant value's type.
+    }
+
+    if (analyzer.vmOptions.developerMode) {
+      // TODO: Print param types
+      cout << "Found param \"" << node->name << "\"";
+    }
+
+    params.push_back({node->location, node->name, type, defaultValue});
   }
 
   // If the author didn't declare the type, we must eventually
@@ -303,6 +311,8 @@ void TypeResolver::visitBlockExpr(BlockExprCtx &ctx) {
       node->accept(childResolver);
       scope = scope->createChild();
     }
+
+    ctx.runtimeType = ctx.body.back()->runtimeType;
 
     if (!ctx.runtimeType) {
       analyzer.errorReporter.reportError(

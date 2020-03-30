@@ -318,7 +318,17 @@ shared_ptr<FnDeclExprCtx> Parser::parseFnDeclExpr(const Token &token) {
       return nullptr;
     }
   }
-  // TODO: Parse return type
+
+  // Parse explicit return type
+  if (next(Token::COLON)) {
+    lastLocation = current.location;
+    ptr->returnType = parseType();
+    if (!ptr->returnType) {
+      emitError(lastLocation, "Missing type after ':'.");
+      return nullptr;
+    }
+  }
+
   if (next(Token::ARROW)) {
     lastLocation = current.location;
   }
