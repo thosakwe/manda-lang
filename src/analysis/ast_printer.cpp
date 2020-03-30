@@ -1,4 +1,5 @@
 #include "ast_printer.hpp"
+#include <sstream>
 
 using namespace manda::analysis;
 using namespace std;
@@ -67,7 +68,21 @@ void AstPrinter::visitFnDeclExpr(FnDeclExprCtx &ctx) {
   indent();
   for (auto &param : ctx.params) {
     // TODO: Print type, default value
-    print() << "Param " << param->name << endl;
+    ostringstream oss;
+    oss << "Param " << param->name;
+    if (param->type) {
+      indent();
+      print() << "Type:" << endl;
+      param->type->accept(*this);
+      outdent();
+    }
+    if (param->defaultValue) {
+      indent();
+      print() << "Default:" << endl;
+      param->defaultValue->accept(*this);
+      outdent();
+    }
+    print() << oss.str() << endl;
   }
   if (!ctx.body) {
     print() << "<no body>" << endl;
@@ -156,4 +171,8 @@ void AstPrinter::visitParenExpr(ParenExprCtx &ctx) {
   indent();
   ctx.inner->accept(*this);
   outdent();
+}
+
+void AstPrinter::visitTypeRef(TypeRefCtx &ctx) {
+  print() << "TypeRef(" << ctx.name << ")" << endl;
 }

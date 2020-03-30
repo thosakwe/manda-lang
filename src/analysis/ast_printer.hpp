@@ -8,6 +8,7 @@ namespace manda::analysis {
 class AstPrinter : public CompilationUnitVisitor,
                    public DeclVisitor,
                    public ExprVisitor,
+                   public TypeVisitor,
                    public IndentingPrinter {
 public:
   explicit AstPrinter(std::ostream &out);
@@ -29,6 +30,7 @@ public:
   void visitCallExpr(CallExprCtx &ctx) override;
   void visitParenExpr(ParenExprCtx &ctx) override;
   void visitIfExpr(IfExprCtx &ctx) override;
+  void visitTypeRef(TypeRefCtx &ctx) override;
 };
 } // namespace manda::analysis
 
