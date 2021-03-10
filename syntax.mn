@@ -1,0 +1,49 @@
+// Syntax pretty clearly inspired by Dart, OCaml, etc.
+
+/* Multi-line comment */
+
+import "foo.mn"
+import "bar.mn" as Bar
+import {Foo, Bar as Baz} from "bar.mn"
+
+export "foo.mn"
+export "bar.mn" as Bar
+export {Foo, Bar as Baz} from "bar.mn"
+
+/// Doc comment here, use Markdown...
+class MyElement(props, name) : ReactElement(props) =
+  let render () =
+    <div>
+      Hello, {!name}!
+    </div>
+
+class HasConstructor(name) =
+  let _name : string ref
+
+  // Constructors must return unit ()
+  constructor =
+    _name := name
+
+  let name_twice = !name ^ !name
+
+// Note the use of "this" in typeclasses...
+typeclass MyNum =
+  val x2 : this
+  operator + : this -> this -> this
+
+// Generic typeclass
+typeclass 'foo HasFooRef =
+  val get : 'foo ref
+
+module MySubModule =
+  class Foo(bar) =
+    let baz = bar * bar
+
+  module Nested =
+    let two = 2
+
+let my_func x y =
+  let instance = HasConstructor 32 in
+  match x with
+  | Foo -> y * 2
+  | Bar baz -> baz * y
