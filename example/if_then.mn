@@ -1,7 +1,0 @@
-fn main {
-  if (true) {
-    print("If statements must evaluate to true.")
-  } else {
-    print("This statement should never print.")
-  }
-}

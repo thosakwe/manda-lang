@@ -1,1 +1,0 @@
-fn main -> if true then 2 else 3

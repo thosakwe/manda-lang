@@ -1,3 +1,0 @@
-fn two() -> 2
-
-fn main -> two()
